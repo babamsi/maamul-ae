@@ -983,120 +983,159 @@ export default function OnboardingPage() {
 
       {/* Content */}
       <div className="relative z-10 flex flex-col justify-center px-12 py-16 h-full">
-        <div className="max-w-lg backdrop-blur-[10%] bg-black/10 rounded-3xl p-8 border border-white/20 shadow-2xl">
-          {/* Logo */}
-          <div
-            className={`transition-all duration-500 ${showBusinessLogo ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-          >
-            <div className="text-white mb-6 text-5xl font-serif drop-shadow-2xl animate-pulse">𐒑</div>
-          </div>
+        <div className="max-w-lg backdrop-blur-[10%] bg-black/10 p-6 rounded-3xl border border-white/20 shadow-2xl overflow-hidden">
+          {/* Messaging Platform Style Content */}
+          <div className="space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-hide">
+            {/* Logo */}
+            {showBusinessLogo && (
+              <div className="transition-all duration-500 opacity-100 translate-y-0">
+                <div className="text-white text-5xl font-serif drop-shadow-2xl">𐒑</div>
+              </div>
+            )}
 
-          {/* Heading */}
-          <div
-            className={`transition-all duration-500 ${businessHeadingText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-          >
-            <h1 className="text-3xl font-bold tracking-tight mb-4 text-white drop-shadow-xl leading-tight bg-gradient-to-r from-white to-white/90 bg-clip-text">
-              {businessHeadingText}
-              {isTypingBusinessHeading && <span className="animate-pulse">|</span>}
-            </h1>
-          </div>
-
-          {/* Description */}
-          <div
-            className={`transition-all duration-500 ${businessDescText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-          >
-            <p className="text-white/90 mb-6 drop-shadow-lg text-sm leading-relaxed">
-              {businessDescText}
-              {isTypingBusinessDesc && <span className="animate-pulse">|</span>}
-            </p>
-          </div>
-
-          {/* Features */}
-          <div className="space-y-4">
-            {/* Feature 1 */}
-            <div
-              className={`transition-all duration-500 ${businessFeature1Text ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-            >
-              <div className="flex items-start gap-3 p-3 rounded-2xl bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20 hover:translate-x-1 transition-transform duration-300 shadow-lg">
-                <div className="bg-gradient-to-r from-blue-500/30 to-cyan-500/30 p-2 rounded-full mt-1 shadow-inner">
-                  <Settings className="h-4 w-4 text-blue-200" />
-                </div>
-                <div className="flex-1">
-                  {renderTypedText(businessFeature1Text, true)}
-                  {isTypingBusinessFeature1 && <span className="animate-pulse text-white">|</span>}
+            {/* Heading - Typing Effect */}
+            {businessHeadingText && (
+              <div className="transition-all duration-500 opacity-100 translate-y-0">
+                <div className="flex items-start">
+                  <div className="bg-primary/20 backdrop-blur-sm p-2 rounded-full mr-3 mt-1 flex-shrink-0">
+                    <Settings className="h-4 w-4 text-white" />
+                  </div>
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[85%]">
+                    <h1 className="text-2xl font-bold tracking-tight text-white drop-shadow-xl leading-tight">
+                      {businessHeadingText}
+                      {isTypingBusinessHeading && <span className="animate-pulse">|</span>}
+                    </h1>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            {/* Feature 2 */}
-            <div
-              className={`transition-all duration-500 ${businessFeature2Text ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-            >
-              <div className="flex items-start gap-3 p-3 rounded-2xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 hover:translate-x-1 transition-transform duration-300 shadow-lg">
-                <div className="bg-gradient-to-r from-green-500/30 to-emerald-500/30 p-2 rounded-full mt-1 shadow-inner">
-                  <Layers className="h-4 w-4 text-green-200" />
-                </div>
-                <div className="flex-1">
-                  {renderTypedText(businessFeature2Text, true)}
-                  {isTypingBusinessFeature2 && <span className="animate-pulse text-white">|</span>}
+            {/* Description - Typing Effect */}
+            {businessDescText && (
+              <div className="transition-all duration-500 opacity-100 translate-y-0">
+                <div className="flex items-start justify-end">
+                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-3 rounded-2xl rounded-tr-none border border-primary/30 max-w-[85%]">
+                    <p className="text-base text-white leading-relaxed drop-shadow-sm">
+                      {businessDescText}
+                      {isTypingBusinessDesc && <span className="animate-pulse">|</span>}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            {/* Feature 3 */}
-            <div
-              className={`transition-all duration-500 ${businessFeature3Text ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-            >
-              <div className="flex items-start gap-3 p-3 rounded-2xl bg-gradient-to-r from-purple-500/10 to-violet-500/10 border border-purple-500/20 hover:translate-x-1 transition-transform duration-300 shadow-lg">
-                <div className="bg-gradient-to-r from-purple-500/30 to-violet-500/30 p-2 rounded-full mt-1 shadow-inner">
-                  <TrendingUp className="h-4 w-4 text-purple-200" />
-                </div>
-                <div className="flex-1">
-                  {renderTypedText(businessFeature3Text, true)}
-                  {isTypingBusinessFeature3 && <span className="animate-pulse text-white">|</span>}
+            {/* Feature 1 - Typing Effect */}
+            {businessFeature1Text && (
+              <div className="transition-all duration-500 opacity-100 translate-y-0">
+                <div className="flex items-start">
+                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl mr-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Settings className="h-4 w-4 text-white" />
+                  </div>
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
+                    {renderTypedText(businessFeature1Text)}
+                    {isTypingBusinessFeature1 && <span className="animate-pulse">|</span>}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            {/* Feature 4 */}
-            <div
-              className={`transition-all duration-500 ${businessFeature4Text ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-            >
-              <div className="flex items-start gap-3 p-3 rounded-2xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 hover:translate-x-1 transition-transform duration-300 shadow-lg">
-                <div className="bg-gradient-to-r from-amber-500/30 to-orange-500/30 p-2 rounded-full mt-1 shadow-inner">
-                  <DollarSign className="h-4 w-4 text-amber-200" />
-                </div>
-                <div className="flex-1">
-                  {renderTypedText(businessFeature4Text, true)}
-                  {isTypingBusinessFeature4 && <span className="animate-pulse text-white">|</span>}
+            {/* Feature 2 - Typing Effect */}
+            {businessFeature2Text && (
+              <div className="transition-all duration-500 opacity-100 translate-y-0">
+                <div className="flex items-start justify-end">
+                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-3 rounded-2xl rounded-tr-none border border-primary/30 max-w-[80%]">
+                    {renderTypedText(businessFeature2Text)}
+                    {isTypingBusinessFeature2 && <span className="animate-pulse">|</span>}
+                  </div>
+                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl ml-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Layers className="h-4 w-4 text-white" />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            {/* Feature 5 */}
-            <div
-              className={`transition-all duration-500 ${businessFeature5Text ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-            >
-              <div className="flex items-start gap-3 p-3 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 hover:translate-x-1 transition-transform duration-300 shadow-lg">
-                <div className="bg-gradient-to-r from-emerald-500/30 to-teal-500/30 p-2 rounded-full mt-1 shadow-inner">
-                  <Shield className="h-4 w-4 text-emerald-200" />
-                </div>
-                <div className="flex-1">
-                  {renderTypedText(businessFeature5Text, true)}
-                  {isTypingBusinessFeature5 && <span className="animate-pulse text-white">|</span>}
+            {/* Feature 3 - Typing Effect */}
+            {businessFeature3Text && (
+              <div className="transition-all duration-500 opacity-100 translate-y-0">
+                <div className="flex items-start">
+                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl mr-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <TrendingUp className="h-4 w-4 text-white" />
+                  </div>
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
+                    {renderTypedText(businessFeature3Text)}
+                    {isTypingBusinessFeature3 && <span className="animate-pulse">|</span>}
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+            )}
 
-          {/* Trust Badge */}
-          <div
-            className={`transition-all duration-500 mt-6 ${showBusinessTrust ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-          >
-            <div className="flex items-center gap-2 text-xs text-white/80 bg-white/5 rounded-full px-3 py-2 border border-white/10 hover:bg-white/20 transition-colors">
-              <CheckCircle className="h-3 w-3 text-green-400 animate-pulse" />
-              <span>Powering 58+ East African businesses</span>
-            </div>
+            {/* Feature 4 - Typing Effect */}
+            {businessFeature4Text && (
+              <div className="transition-all duration-500 opacity-100 translate-y-0">
+                <div className="flex items-start justify-end">
+                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-3 rounded-2xl rounded-tr-none border border-primary/30 max-w-[80%]">
+                    {renderTypedText(businessFeature4Text)}
+                    {isTypingBusinessFeature4 && <span className="animate-pulse">|</span>}
+                  </div>
+                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl ml-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <DollarSign className="h-4 w-4 text-white" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Feature 5 - Typing Effect */}
+            {businessFeature5Text && (
+              <div className="transition-all duration-500 opacity-100 translate-y-0">
+                <div className="flex items-start">
+                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl mr-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Shield className="h-4 w-4 text-white" />
+                  </div>
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
+                    {renderTypedText(businessFeature5Text)}
+                    {isTypingBusinessFeature5 && <span className="animate-pulse">|</span>}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Trust Badge */}
+            {showBusinessTrust && (
+              <div className="transition-all duration-700 opacity-100 scale-100">
+                <div className="mt-4 p-4 bg-white/15 backdrop-blur-md rounded-2xl border border-white/30 shadow-2xl">
+                  <div className="flex items-center gap-3 mb-2">
+                    <CheckCircle className="h-4 w-4 text-green-400 animate-pulse" />
+                    <span className="font-medium text-white drop-shadow-sm text-sm">Trusted by 58+ businesses</span>
+                  </div>
+                  <div className="flex gap-1 flex-wrap">
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 backdrop-blur-sm text-white border-white/40 hover:bg-white/25 transition-colors text-xs"
+                    >
+                      Somalia
+                    </Badge>
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 backdrop-blur-sm text-white border-white/40 hover:bg-white/25 transition-colors text-xs"
+                    >
+                      Kenya
+                    </Badge>
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 backdrop-blur-sm text-white border-white/40 hover:bg-white/25 transition-colors text-xs"
+                    >
+                      Ethiopia
+                    </Badge>
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 backdrop-blur-sm text-white border-white/40 hover:bg-white/25 transition-colors text-xs"
+                    >
+                      Djibouti
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -1119,120 +1158,161 @@ export default function OnboardingPage() {
 
       {/* Content */}
       <div className="relative z-10 flex flex-col justify-center px-12 py-16 h-full">
-        <div className="max-w-lg backdrop-blur-[10%] bg-black/10 rounded-3xl p-8 border border-white/20 shadow-2xl">
-          {/* Logo */}
-          <div
-            className={`transition-all duration-500 ${showAccountLogo ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-          >
-            <div className="text-white mb-6 text-5xl font-serif drop-shadow-2xl animate-pulse">𐒑</div>
-          </div>
+        <div className="max-w-lg backdrop-blur-[10%] bg-black/10 p-6 rounded-3xl border border-white/20 shadow-2xl overflow-hidden">
+          {/* Messaging Platform Style Content */}
+          <div className="space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-hide">
+            {/* Logo */}
+            {showAccountLogo && (
+              <div className="transition-all duration-500 opacity-100 translate-y-0">
+                <div className="text-white text-5xl font-serif drop-shadow-2xl">𐒑</div>
+              </div>
+            )}
 
-          {/* Heading */}
-          <div
-            className={`transition-all duration-500 ${accountHeadingText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-          >
-            <h1 className="text-3xl font-bold tracking-tight mb-4 text-white drop-shadow-xl leading-tight bg-gradient-to-r from-white to-white/90 bg-clip-text">
-              {accountHeadingText}
-              {isTypingAccountHeading && <span className="animate-pulse">|</span>}
-            </h1>
-          </div>
-
-          {/* Description */}
-          <div
-            className={`transition-all duration-500 ${accountDescText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-          >
-            <p className="text-white/90 mb-6 drop-shadow-lg text-sm leading-relaxed">
-              {accountDescText}
-              {isTypingAccountDesc && <span className="animate-pulse">|</span>}
-            </p>
-          </div>
-
-          {/* Features */}
-          <div className="space-y-4">
-            {/* Feature 1 */}
-            <div
-              className={`transition-all duration-500 ${accountFeature1Text ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-            >
-              <div className="flex items-start gap-3 p-3 rounded-2xl bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-500/20 hover:translate-x-1 transition-transform duration-300 shadow-lg">
-                <div className="bg-gradient-to-r from-orange-500/30 to-red-500/30 p-2 rounded-full mt-1 shadow-inner">
-                  <Shield className="h-4 w-4 text-orange-200" />
-                </div>
-                <div className="flex-1">
-                  {renderTypedText(accountFeature1Text, true)}
-                  {isTypingAccountFeature1 && <span className="animate-pulse text-white">|</span>}
+            {/* Heading - Typing Effect */}
+            {accountHeadingText && (
+              <div className="transition-all duration-500 opacity-100 translate-y-0">
+                <div className="flex items-start">
+                  <div className="bg-primary/20 backdrop-blur-sm p-2 rounded-full mr-3 mt-1 flex-shrink-0">
+                    <User className="h-4 w-4 text-white" />
+                  </div>
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[85%]">
+                    <h1 className="text-2xl font-bold tracking-tight text-white drop-shadow-xl leading-tight">
+                      {accountHeadingText}
+                      {isTypingAccountHeading && <span className="animate-pulse">|</span>}
+                    </h1>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            {/* Feature 2 */}
-            <div
-              className={`transition-all duration-500 ${accountFeature2Text ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-            >
-              <div className="flex items-start gap-3 p-3 rounded-2xl bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 hover:translate-x-1 transition-transform duration-300 shadow-lg">
-                <div className="bg-gradient-to-r from-cyan-500/30 to-blue-500/30 p-2 rounded-full mt-1 shadow-inner">
-                  <Users className="h-4 w-4 text-cyan-200" />
-                </div>
-                <div className="flex-1">
-                  {renderTypedText(accountFeature2Text, true)}
-                  {isTypingAccountFeature2 && <span className="animate-pulse text-white">|</span>}
+            {/* Description - Typing Effect */}
+            {accountDescText && (
+              <div className="transition-all duration-500 opacity-100 translate-y-0">
+                <div className="flex items-start justify-end">
+                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-3 rounded-2xl rounded-tr-none border border-primary/30 max-w-[85%]">
+                    <p className="text-base text-white leading-relaxed drop-shadow-sm">
+                      {accountDescText}
+                      {isTypingAccountDesc && <span className="animate-pulse">|</span>}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            {/* Feature 3 */}
-            <div
-              className={`transition-all duration-500 ${accountFeature3Text ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-            >
-              <div className="flex items-start gap-3 p-3 rounded-2xl bg-gradient-to-r from-pink-500/10 to-rose-500/10 border border-pink-500/20 hover:translate-x-1 transition-transform duration-300 shadow-lg">
-                <div className="bg-gradient-to-r from-pink-500/30 to-rose-500/30 p-2 rounded-full mt-1 shadow-inner">
-                  <Zap className="h-4 w-4 text-pink-200" />
-                </div>
-                <div className="flex-1">
-                  {renderTypedText(accountFeature3Text, true)}
-                  {isTypingAccountFeature3 && <span className="animate-pulse text-white">|</span>}
+            {/* Feature 1 - Typing Effect */}
+            {accountFeature1Text && (
+              <div className="transition-all duration-500 opacity-100 translate-y-0">
+                <div className="flex items-start">
+                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl mr-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Shield className="h-4 w-4 text-white" />
+                  </div>
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
+                    {renderTypedText(accountFeature1Text)}
+                    {isTypingAccountFeature1 && <span className="animate-pulse">|</span>}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            {/* Feature 4 */}
-            <div
-              className={`transition-all duration-500 ${accountFeature4Text ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-            >
-              <div className="flex items-start gap-3 p-3 rounded-2xl bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 hover:translate-x-1 transition-transform duration-300 shadow-lg">
-                <div className="bg-gradient-to-r from-indigo-500/30 to-purple-500/30 p-2 rounded-full mt-1 shadow-inner">
-                  <Lock className="h-4 w-4 text-indigo-200" />
-                </div>
-                <div className="flex-1">
-                  {renderTypedText(accountFeature4Text, true)}
-                  {isTypingAccountFeature4 && <span className="animate-pulse text-white">|</span>}
+            {/* Feature 2 - Typing Effect */}
+            {accountFeature2Text && (
+              <div className="transition-all duration-500 opacity-100 translate-y-0">
+                <div className="flex items-start justify-end">
+                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-3 rounded-2xl rounded-tr-none border border-primary/30 max-w-[80%]">
+                    {renderTypedText(accountFeature2Text)}
+                    {isTypingAccountFeature2 && <span className="animate-pulse">|</span>}
+                  </div>
+                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl ml-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Users className="h-4 w-4 text-white" />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            {/* Feature 5 */}
-            <div
-              className={`transition-all duration-500 ${accountFeature5Text ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-            >
-              <div className="flex items-start gap-3 p-3 rounded-2xl bg-gradient-to-r from-rose-500/10 to-pink-500/10 border border-rose-500/20 hover:translate-x-1 transition-transform duration-300 shadow-lg">
-                <div className="bg-gradient-to-r from-rose-500/30 to-pink-500/30 p-2 rounded-full mt-1 shadow-inner">
-                  <Users className="h-4 w-4 text-rose-200" />
-                </div>
-                <div className="flex-1">
-                  {renderTypedText(accountFeature5Text, true)}
-                  {isTypingAccountFeature5 && <span className="animate-pulse text-white">|</span>}
+            {/* Feature 3 - Typing Effect */}
+            {accountFeature3Text && (
+              <div className="transition-all duration-500 opacity-100 translate-y-0">
+                <div className="flex items-start">
+                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl mr-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Zap className="h-4 w-4 text-white" />
+                  </div>
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
+                    {renderTypedText(accountFeature3Text)}
+                    {isTypingAccountFeature3 && <span className="animate-pulse">|</span>}
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+            )}
 
-          {/* Trust Badge */}
-          <div
-            className={`transition-all duration-500 mt-6 ${showAccountTrust ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-          >
-            <div className="flex items-center gap-2 text-xs text-white/80 bg-white/5 rounded-full px-3 py-2 border border-white/10 hover:bg-white/20 transition-colors">
-              <Star className="h-3 w-3 text-yellow-400 animate-pulse" />
-              <span>Join thousands of successful businesses</span>
-            </div>
+            {/* Feature 4 - Typing Effect */}
+            {accountFeature4Text && (
+              <div className="transition-all duration-500 opacity-100 translate-y-0">
+                <div className="flex items-start justify-end">
+                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-3 rounded-2xl rounded-tr-none border border-primary/30 max-w-[80%]">
+                    {renderTypedText(accountFeature4Text)}
+                    {isTypingAccountFeature4 && <span className="animate-pulse">|</span>}
+                  </div>
+                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl ml-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Lock className="h-4 w-4 text-white" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Feature 5 - Typing Effect */}
+            {accountFeature5Text && (
+              <div className="transition-all duration-500 opacity-100 translate-y-0">
+                <div className="flex items-start">
+                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl mr-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Users className="h-4 w-4 text-white" />
+                  </div>
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
+                    {renderTypedText(accountFeature5Text)}
+                    {isTypingAccountFeature5 && <span className="animate-pulse">|</span>}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Trust Badge */}
+            {showAccountTrust && (
+              <div className="transition-all duration-700 opacity-100 scale-100">
+                <div className="mt-4 p-4 bg-white/15 backdrop-blur-md rounded-2xl border border-white/30 shadow-2xl">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Star className="h-4 w-4 text-yellow-400 animate-pulse" />
+                    <span className="font-medium text-white drop-shadow-sm text-sm">
+                      Join thousands of successful businesses
+                    </span>
+                  </div>
+                  <div className="flex gap-1 flex-wrap">
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 backdrop-blur-sm text-white border-white/40 hover:bg-white/25 transition-colors text-xs"
+                    >
+                      Somalia
+                    </Badge>
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 backdrop-blur-sm text-white border-white/40 hover:bg-white/25 transition-colors text-xs"
+                    >
+                      Kenya
+                    </Badge>
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 backdrop-blur-sm text-white border-white/40 hover:bg-white/25 transition-colors text-xs"
+                    >
+                      Ethiopia
+                    </Badge>
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 backdrop-blur-sm text-white border-white/40 hover:bg-white/25 transition-colors text-xs"
+                    >
+                      Djibouti
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
