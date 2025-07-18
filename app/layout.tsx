@@ -3,10 +3,10 @@ import "./globals.css"
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Analytics } from "@vercel/analytics/react"
+import { CozeChat } from "@/components/CozeChat"
 import { DialogProvider } from "@/contexts/dialog-context"
 import StructuredData from "@/components/StructuredData"
 import { Toaster } from "sonner"
-import { Suspense } from "react"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -47,18 +47,19 @@ export default function RootLayout({
         <StructuredData data={structuredData} />
       </head>
       <body className={inter.className}>
-        <Suspense fallback={null}>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            <DialogProvider>{children}</DialogProvider>
-          </ThemeProvider>
-          <Toaster />
-          <Analytics />
-        </Suspense>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <DialogProvider>
+            {children}
+            <CozeChat />
+          </DialogProvider>
+        </ThemeProvider>
+        <Toaster />
+        <Analytics />
       </body>
     </html>
   )
 }
 
 export const metadata = {
-  generator: "v0.dev",
-}
+      generator: 'v0.dev'
+    };
