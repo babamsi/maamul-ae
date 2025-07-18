@@ -183,7 +183,7 @@ importers:
         specifier: latest
         version: 4.5.1(vue@3.5.17(typescript@5.0.2))
       zod:
-        specifier: ^3.24.1
+        specifier: 3.24.1
         version: 3.24.1
     devDependencies:
       '@types/node':
