@@ -2,554 +2,324 @@
 
 import type React from "react"
 
-import { useState, useRef, useCallback, useEffect } from "react"
-import { useForm } from "react-hook-form"
-import { Loader2, CheckCircle, X, FileText, ImageIcon } from "lucide-react"
-import { toast } from "sonner"
-
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
+import { toast } from "sonner"
 
-const MAX_FILE_SIZE = 5000000
-const ACCEPTED_FILE_TYPES = [
-  "application/pdf",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  "image/jpeg",
-  "image/png",
-]
-
-// Define form schema without zod for now to fix build issue
-interface CareerFormValues {
+interface JobApplication {
   fullName: string
   email: string
   phone: string
-  position: string
-  department: string
   location: string
+  position: string
   experience: string
-  languages: string[]
-  internetSpeed: string
   coverLetter: string
-  files?: File[]
+  portfolio?: string
+  linkedin?: string
+  availability: string
+  salary: string
+  remote: boolean
+  resume?: File
 }
 
-const positions = [
-  "Sales Representative",
-  "Software Engineer",
-  "Product Manager",
-  "UX/UI Designer",
-  "Data Analyst",
-  "Customer Support Specialist",
-  "Digital Marketing Manager",
-  "Quality Assurance Engineer",
-  "Content Writer",
-  "Financial Analyst",
-  "HR Coordinator",
-  "Project Manager",
-  "DevOps Engineer",
-  "Information Security Analyst",
-  "Legal Counsel",
-  "HR Manager",
-  "Operations Manager",
-  "Finance Manager",
-  "Sales Manager",
-  "Marketing Director",
-  "IT Support Specialist",
-  "Customer Success Manager",
-]
+interface CareerFormProps {
+  position: string
+  onClose: () => void
+}
 
-const departments = [
-  "Sales",
-  "Engineering",
-  "Product",
-  "Design",
-  "Analytics",
-  "Customer Service",
-  "Marketing",
-  "Finance",
-  "Human Resources",
-  "Operations",
-  "IT",
-  "Legal",
-]
-
-const locations = ["Virtual", "Nairobi, Kenya (HQ)"]
-
-const experienceLevels = ["Entry Level", "1-3 years", "3-5 years", "5-10 years", "10+ years"]
-
-const languages = [
-  { label: "English", value: "english" },
-  { label: "Swahili", value: "swahili" },
-  { label: "Somali", value: "somali" },
-  { label: "Amharic", value: "amharic" },
-  { label: "Arabic", value: "arabic" },
-]
-
-export function CareerForm() {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
-  const fileInputRef = useRef<HTMLInputElement>(null)
-
-  const form = useForm<CareerFormValues>({
-    defaultValues: {
-      fullName: "",
-      email: "",
-      phone: "",
-      position: "",
-      department: "",
-      location: "",
-      experience: "",
-      languages: [],
-      internetSpeed: "",
-      coverLetter: "",
-      files: [],
-    },
+export function CareerForm({ position, onClose }: CareerFormProps) {
+  const [formData, setFormData] = useState<JobApplication>({
+    fullName: "",
+    email: "",
+    phone: "",
+    location: "",
+    position: position,
+    experience: "",
+    coverLetter: "",
+    portfolio: "",
+    linkedin: "",
+    availability: "",
+    salary: "",
+    remote: false,
   })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errors, setErrors] = useState<Partial<JobApplication>>({})
 
-  const handleFileChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const newFiles = Array.from(event.target.files || [])
-      const updatedFiles = [...selectedFiles, ...newFiles].slice(0, 5) // Limit to 5 files
-      setSelectedFiles(updatedFiles)
-      form.setValue("files", updatedFiles)
-    },
-    [selectedFiles, form],
-  )
+  const validateForm = (): boolean => {
+    const newErrors: Partial<JobApplication> = {}
 
-  const removeFile = useCallback(
-    (index: number) => {
-      setSelectedFiles((prevFiles) => {
-        const newFiles = [...prevFiles]
-        newFiles.splice(index, 1)
-        form.setValue("files", newFiles)
-        return newFiles
-      })
-    },
-    [form],
-  )
-
-  const openFileDialog = useCallback(() => {
-    fileInputRef.current?.click()
-  }, [])
-
-  // Basic validation function
-  const validateForm = (values: CareerFormValues): string[] => {
-    const errors: string[] = []
-
-    if (!values.fullName || values.fullName.length < 2) {
-      errors.push("Full name must be at least 2 characters")
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = "Full name is required"
     }
 
-    if (!values.email || !/\S+@\S+\.\S+/.test(values.email)) {
-      errors.push("Please enter a valid email address")
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required"
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address"
     }
 
-    if (!values.phone || values.phone.length < 10) {
-      errors.push("Please enter a valid phone number")
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone number is required"
     }
 
-    if (!values.position) {
-      errors.push("Please select a position")
+    if (!formData.location.trim()) {
+      newErrors.location = "Location is required"
     }
 
-    if (!values.department) {
-      errors.push("Please select a department")
+    if (!formData.experience.trim()) {
+      newErrors.experience = "Experience level is required"
     }
 
-    if (!values.location) {
-      errors.push("Please select a location")
+    if (!formData.coverLetter.trim()) {
+      newErrors.coverLetter = "Cover letter is required"
     }
 
-    if (!values.experience) {
-      errors.push("Please select your experience level")
+    if (!formData.availability.trim()) {
+      newErrors.availability = "Availability is required"
     }
 
-    if (!values.languages || values.languages.length === 0) {
-      errors.push("Please select at least one language")
+    if (!formData.salary.trim()) {
+      newErrors.salary = "Salary expectation is required"
     }
 
-    if (!values.internetSpeed) {
-      errors.push("Please enter your internet speed")
-    }
-
-    if (!values.coverLetter || values.coverLetter.length < 50) {
-      errors.push("Cover letter must be at least 50 characters")
-    }
-
-    if (selectedFiles.length > 0) {
-      const oversizedFiles = selectedFiles.filter((file) => file.size > MAX_FILE_SIZE)
-      if (oversizedFiles.length > 0) {
-        errors.push("Each file must be less than 5MB")
-      }
-
-      const invalidTypeFiles = selectedFiles.filter((file) => !ACCEPTED_FILE_TYPES.includes(file.type))
-      if (invalidTypeFiles.length > 0) {
-        errors.push("Only PDF, DOC, DOCX, JPEG, or PNG files are accepted")
-      }
-
-      if (selectedFiles.length > 5) {
-        errors.push("You can upload a maximum of 5 files")
-      }
-    }
-
-    return errors
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
   }
 
-  async function onSubmit(values: CareerFormValues) {
-    const validationErrors = validateForm(values)
+  const handleInputChange = (field: keyof JobApplication, value: string | boolean | File) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }))
+    }
+  }
 
-    if (validationErrors.length > 0) {
-      validationErrors.forEach((error) => toast.error(error))
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!validateForm()) {
+      toast.error("Please fill in all required fields correctly")
       return
     }
 
     setIsSubmitting(true)
+
     try {
-      const formData = new FormData()
-      Object.entries(values).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          if (key === "files") {
-            value.forEach((file, index) => {
-              formData.append(`file${index}`, file)
-            })
+      const submitData = new FormData()
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          if (typeof value === "boolean") {
+            submitData.append(key, value.toString())
+          } else if (value instanceof File) {
+            submitData.append(key, value)
           } else {
-            formData.append(key, value.join(", "))
+            submitData.append(key, value.toString())
           }
-        } else if (value instanceof File) {
-          formData.append(key, value)
-        } else if (value !== undefined && value !== null) {
-          formData.append(key, value.toString())
         }
       })
 
-      console.log("Submitting form data:", Object.fromEntries(formData))
-
       const response = await fetch("/api/careers/apply", {
         method: "POST",
-        body: formData,
+        body: submitData,
       })
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Failed to submit application")
+        throw new Error("Failed to submit application")
       }
 
-      const result = await response.json()
-      console.log("Form submission result:", result)
-      toast.success(result.message || "Application submitted successfully!")
-      setIsSuccess(true)
-      form.reset()
-      setSelectedFiles([])
-    } catch (error: any) {
-      console.error("Submission error:", error)
-      toast.error(error.message || "Failed to submit application. Please try again.")
+      toast.success("Application submitted successfully! We'll be in touch soon.")
+      onClose()
+    } catch (error) {
+      console.error("Error submitting application:", error)
+      toast.error("Failed to submit application. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField
-            control={form.control}
-            name="fullName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Full Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Yusef Adam" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input type="email" placeholder="adam@example.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Phone Number</FormLabel>
-              <FormControl>
-                <Input placeholder="+1234567890" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField
-            control={form.control}
-            name="position"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Position</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a position" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {positions.map((position) => (
-                      <SelectItem key={position} value={position}>
-                        {position}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="department"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Department</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a department" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {departments.map((department) => (
-                      <SelectItem key={department} value={department}>
-                        {department}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField
-            control={form.control}
-            name="location"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Location</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a location" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {locations.map((location) => (
-                      <SelectItem key={location} value={location}>
-                        {location}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="experience"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Experience Level</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select experience level" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {experienceLevels.map((level) => (
-                      <SelectItem key={level} value={level}>
-                        {level}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <FormField
-          control={form.control}
-          name="languages"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Languages</FormLabel>
-              <div className="space-y-2">
-                {languages.map((language) => (
-                  <div key={language.value} className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id={language.value}
-                      checked={field.value.includes(language.value)}
-                      onChange={(e) => {
-                        const updatedValues = e.target.checked
-                          ? [...field.value, language.value]
-                          : field.value.filter((val: string) => val !== language.value)
-                        field.onChange(updatedValues)
-                      }}
-                      className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                    />
-                    <label htmlFor={language.value} className="text-sm font-medium">
-                      {language.label}
-                    </label>
-                  </div>
-                ))}
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="internetSpeed"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Internet Speed (Mbps)</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="files"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Resume and Additional Documents</FormLabel>
-              <FormControl>
-                <div className="flex flex-col items-start space-y-2">
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                    multiple
-                    className="hidden"
-                  />
-                  <Button type="button" onClick={openFileDialog}>
-                    Select Files
-                  </Button>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-                    {selectedFiles.map((file, index) => (
-                      <FilePreview key={index} file={file} onRemove={() => removeFile(index)} />
-                    ))}
-                  </div>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="coverLetter"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Cover Letter</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Tell us why you're interested in this position and what you can bring to the team."
-                  className="min-h-[150px] resize-none"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-full" disabled={isSubmitting || isSuccess}>
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Submitting application...
-            </>
-          ) : isSuccess ? (
-            <>
-              <CheckCircle className="mr-2 h-4 w-4" />
-              Application Submitted!
-            </>
-          ) : (
-            "Submit Application"
-          )}
-        </Button>
-      </form>
-    </Form>
-  )
-}
+    <Card className="w-full max-w-2xl mx-auto">
+      <CardHeader>
+        <CardTitle>Apply for {position}</CardTitle>
+        <CardDescription>
+          Fill out the form below to apply for this position. All fields marked with * are required.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="fullName">Full Name *</Label>
+              <Input
+                id="fullName"
+                value={formData.fullName}
+                onChange={(e) => handleInputChange("fullName", e.target.value)}
+                placeholder="Enter your full name"
+                className={errors.fullName ? "border-red-500" : ""}
+              />
+              {errors.fullName && <p className="text-sm text-red-500">{errors.fullName}</p>}
+            </div>
 
-interface FilePreviewProps {
-  file: File
-  onRemove: () => void
-}
+            <div className="space-y-2">
+              <Label htmlFor="email">Email Address *</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => handleInputChange("email", e.target.value)}
+                placeholder="Enter your email"
+                className={errors.email ? "border-red-500" : ""}
+              />
+              {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+            </div>
+          </div>
 
-function FilePreview({ file, onRemove }: FilePreviewProps) {
-  const [preview, setPreview] = useState<string | null>(null)
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone Number *</Label>
+              <Input
+                id="phone"
+                value={formData.phone}
+                onChange={(e) => handleInputChange("phone", e.target.value)}
+                placeholder="Enter your phone number"
+                className={errors.phone ? "border-red-500" : ""}
+              />
+              {errors.phone && <p className="text-sm text-red-500">{errors.phone}</p>}
+            </div>
 
-  useEffect(() => {
-    if (file.type.startsWith("image/")) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setPreview(reader.result as string)
-      }
-      reader.onerror = () => {
-        console.error("Error reading file:", file.name)
-        setPreview(null)
-      }
-      reader.readAsDataURL(file)
-    }
-    return () => {
-      if (preview) {
-        URL.revokeObjectURL(preview)
-      }
-    }
-  }, [file, preview])
+            <div className="space-y-2">
+              <Label htmlFor="location">Location *</Label>
+              <Input
+                id="location"
+                value={formData.location}
+                onChange={(e) => handleInputChange("location", e.target.value)}
+                placeholder="City, Country"
+                className={errors.location ? "border-red-500" : ""}
+              />
+              {errors.location && <p className="text-sm text-red-500">{errors.location}</p>}
+            </div>
+          </div>
 
-  return (
-    <div className="relative bg-muted p-2 rounded-md">
-      <div className="flex items-center space-x-2">
-        {preview ? (
-          <img src={preview || "/placeholder.svg"} alt={file.name} className="w-10 h-10 object-cover rounded" />
-        ) : file.type.includes("pdf") ? (
-          <FileText className="w-10 h-10 text-primary" />
-        ) : (
-          <ImageIcon className="w-10 h-10 text-primary" />
-        )}
-        <span className="text-sm truncate">{file.name}</span>
-      </div>
-      <Button type="button" variant="ghost" size="icon" className="absolute top-0 right-0" onClick={onRemove}>
-        <X className="h-4 w-4" />
-      </Button>
-    </div>
+          <div className="space-y-2">
+            <Label htmlFor="experience">Experience Level *</Label>
+            <Select value={formData.experience} onValueChange={(value) => handleInputChange("experience", value)}>
+              <SelectTrigger className={errors.experience ? "border-red-500" : ""}>
+                <SelectValue placeholder="Select your experience level" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="entry">Entry Level (0-2 years)</SelectItem>
+                <SelectItem value="mid">Mid Level (3-5 years)</SelectItem>
+                <SelectItem value="senior">Senior Level (6-10 years)</SelectItem>
+                <SelectItem value="lead">Lead/Principal (10+ years)</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.experience && <p className="text-sm text-red-500">{errors.experience}</p>}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="portfolio">Portfolio URL</Label>
+              <Input
+                id="portfolio"
+                value={formData.portfolio}
+                onChange={(e) => handleInputChange("portfolio", e.target.value)}
+                placeholder="https://your-portfolio.com"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="linkedin">LinkedIn Profile</Label>
+              <Input
+                id="linkedin"
+                value={formData.linkedin}
+                onChange={(e) => handleInputChange("linkedin", e.target.value)}
+                placeholder="https://linkedin.com/in/yourprofile"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="availability">Availability *</Label>
+              <Select value={formData.availability} onValueChange={(value) => handleInputChange("availability", value)}>
+                <SelectTrigger className={errors.availability ? "border-red-500" : ""}>
+                  <SelectValue placeholder="When can you start?" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="immediately">Immediately</SelectItem>
+                  <SelectItem value="2weeks">2 weeks notice</SelectItem>
+                  <SelectItem value="1month">1 month notice</SelectItem>
+                  <SelectItem value="2months">2+ months</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.availability && <p className="text-sm text-red-500">{errors.availability}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="salary">Salary Expectation *</Label>
+              <Input
+                id="salary"
+                value={formData.salary}
+                onChange={(e) => handleInputChange("salary", e.target.value)}
+                placeholder="e.g., $50,000 - $70,000"
+                className={errors.salary ? "border-red-500" : ""}
+              />
+              {errors.salary && <p className="text-sm text-red-500">{errors.salary}</p>}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="resume">Resume/CV</Label>
+            <Input
+              id="resume"
+              type="file"
+              accept=".pdf,.doc,.docx"
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) handleInputChange("resume", file)
+              }}
+            />
+            <p className="text-sm text-gray-500">Upload your resume in PDF, DOC, or DOCX format (max 5MB)</p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="coverLetter">Cover Letter *</Label>
+            <Textarea
+              id="coverLetter"
+              value={formData.coverLetter}
+              onChange={(e) => handleInputChange("coverLetter", e.target.value)}
+              placeholder="Tell us why you're interested in this position and what makes you a great fit..."
+              rows={6}
+              className={errors.coverLetter ? "border-red-500" : ""}
+            />
+            {errors.coverLetter && <p className="text-sm text-red-500">{errors.coverLetter}</p>}
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="remote"
+              checked={formData.remote}
+              onCheckedChange={(checked) => handleInputChange("remote", checked as boolean)}
+            />
+            <Label htmlFor="remote">I'm interested in remote work opportunities</Label>
+          </div>
+
+          <div className="flex gap-4 pt-4">
+            <Button type="button" variant="outline" onClick={onClose} className="flex-1 bg-transparent">
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting} className="flex-1">
+              {isSubmitting ? "Submitting..." : "Submit Application"}
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   )
 }
