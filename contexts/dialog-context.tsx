@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, type ReactNode } from "react"
 
 interface DialogContextType {
   isAnyDialogOpen: boolean
@@ -16,17 +16,13 @@ export function DialogProvider({ children }: { children: ReactNode }) {
     setIsAnyDialogOpen(isOpen)
   }
 
-  return (
-    <DialogContext.Provider value={{ isAnyDialogOpen, setDialogOpen }}>
-      {children}
-    </DialogContext.Provider>
-  )
+  return <DialogContext.Provider value={{ isAnyDialogOpen, setDialogOpen }}>{children}</DialogContext.Provider>
 }
 
 export function useDialog() {
   const context = useContext(DialogContext)
   if (context === undefined) {
-    throw new Error('useDialog must be used within a DialogProvider')
+    throw new Error("useDialog must be used within a DialogProvider")
   }
   return context
 }
