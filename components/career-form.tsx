@@ -1,9 +1,9 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useRef, useCallback, useEffect } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import * as z from "zod"
 import { Loader2, CheckCircle, X, FileText, ImageIcon } from "lucide-react"
 import { toast } from "sonner"
 
@@ -22,36 +22,20 @@ const ACCEPTED_FILE_TYPES = [
   "image/png",
 ]
 
-const formSchema = z.object({
-  fullName: z.string().min(2, "Full name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  phone: z.string().min(10, "Please enter a valid phone number"),
-  position: z.string().min(1, "Please select a position"),
-  department: z.string().min(1, "Please select a department"),
-  location: z.string().min(1, "Please select a location"),
-  experience: z.string().min(1, "Please select your experience level"),
-  languages: z.array(z.string()).min(1, "Please select at least one language"),
-  internetSpeed: z.string().min(1, "Please enter your internet speed"),
-  coverLetter: z.string().min(50, "Cover letter must be at least 50 characters"),
-  files: z
-    .array(
-      z.custom<File>((file) => file instanceof File, {
-        message: "Must be a valid file",
-      }),
-    )
-    .refine((files) => files.every((file) => file.size <= MAX_FILE_SIZE), {
-      message: "Each file must be less than 5MB.",
-    })
-    .refine((files) => files.every((file) => ACCEPTED_FILE_TYPES.includes(file.type)), {
-      message: "Only PDF, DOC, DOCX, JPEG, or PNG files are accepted.",
-    })
-    .refine((files) => files.length <= 5, {
-      message: "You can upload a maximum of 5 files.",
-    })
-    .optional(),
-})
-
-type CareerFormValues = z.infer<typeof formSchema>
+// Define form schema without zod for now to fix build issue
+interface CareerFormValues {
+  fullName: string
+  email: string
+  phone: string
+  position: string
+  department: string
+  location: string
+  experience: string
+  languages: string[]
+  internetSpeed: string
+  coverLetter: string
+  files?: File[]
+}
 
 const positions = [
   "Sales Representative",
@@ -112,7 +96,6 @@ export function CareerForm() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const form = useForm<CareerFormValues>({
-    resolver: zodResolver(formSchema),
     defaultValues: {
       fullName: "",
       email: "",
@@ -134,7 +117,6 @@ export function CareerForm() {
       const updatedFiles = [...selectedFiles, ...newFiles].slice(0, 5) // Limit to 5 files
       setSelectedFiles(updatedFiles)
       form.setValue("files", updatedFiles)
-      form.trigger("files") // Trigger validation
     },
     [selectedFiles, form],
   )
@@ -155,7 +137,77 @@ export function CareerForm() {
     fileInputRef.current?.click()
   }, [])
 
+  // Basic validation function
+  const validateForm = (values: CareerFormValues): string[] => {
+    const errors: string[] = []
+
+    if (!values.fullName || values.fullName.length < 2) {
+      errors.push("Full name must be at least 2 characters")
+    }
+
+    if (!values.email || !/\S+@\S+\.\S+/.test(values.email)) {
+      errors.push("Please enter a valid email address")
+    }
+
+    if (!values.phone || values.phone.length < 10) {
+      errors.push("Please enter a valid phone number")
+    }
+
+    if (!values.position) {
+      errors.push("Please select a position")
+    }
+
+    if (!values.department) {
+      errors.push("Please select a department")
+    }
+
+    if (!values.location) {
+      errors.push("Please select a location")
+    }
+
+    if (!values.experience) {
+      errors.push("Please select your experience level")
+    }
+
+    if (!values.languages || values.languages.length === 0) {
+      errors.push("Please select at least one language")
+    }
+
+    if (!values.internetSpeed) {
+      errors.push("Please enter your internet speed")
+    }
+
+    if (!values.coverLetter || values.coverLetter.length < 50) {
+      errors.push("Cover letter must be at least 50 characters")
+    }
+
+    if (selectedFiles.length > 0) {
+      const oversizedFiles = selectedFiles.filter((file) => file.size > MAX_FILE_SIZE)
+      if (oversizedFiles.length > 0) {
+        errors.push("Each file must be less than 5MB")
+      }
+
+      const invalidTypeFiles = selectedFiles.filter((file) => !ACCEPTED_FILE_TYPES.includes(file.type))
+      if (invalidTypeFiles.length > 0) {
+        errors.push("Only PDF, DOC, DOCX, JPEG, or PNG files are accepted")
+      }
+
+      if (selectedFiles.length > 5) {
+        errors.push("You can upload a maximum of 5 files")
+      }
+    }
+
+    return errors
+  }
+
   async function onSubmit(values: CareerFormValues) {
+    const validationErrors = validateForm(values)
+
+    if (validationErrors.length > 0) {
+      validationErrors.forEach((error) => toast.error(error))
+      return
+    }
+
     setIsSubmitting(true)
     try {
       const formData = new FormData()
@@ -193,7 +245,7 @@ export function CareerForm() {
       setIsSuccess(true)
       form.reset()
       setSelectedFiles([])
-    } catch (error) {
+    } catch (error: any) {
       console.error("Submission error:", error)
       toast.error(error.message || "Failed to submit application. Please try again.")
     } finally {

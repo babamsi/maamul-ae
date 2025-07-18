@@ -1,6 +1,6 @@
 "use client"
 
-export function CozeChat() {
-  // Hide the entire chatbot from the website
+export default function CozeChat() {
+  // Hide the entire chatbot - return null to prevent rendering
   return null
 }
