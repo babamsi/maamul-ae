@@ -3,20 +3,24 @@ import nodemailer from "nodemailer"
 import { v4 as uuidv4 } from "uuid"
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.zoho.com",
-  port: 465,
+  host: process.env.SMTP_HOST || "smtp.zoho.com",
+  port: Number.parseInt(process.env.SMTP_PORT || "465"),
   secure: true,
   auth: {
-    user: "no-reply@maamul.com",
-    pass: "69APsXQkuLuw",
+    user: process.env.SMTP_USER || "no-reply@maamul.com",
+    pass: process.env.SMTP_PASS || "69APsXQkuLuw",
   },
 })
 
 export async function POST(request: Request) {
   console.log("Starting application submission process")
   try {
+    // Verify transporter configuration
+    await transporter.verify()
+    console.log("SMTP connection verified")
+
     const formData = await request.formData()
-    console.log("Form data received:", Object.fromEntries(formData))
+    console.log("Form data received")
 
     const fullName = formData.get("fullName") as string
     const email = formData.get("email") as string
@@ -29,11 +33,21 @@ export async function POST(request: Request) {
     const internetSpeed = formData.get("internetSpeed") as string
     const coverLetter = formData.get("coverLetter") as string
 
+    // Validate required fields
+    if (!fullName || !email || !position || !coverLetter) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
+
     console.log("Form data parsed:", { fullName, email, position })
 
     const files: File[] = []
+    const maxFileSize = 5 * 1024 * 1024 // 5MB
+
     for (const [key, value] of formData.entries()) {
       if (value instanceof File && value.size > 0) {
+        if (value.size > maxFileSize) {
+          return NextResponse.json({ error: `File ${value.name} exceeds 5MB limit` }, { status: 400 })
+        }
         files.push(value)
       }
     }
@@ -42,10 +56,15 @@ export async function POST(request: Request) {
     console.log("Processing files...")
     const attachments = await Promise.all(
       files.map(async (file) => {
-        const buffer = Buffer.from(await file.arrayBuffer())
-        return {
-          filename: `${uuidv4()}-${file.name}`,
-          content: buffer,
+        try {
+          const buffer = Buffer.from(await file.arrayBuffer())
+          return {
+            filename: `${uuidv4()}-${file.name}`,
+            content: buffer,
+          }
+        } catch (error) {
+          console.error(`Error processing file ${file.name}:`, error)
+          throw new Error(`Failed to process file: ${file.name}`)
         }
       }),
     )
@@ -54,8 +73,8 @@ export async function POST(request: Request) {
     console.log("Preparing to send emails...")
     // Email to admin
     const adminMailOptions = {
-      from: "no-reply@maamul.com",
-      to: "support@maamul.com",
+      from: process.env.SMTP_USER || "no-reply@maamul.com",
+      to: process.env.ADMIN_EMAIL || "support@maamul.com",
       subject: "New Job Application",
       html: `
         <h2>New Job Application Received</h2>
@@ -76,7 +95,7 @@ export async function POST(request: Request) {
 
     // Email to applicant
     const applicantMailOptions = {
-      from: "no-reply@maamul.com",
+      from: process.env.SMTP_USER || "no-reply@maamul.com",
       to: email,
       subject: "Application Received - Maamul Careers",
       html: `
@@ -87,14 +106,12 @@ export async function POST(request: Request) {
       `,
     }
 
-    // Send both emails
+    // Send both emails with timeout
     console.log("Sending admin email...")
-    await transporter.sendMail(adminMailOptions)
-    console.log("Admin email sent")
+    const emailPromises = [transporter.sendMail(adminMailOptions), transporter.sendMail(applicantMailOptions)]
 
-    console.log("Sending applicant email...")
-    await transporter.sendMail(applicantMailOptions)
-    console.log("Applicant email sent")
+    await Promise.all(emailPromises)
+    console.log("Both emails sent successfully")
 
     console.log("Application submission completed successfully")
     return NextResponse.json({
@@ -103,7 +120,22 @@ export async function POST(request: Request) {
     })
   } catch (error) {
     console.error("Application submission error:", error)
-    console.error("Error details:", JSON.stringify(error, Object.getOwnPropertyNames(error)))
-    return NextResponse.json({ error: "Failed to process application", details: error.message }, { status: 500 })
+
+    // More specific error handling
+    if (error.code === "EAUTH") {
+      return NextResponse.json({ error: "Email authentication failed" }, { status: 500 })
+    }
+
+    if (error.code === "ECONNECTION") {
+      return NextResponse.json({ error: "Email server connection failed" }, { status: 500 })
+    }
+
+    return NextResponse.json(
+      {
+        error: "Failed to process application",
+        details: process.env.NODE_ENV === "development" ? error.message : "Internal server error",
+      },
+      { status: 500 },
+    )
   }
 }

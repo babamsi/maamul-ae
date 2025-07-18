@@ -2,17 +2,21 @@ import { NextResponse } from "next/server"
 import nodemailer from "nodemailer"
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.zoho.com",
-  port: 465,
+  host: process.env.SMTP_HOST || "smtp.zoho.com",
+  port: Number.parseInt(process.env.SMTP_PORT || "465"),
   secure: true,
   auth: {
-    user: "no-reply@maamul.com",
-    pass: "69APsXQkuLuw",
+    user: process.env.SMTP_USER || "no-reply@maamul.com",
+    pass: process.env.SMTP_PASS || "69APsXQkuLuw",
   },
 })
 
 export async function POST(request: Request) {
   try {
+    // Verify transporter configuration
+    await transporter.verify()
+    console.log("SMTP connection verified")
+
     const formData = await request.formData()
     const fullName = formData.get("fullName") as string
     const email = formData.get("email") as string
@@ -20,19 +24,34 @@ export async function POST(request: Request) {
     const coverLetter = formData.get("coverLetter") as string
     const resume = formData.get("resume") as File | null
 
+    // Validate required fields
+    if (!fullName || !email || !coverLetter) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
+
     const attachments = []
     if (resume) {
-      const buffer = Buffer.from(await resume.arrayBuffer())
-      attachments.push({
-        filename: resume.name,
-        content: buffer,
-      })
+      const maxFileSize = 5 * 1024 * 1024 // 5MB
+      if (resume.size > maxFileSize) {
+        return NextResponse.json({ error: "Resume file exceeds 5MB limit" }, { status: 400 })
+      }
+
+      try {
+        const buffer = Buffer.from(await resume.arrayBuffer())
+        attachments.push({
+          filename: resume.name,
+          content: buffer,
+        })
+      } catch (error) {
+        console.error("Error processing resume file:", error)
+        return NextResponse.json({ error: "Failed to process resume file" }, { status: 400 })
+      }
     }
 
     // Email to admin
     const adminMailOptions = {
-      from: "no-reply@maamul.com",
-      to: "support@maamul.com",
+      from: process.env.SMTP_USER || "no-reply@maamul.com",
+      to: process.env.ADMIN_EMAIL || "support@maamul.com",
       subject: "New General Job Application",
       html: `
         <h2>New General Job Application Received</h2>
@@ -47,7 +66,7 @@ export async function POST(request: Request) {
 
     // Email to applicant
     const applicantMailOptions = {
-      from: "no-reply@maamul.com",
+      from: process.env.SMTP_USER || "no-reply@maamul.com",
       to: email,
       subject: "General Application Received - Maamul Careers",
       html: `
@@ -67,8 +86,21 @@ export async function POST(request: Request) {
     })
   } catch (error) {
     console.error("Application submission error:", error)
+
+    // More specific error handling
+    if (error.code === "EAUTH") {
+      return NextResponse.json({ error: "Email authentication failed" }, { status: 500 })
+    }
+
+    if (error.code === "ECONNECTION") {
+      return NextResponse.json({ error: "Email server connection failed" }, { status: 500 })
+    }
+
     return NextResponse.json(
-      { error: "Failed to process general application", details: error.message },
+      {
+        error: "Failed to process general application",
+        details: process.env.NODE_ENV === "development" ? error.message : "Internal server error",
+      },
       { status: 500 },
     )
   }
