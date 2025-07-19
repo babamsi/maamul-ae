@@ -6,6 +6,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { businessName, industry, businessType, location, email, phone, fullName, teamMembers } = body
+    console.log(body)
 
     // Validate required fields
     if (!businessName || !industry || !email || !fullName) {
