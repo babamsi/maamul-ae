@@ -188,28 +188,39 @@ export default function LandingPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           id="consultation"
-          className="bg-gradient-to-br from-background to-primary/10 dark:from-gray-900 dark:to-primary/5 py-20 md:py-32 overflow-hidden relative transition-colors duration-300"
+          className="relative py-20 md:py-32 overflow-hidden transition-colors duration-300"
         >
-          <div className="container max-w-6xl mx-auto text-center px-4 relative z-10">
+          {/* Full-width background video */}
+          <div className="absolute inset-0 z-0">
+            <video autoPlay muted loop playsInline className="w-full h-full object-cover">
+              <source src="https://zl2dvipizibcvy5o.public.blob.vercel-storage.com/1x%20copy_72FDCF56-E600-4D28-BBFD-D16C2AEB9E32.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+            {/* Overlay for better text readability */}
+            <div className="absolute inset-0 bg-black/40 dark:bg-black/60"></div>
+          </div>
+
+          {/* Content overlay */}
+          <div className="container max-w-6xl mx-auto px-4 relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="space-y-6 max-w-3xl mx-auto"
+              className="text-center space-y-6 max-w-3xl mx-auto"
             >
               <div className="inline-block rounded-lg bg-primary px-3 py-1 text-sm text-primary-foreground">
                 Ready to Streamline Your Business?
               </div>
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl dark:text-white">
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-white">
                 Start Your Journey with Maamul
               </h2>
-              <p className="text-muted-foreground dark:text-gray-400 md:text-xl">
+              <p className="text-white/90 md:text-xl">
                 Begin your path towards efficient business management and take the first step to transform your
-                operations.
+                operations across all your devices.
               </p>
               <div className="mt-8">
                 <Button
-                  className="bg-primary text-primary-foreground hover:bg-primary/90"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg"
                   onClick={() => (window.location.href = "/onboarding")}
                 >
                   Get Started with Maamul
@@ -217,7 +228,9 @@ export default function LandingPage() {
               </div>
             </motion.div>
           </div>
-          <div className="absolute inset-0 bg-grid-white/[0.02] dark:bg-gray-700/[0.02] bg-[size:40px_40px] opacity-20"></div>
+
+          {/* Grid pattern overlay */}
+          <div className="absolute inset-0 bg-grid-white/[0.02] dark:bg-gray-700/[0.02] bg-[size:40px_40px] opacity-20 z-5"></div>
         </motion.section>
         <motion.section
           initial={{ opacity: 0, y: 20 }}
