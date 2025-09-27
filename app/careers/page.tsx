@@ -19,7 +19,7 @@ const jobListings = [
     department: "Marketing",
     location: "Virtual",
     type: "Full-time",
-    deadline: "5 August 2025",
+    deadline: "5 March 2026",
     description:
       "Lead Maamul's marketing efforts to build brand awareness, drive customer acquisition, and support business growth in East Africa. You'll develop and execute comprehensive marketing strategies across various channels.",
     requirements: [
@@ -50,7 +50,7 @@ const jobListings = [
     department: "Sales",
     location: "Virtual",
     type: "Full-time",
-    deadline: "5 August 2025",
+    deadline: "5 March 2026",
     description:
       "Lead Maamul's sales team to drive revenue growth and market expansion in East Africa. You'll develop and execute sales strategies, manage key accounts, and build strong client relationships.",
     requirements: [
@@ -81,7 +81,7 @@ const jobListings = [
     department: "Legal",
     location: "Virtual",
     type: "Full-time",
-    deadline: "5 August 2025",
+    deadline: "5 March 2026",
     description:
       "Provide comprehensive legal support to Maamul, ensuring compliance with East African regulations and protecting the company's interests. You'll handle a wide range of legal matters and work closely with various departments.",
     requirements: [
@@ -112,7 +112,7 @@ const jobListings = [
     department: "Operations",
     location: "Virtual",
     type: "Full-time",
-    deadline: "5 August 2025",
+    deadline: "5 March 2026",
     description:
       "Lead and coordinate cross-functional projects to drive Maamul's growth and operational efficiency. You'll ensure successful project delivery while managing resources, timelines, and stakeholder expectations.",
     requirements: [
@@ -143,7 +143,7 @@ const jobListings = [
     department: "Various Departments",
     location: "Virtual",
     type: "Internship",
-    deadline: "5 August 2025",
+    deadline: "5 March 2026",
     description:
       "Join Maamul's comprehensive internship program designed for fresh graduates. You'll gain hands-on experience across various departments including Engineering, Marketing, Sales, Customer Success, and Operations while contributing to real projects that impact East African businesses.",
     requirements: [
