@@ -57,7 +57,7 @@
     "nodemailer": "latest",
     "react": "^18.0.0",
     "react-day-picker": "8.10.1",
-    "react-dom": "^19",
+    "react-dom": "^18.0.0",
     "react-hook-form": "latest",
     "react-is": "^19.1.0",
     "react-resizable-panels": "latest",
