@@ -39,6 +39,53 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 
+// Type definitions
+interface BaseOption {
+  id: string
+  label: string
+  icon: React.ComponentType<any>
+}
+
+interface BusinessModuleOption extends BaseOption {
+  description: string
+  essential: boolean
+}
+
+interface SingleSelectOption extends BaseOption {
+  // No additional properties needed
+}
+
+interface BaseQuestion {
+  id: string
+  type: string
+  title: string
+  description: string
+}
+
+interface WelcomeQuestion extends BaseQuestion {
+  type: "welcome"
+}
+
+interface SingleSelectQuestion extends BaseQuestion {
+  type: "single-select"
+  options: SingleSelectOption[]
+}
+
+interface MultiSelectQuestion extends BaseQuestion {
+  type: "multi-select"
+  options: BusinessModuleOption[]
+}
+
+interface SliderQuestion extends BaseQuestion {
+  type: "slider"
+  min: number
+  max: number
+  step: number
+  defaultValue: number
+}
+
+type RetailQuestion = WelcomeQuestion | SingleSelectQuestion | MultiSelectQuestion | SliderQuestion
+
 // Industry options
 const industryOptions = [
   {
@@ -93,7 +140,7 @@ const industryOptions = [
 ]
 
 // Business modules for retail
-const businessModules = [
+const businessModules: BusinessModuleOption[] = [
   {
     id: "inventory",
     label: "Inventory Management",
@@ -146,7 +193,7 @@ const businessModules = [
 ]
 
 // Questions for retail onboarding
-const retailQuestions = [
+const retailQuestions: RetailQuestion[] = [
   {
     id: "welcome",
     type: "welcome",
@@ -915,6 +962,11 @@ export default function OnboardingPage() {
   const handleSignUpSubmit = async () => {
     setIsSubmitting(true)
     try {
+      console.log(JSON.stringify({
+        ...signUpData,
+        industry: selectedIndustry,
+        onboardingData: retailAnswers
+      }))
       const response = await fetch("/api/onboarding/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1537,7 +1589,9 @@ export default function OnboardingPage() {
                             </Badge>
                           )}
                         </div>
-                        <div className="text-xs text-muted-foreground mt-1">{option.description}</div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          {option.description}
+                        </div>
                       </div>
                       {(isSelected || isEssential) && <Check className="h-5 w-5 text-primary" />}
                     </div>
@@ -1711,12 +1765,6 @@ export default function OnboardingPage() {
         </div>
       </div>
       <div className="space-y-4">
-        <Button asChild size="lg" className="w-full">
-          <Link href="/login">
-            Continue to Login
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Link>
-        </Button>
         <p className="text-sm text-muted-foreground">
           Questions? Contact us at{" "}
           <a href="mailto:support@maamul.com" className="text-primary hover:underline">
