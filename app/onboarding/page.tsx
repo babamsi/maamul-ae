@@ -962,11 +962,7 @@ export default function OnboardingPage() {
   const handleSignUpSubmit = async () => {
     setIsSubmitting(true)
     try {
-      console.log(JSON.stringify({
-        ...signUpData,
-        industry: selectedIndustry,
-        onboardingData: retailAnswers
-      }))
+      
       const response = await fetch("/api/onboarding/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
