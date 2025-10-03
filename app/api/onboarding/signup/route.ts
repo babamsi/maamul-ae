@@ -1,14 +1,38 @@
 import { type NextRequest, NextResponse } from "next/server"
 import nodemailer from "nodemailer"
+import bcrypt from "bcryptjs"
 import { isEmailWhitelisted } from "@/lib/email-whitelist"
+import { supabaseAdmin } from "@/lib/supabase"
+import { DatabaseNameService } from "@/lib/services/databaseNameService"
+import { DatabaseCreatorService } from "@/lib/services/databaseCreatorService"
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { businessName, industry, businessType, location, email, phone, fullName, teamMembers } = body
+    console.log(body)
+    
+    const { 
+      businessName, 
+      industry, 
+      businessType, 
+      location, 
+      email, 
+      phone, 
+      fullName, 
+      teamMembers, 
+      managerName, 
+      companyName,
+      businessAge,
+      primaryGoal,
+      biggestChallenge,
+      dailyHours,
+      password,
+      confirmPassword,
+      onboardingData
+    } = await body
 
     // Validate required fields
-    if (!businessName || !industry || !email || !fullName) {
+    if (!companyName || !industry || !email || !managerName || !password) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
@@ -29,6 +53,81 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Validate password confirmation
+    if (password !== confirmPassword) {
+      return NextResponse.json({ error: "Passwords do not match" }, { status: 400 })
+    }
+
+    // Check if user already exists (Supabase)
+    const { data: existing, error: existingErr } = await supabaseAdmin
+      .from('users')
+      .select('id')
+      .eq('email', email.toLowerCase())
+      .limit(1)
+      .maybeSingle()
+
+    if (existingErr) {
+      console.error('Supabase select error:', existingErr)
+      return NextResponse.json({ error: "Database error" }, { status: 500 })
+    }
+
+    if (existing) {
+      return NextResponse.json({ error: "User with this email already exists" }, { status: 409 })
+    }
+
+    // Hash password
+    const saltRounds = 12
+    const hashedPassword = await bcrypt.hash(password, saltRounds)
+
+    // Generate unique database name
+    const databaseName = await DatabaseNameService.generateDatabaseName(companyName)
+
+    // Calculate trial end date (7 days from now)
+    const trialEndDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+
+    // Insert user into Supabase
+    const trialStart = new Date()
+    const { data: inserted, error: insertErr } = await supabaseAdmin
+      .from('users')
+      .insert({
+        manager_name: managerName,
+        company_name: companyName,
+      email: email.toLowerCase(),
+        phone: phone || null,
+        location: location || null,
+        business_age: businessAge || null,
+        primary_goal: primaryGoal || null,
+        biggest_challenge: biggestChallenge || null,
+        daily_hours: dailyHours || null,
+        password_hash: hashedPassword,
+      industry,
+        onboarding_data: onboardingData,
+        team_members: teamMembers || [],
+        is_active: true,
+        is_verified: false,
+        database_name: databaseName,
+        trial_start_date: trialStart.toISOString(),
+        trial_end_date: trialEndDate.toISOString(),
+        is_trial_active: true,
+        subscription_status: 'trial',
+      })
+      .select('id, database_name, trial_end_date, created_at')
+      .single()
+
+    if (insertErr) {
+      console.error('Supabase insert error:', insertErr)
+      return NextResponse.json({ error: "Failed to create user" }, { status: 500 })
+    }
+
+    // Create new database and models for the user
+    try {
+      await DatabaseCreatorService.createDatabaseAndModels(databaseName, inserted.id)
+      console.log(`✅ User database '${databaseName}' created successfully`)
+    } catch (error) {
+      console.error(`❌ Error creating user database:`, error)
+      // Don't fail the signup if database creation fails, just log it
+    }
+
     // Configure nodemailer transporter
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST || "smtp.gmail.com",
@@ -45,7 +144,7 @@ export async function POST(request: NextRequest) {
       await transporter.verify()
     } catch (error) {
       console.error("SMTP configuration error:", error)
-      return NextResponse.json({ error: "Email service configuration error" }, { status: 500 })
+      // Don't fail the request if email fails, just log it
     }
 
     // Prepare email content
@@ -77,7 +176,7 @@ export async function POST(request: NextRequest) {
           <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
             <tr>
               <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: bold; width: 30%;">Business Name:</td>
-              <td style="padding: 10px 0; border-bottom: 1px solid #eee;">${businessName}</td>
+              <td style="padding: 10px 0; border-bottom: 1px solid #eee;">${companyName}</td>
             </tr>
             <tr>
               <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: bold;">Industry:</td>
@@ -97,7 +196,7 @@ export async function POST(request: NextRequest) {
           <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
             <tr>
               <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: bold; width: 30%;">Full Name:</td>
-              <td style="padding: 10px 0; border-bottom: 1px solid #eee;">${fullName}</td>
+              <td style="padding: 10px 0; border-bottom: 1px solid #eee;">${managerName}</td>
             </tr>
             <tr>
               <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: bold;">Email:</td>
@@ -136,7 +235,7 @@ export async function POST(request: NextRequest) {
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: process.env.ADMIN_EMAIL || "admin@maamul.com",
-      subject: `New Business Registration: ${businessName}`,
+      subject: `New Business Registration: ${companyName}`,
       html: emailHtml,
       replyTo: email,
     }
@@ -154,9 +253,12 @@ export async function POST(request: NextRequest) {
       success: true,
       message: "Registration completed successfully",
       data: {
-        businessName,
+        userId: inserted.id,
+        companyName,
         email,
-        registrationDate: new Date().toISOString(),
+        databaseName: databaseName,
+        registrationDate: inserted.created_at,
+        trialEndDate: trialEndDate.toISOString(),
       },
     })
   } catch (error) {
