@@ -886,6 +886,31 @@ export default function OnboardingPage() {
     }
   }
 
+  // Advance with Enter key in inputs and selection lists
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "Enter") return
+
+      // Prevent accidental form submission/line breaks
+      e.preventDefault()
+
+      if (currentStep === "retail-setup") {
+        // Only advance if current retail question is answered
+        if (isCurrentQuestionAnswered()) {
+          handleNextQuestion()
+        }
+      } else if (currentStep === "signup") {
+        // Only advance if current signup step can proceed and not submitting
+        if (canProceedSignupStep() && !isSubmitting) {
+          handleNextSignupStep()
+        }
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [currentStep, currentQuestionIndex, currentSignupStep, signUpData, retailAnswers, isSubmitting])
+
   // Handle retail answer changes
   const handleRetailAnswerChange = (questionId: string, value: any) => {
     setRetailAnswers((prev) => ({
@@ -962,7 +987,11 @@ export default function OnboardingPage() {
   const handleSignUpSubmit = async () => {
     setIsSubmitting(true)
     try {
-      
+      console.log(JSON.stringify({
+        ...signUpData,
+        industry: selectedIndustry,
+        onboardingData: retailAnswers
+      }))
       const response = await fetch("/api/onboarding/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -975,11 +1004,32 @@ export default function OnboardingPage() {
       if (response.ok) {
         setCurrentStep("success")
       } else {
-        const error = await response.json()
-        toast.error(error.message || "Something went wrong. Please try again.")
+        let message = "Sign up failed. Please try again."
+        let code: string | undefined
+        try {
+          const err = await response.json()
+          code = err?.code
+          message = err?.message || err?.error || message
+        } catch {
+          // fallback to status-based messages
+          if (response.status === 403) message = "Email domain not authorized. Please contact support for access."
+          if (response.status === 409) message = "User with this email already exists. Try logging in instead."
+          if (response.status === 400) message = "Invalid input. Please review your details."
+        }
+
+        // Prefer code when available
+        if (code === "DOMAIN_NOT_WHITELISTED") {
+          message = "Email domain not authorized. Please contact support for access."
+        }
+
+        if (response.status === 409) {
+          message = message || "User with this email already exists. Try logging in instead."
+        }
+
+        toast.error(message)
       }
     } catch (error) {
-      toast.error("Something went wrong. Please try again.")
+      toast.error("Network error. Please check your connection and try again.")
     } finally {
       setIsSubmitting(false)
     }
