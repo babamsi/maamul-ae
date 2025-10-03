@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
       .insert({
         manager_name: managerName,
         company_name: companyName,
-      email: email.toLowerCase(),
+        email: email.toLowerCase(),
         phone: phone || null,
         location: location || null,
         business_age: businessAge || null,
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
         biggest_challenge: biggestChallenge || null,
         daily_hours: dailyHours || null,
         password_hash: hashedPassword,
-      industry,
+        industry,
         onboarding_data: onboardingData,
         team_members: teamMembers || [],
         is_active: true,
