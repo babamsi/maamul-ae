@@ -5,6 +5,7 @@ import { isEmailWhitelisted } from "@/lib/email-whitelist"
 import { supabaseAdmin } from "@/lib/supabase"
 import { DatabaseNameService } from "@/lib/services/databaseNameService"
 import { DatabaseCreatorService } from "@/lib/services/databaseCreatorService"
+import aj from "@/lib/arcjet"
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,29 +30,62 @@ export async function POST(request: NextRequest) {
       password,
       confirmPassword,
       onboardingData
-    } = await body
+    } = body
 
     // Validate required fields
     if (!companyName || !industry || !email || !managerName || !password) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      return NextResponse.json({ error: "Invalid email format" }, { status: 400 })
+    // Arcjet protection: Bot detection, email validation, and rate limiting
+    // This must be called after we have the email from the request body
+    const decision = await aj.protect(request, {
+      email, // Pass email for validation
+    })
+    
+    if (decision.isDenied()) {
+      // Check the reason for denial
+      const reason = decision.reason
+      
+      if (reason.isBot()) {
+        return NextResponse.json(
+          { error: "Automated requests are not allowed. Please complete the signup manually." },
+          { status: 403 }
+        )
+      }
+      
+      if (reason.isRateLimit()) {
+        return NextResponse.json(
+          { error: "Too many signup attempts. Please try again later." },
+          { status: 429 }
+        )
+      }
+      
+      if (reason.isEmail()) {
+        // Email validation failed - provide generic error message
+        // Arcjet handles the specific validation (invalid, disposable, no MX records)
+        return NextResponse.json(
+          { error: "Email validation failed. Please use a valid email address." },
+          { status: 400 }
+        )
+      }
+      
+      return NextResponse.json(
+        { error: "Request blocked for security reasons" },
+        { status: 403 }
+      )
     }
 
     // Check if email domain is whitelisted
-    if (!isEmailWhitelisted(email)) {
-      return NextResponse.json(
-        {
-          error: "Email domain not authorized. Please contact support for access.",
-          code: "DOMAIN_NOT_WHITELISTED",
-        },
-        { status: 403 },
-      )
-    }
+    // if (!isEmailWhitelisted(email)) {
+    //   return NextResponse.json(
+    //     {
+    //       error: "Email domain not authorized. Please contact support for access.",
+    //       code: "DOMAIN_NOT_WHITELISTED",
+    //     },
+    //     { status: 403 },
+    //   )
+    // }
 
     // Validate password confirmation
     if (password !== confirmPassword) {
@@ -92,7 +126,7 @@ export async function POST(request: NextRequest) {
       .insert({
         manager_name: managerName,
         company_name: companyName,
-        email: email.toLowerCase(),
+        manager_email: email.toLowerCase(),
         phone: phone || null,
         location: location || null,
         business_age: businessAge || null,
@@ -128,23 +162,36 @@ export async function POST(request: NextRequest) {
       // Don't fail the signup if database creation fails, just log it
     }
 
-    // Configure nodemailer transporter
-    const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST || "smtp.gmail.com",
-      port: Number.parseInt(process.env.EMAIL_PORT || "587"),
-      secure: process.env.EMAIL_SECURE === "true",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    })
+    // Configure nodemailer transporter with better connection options
+    const emailHost = process.env.EMAIL_HOST || "smtp.gmail.com"
+    const emailPort = Number.parseInt(process.env.EMAIL_PORT || "587")
+    const emailUser = process.env.EMAIL_USER
+    const emailPass = process.env.EMAIL_PASS
 
-    // Verify SMTP configuration
-    try {
-      await transporter.verify()
-    } catch (error) {
-      console.error("SMTP configuration error:", error)
-      // Don't fail the request if email fails, just log it
+    // Only attempt to send email if credentials are configured
+    let transporter: nodemailer.Transporter | null = null
+    if (emailUser && emailPass) {
+      const transportConfig = {
+        host: emailHost,
+        port: emailPort,
+        secure: emailPort === 465, // true for 465, false for other ports
+      auth: {
+          user: emailUser,
+          pass: emailPass,
+        },
+        tls: {
+          // Do not fail on invalid certs
+          rejectUnauthorized: false,
+        },
+        connectionTimeout: 60000, // 60 seconds
+        greetingTimeout: 30000, // 30 seconds
+        socketTimeout: 60000, // 60 seconds
+        // Don't use connection pooling in serverless environments
+        // This prevents socket close issues
+        pool: false,
+      } as nodemailer.TransportOptions
+
+      transporter = nodemailer.createTransport(transportConfig)
     }
 
     // Prepare email content
@@ -164,77 +211,234 @@ export async function POST(request: NextRequest) {
         : '<tr><td colspan="3" style="padding: 8px; text-align: center; color: #666;">No team members added</td></tr>'
 
     const emailHtml = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <div style="background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
-          <h1 style="color: white; margin: 0; font-size: 28px;">New Business Registration</h1>
-          <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">Maamul Platform</p>
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>New Business Registration</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background-color: #392A17; padding: 20px; text-align: center; border-radius: 5px 5px 0 0;">
+            <div style="font-size: 60px; color: #D6B98F; margin-bottom: 15px; text-align: center;">𐒑</div>
+            <h1 style="color: #fff; margin: 0; font-size: 24px;">New Business Registration</h1>
         </div>
-        
-        <div style="background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-          <h2 style="color: #333; margin-top: 0;">Business Information</h2>
           
-          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-            <tr>
-              <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: bold; width: 30%;">Business Name:</td>
-              <td style="padding: 10px 0; border-bottom: 1px solid #eee;">${companyName}</td>
+          <div style="background-color: #f9f9f9; border: 1px solid #ddd; border-top: none; padding: 20px; border-radius: 0 0 5px 5px;">
+            <div style="background-color: #fff; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #D6B98F;">
+              <p style="margin-top: 0; font-size: 16px;">A new business has completed the onboarding process and registered for Maamul.</p>
+              <p style="margin-bottom: 0;"><strong>Action Required:</strong> Please review and set up their account within 24 hours.</p>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+              <h2 style="color: #392A17; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 0;">Business Information</h2>
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 8px 0; width: 40%;"><strong>Business Name:</strong></td>
+                  <td style="padding: 8px 0;">${companyName}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; width: 40%;"><strong>Industry:</strong></td>
+                  <td style="padding: 8px 0;">${industry ? (industry === "logistics" ? "Logistics & Distribution" : industry.charAt(0).toUpperCase() + industry.slice(1)) : "Not provided"}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; width: 40%;"><strong>Business Type:</strong></td>
+                  <td style="padding: 8px 0;">${businessType || "Not specified"}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; width: 40%;"><strong>Location:</strong></td>
+                  <td style="padding: 8px 0;">${location || "Not specified"}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; width: 40%;"><strong>Business Age:</strong></td>
+                  <td style="padding: 8px 0;">${businessAge ? (businessAge === "new" ? "Just starting (0-6 months)" : businessAge === "young" ? "Early stage (6 months - 2 years)" : businessAge === "established" ? "Established (2-5 years)" : businessAge === "mature" ? "Mature (5+ years)" : businessAge) : "Not provided"}</td>
             </tr>
             <tr>
-              <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: bold;">Industry:</td>
-              <td style="padding: 10px 0; border-bottom: 1px solid #eee;">${industry}</td>
+                  <td style="padding: 8px 0; width: 40%;"><strong>Primary Goal:</strong></td>
+                  <td style="padding: 8px 0;">${primaryGoal ? (primaryGoal === "efficiency" ? "Improve operational efficiency" : primaryGoal === "growth" ? "Scale and grow my business" : primaryGoal === "organization" ? "Better organize my business" : primaryGoal === "insights" ? "Get better business insights" : primaryGoal === "automation" ? "Automate manual processes" : primaryGoal) : "Not provided"}</td>
             </tr>
             <tr>
-              <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: bold;">Business Type:</td>
-              <td style="padding: 10px 0; border-bottom: 1px solid #eee;">${businessType || "Not specified"}</td>
+                  <td style="padding: 8px 0; width: 40%;"><strong>Biggest Challenge:</strong></td>
+                  <td style="padding: 8px 0;">${biggestChallenge ? (biggestChallenge === "inventory" ? "Managing inventory levels" : biggestChallenge === "sales" ? "Tracking sales and revenue" : biggestChallenge === "customers" ? "Managing customer relationships" : biggestChallenge === "employees" ? "Coordinating with team members" : biggestChallenge === "reporting" ? "Getting clear business reports" : biggestChallenge === "time" ? "Finding time for strategic work" : biggestChallenge) : "Not provided"}</td>
             </tr>
             <tr>
-              <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: bold;">Location:</td>
-              <td style="padding: 10px 0; border-bottom: 1px solid #eee;">${location || "Not specified"}</td>
+                  <td style="padding: 8px 0; width: 40%;"><strong>Daily Hours:</strong></td>
+                  <td style="padding: 8px 0;">${dailyHours ? (dailyHours === "part-time" ? "Less than 4 hours" : dailyHours === "half-time" ? "4-6 hours" : dailyHours === "full-time" ? "6-8 hours" : dailyHours === "overtime" ? "More than 8 hours" : dailyHours) : "Not provided"}</td>
             </tr>
           </table>
+            </div>
 
-          <h3 style="color: #333; margin-top: 30px;">Contact Information</h3>
-          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <div style="margin-bottom: 20px;">
+              <h2 style="color: #392A17; border-bottom: 1px solid #eee; padding-bottom: 10px;">Contact Information</h2>
+              <table style="width: 100%; border-collapse: collapse;">
             <tr>
-              <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: bold; width: 30%;">Full Name:</td>
-              <td style="padding: 10px 0; border-bottom: 1px solid #eee;">${managerName}</td>
+                  <td style="padding: 8px 0; width: 40%;"><strong>Full Name:</strong></td>
+                  <td style="padding: 8px 0;">${managerName}</td>
             </tr>
             <tr>
-              <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: bold;">Email:</td>
-              <td style="padding: 10px 0; border-bottom: 1px solid #eee;">${email}</td>
+                  <td style="padding: 8px 0; width: 40%;"><strong>Email:</strong></td>
+                  <td style="padding: 8px 0;"><a href="mailto:${email}" style="color: #D6B98F;">${email}</a></td>
             </tr>
             <tr>
-              <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: bold;">Phone:</td>
-              <td style="padding: 10px 0; border-bottom: 1px solid #eee;">${phone || "Not provided"}</td>
+                  <td style="padding: 8px 0; width: 40%;"><strong>Phone:</strong></td>
+                  <td style="padding: 8px 0;">${phone || "Not provided"}</td>
             </tr>
           </table>
-
-          <h3 style="color: #333; margin-top: 30px;">Team Members</h3>
-          <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+              <h2 style="color: #392A17; border-bottom: 1px solid #eee; padding-bottom: 10px;">Team Members</h2>
+              <div style="background-color: #fff; padding: 15px; border-radius: 5px;">
+                <table style="width: 100%; border-collapse: collapse; border-radius: 5px; overflow: hidden;">
             <thead>
-              <tr style="background-color: #f8f9fa;">
-                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Name</th>
-                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Email</th>
-                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Role</th>
+                    <tr style="background-color: #392A17; color: white;">
+                      <th style="padding: 10px; text-align: left;">Name</th>
+                      <th style="padding: 10px; text-align: left;">Email</th>
+                      <th style="padding: 10px; text-align: left;">Role</th>
               </tr>
             </thead>
             <tbody>
               ${teamMembersList}
             </tbody>
           </table>
-
-          <div style="margin-top: 30px; padding: 20px; background-color: #f8f9fa; border-radius: 5px;">
-            <p style="margin: 0; color: #666; font-size: 14px;">
-              This registration was submitted on ${new Date().toLocaleString()} through the Maamul onboarding process.
-            </p>
+              </div>
+            </div>
+            
+            ${
+              onboardingData
+                ? `
+                <div style="margin-bottom: 20px;">
+                  <h2 style="color: #392A17; border-bottom: 1px solid #eee; padding-bottom: 10px;">Onboarding Configuration</h2>
+                  <div style="background-color: #fff; padding: 15px; border-radius: 5px;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                      ${
+                        onboardingData["company-size"]
+                          ? `
+                        <tr>
+                          <td style="padding: 8px 0; width: 40%;"><strong>Company Size:</strong></td>
+                          <td style="padding: 8px 0;">${
+                            onboardingData["company-size"] === "micro"
+                              ? "Just me (1 person)"
+                              : onboardingData["company-size"] === "small"
+                                ? "2-5 employees"
+                                : onboardingData["company-size"] === "medium"
+                                  ? "6-15 employees"
+                                  : onboardingData["company-size"] === "large"
+                                    ? "16-50 employees"
+                                    : onboardingData["company-size"] === "enterprise"
+                                      ? "50+ employees"
+                                      : onboardingData["company-size"]
+                          }</td>
+                        </tr>
+                      `
+                          : ""
+                      }
+                      ${
+                        onboardingData.revenue
+                          ? `
+                        <tr>
+                          <td style="padding: 8px 0; width: 40%;"><strong>Monthly Revenue:</strong></td>
+                          <td style="padding: 8px 0;">${
+                            onboardingData.revenue === "startup"
+                              ? "Just starting out"
+                              : onboardingData.revenue === "tier1"
+                                ? "Less than $10K"
+                                : onboardingData.revenue === "tier2"
+                                  ? "$10K - $30K"
+                                  : onboardingData.revenue === "tier3"
+                                    ? "$30K - $60K"
+                                    : onboardingData.revenue === "tier4"
+                                      ? "$60K+"
+                                      : onboardingData.revenue
+                          }</td>
+                        </tr>
+                      `
+                          : ""
+                      }
+                      ${
+                        onboardingData.locations
+                          ? `
+                        <tr>
+                          <td style="padding: 8px 0; width: 40%;"><strong>Number of Locations:</strong></td>
+                          <td style="padding: 8px 0;">${onboardingData.locations} location${onboardingData.locations !== 1 ? "s" : ""}</td>
+                        </tr>
+                      `
+                          : ""
+                      }
+                      ${
+                        onboardingData.modules && Array.isArray(onboardingData.modules) && onboardingData.modules.length > 0
+                          ? `
+                        <tr>
+                          <td style="padding: 8px 0; width: 40%; vertical-align: top;"><strong>Selected Modules:</strong></td>
+                          <td style="padding: 8px 0;">
+                            <ul style="margin: 0; padding-left: 20px;">
+                              ${onboardingData.modules
+                                .map(
+                                  (module: string) => `
+                                <li style="margin-bottom: 5px;">${
+                                  module === "inventory"
+                                    ? "Inventory Management"
+                                    : module === "pos"
+                                      ? "Point of Sale"
+                                      : module === "customers"
+                                        ? "Customer Management"
+                                        : module === "employees"
+                                          ? "Employee Management"
+                                          : module === "expenses"
+                                            ? "Expense Tracking"
+                                            : module === "reporting"
+                                              ? "Analytics & Reporting"
+                                              : module === "supply"
+                                                ? "Supply Chain Management"
+                                                : module
+                                }</li>
+                              `,
+                                )
+                                .join("")}
+                            </ul>
+                          </td>
+                        </tr>
+                      `
+                          : ""
+                      }
+                      ${
+                        onboardingData.users
+                          ? `
+                        <tr>
+                          <td style="padding: 8px 0; width: 40%;"><strong>Number of Users:</strong></td>
+                          <td style="padding: 8px 0;">${onboardingData.users} user${onboardingData.users !== 1 ? "s" : ""}</td>
+                        </tr>
+                      `
+                          : ""
+                      }
+                    </table>
+                  </div>
+                </div>
+              `
+                : ""
+            }
+            
+            <div style="background-color: #392A17; color: white; padding: 15px; border-radius: 5px; text-align: center; margin-top: 30px;">
+              <p style="margin: 0;">This is an automated notification. Please do not reply to this email.</p>
+              <p style="margin: 10px 0 0 0; font-size: 12px;">Registration submitted on ${new Date().toLocaleString()}</p>
+            </div>
           </div>
+          
+          <div style="text-align: center; padding: 20px; color: #777; font-size: 12px;">
+            <p>&copy; 2025 Maamul. All rights reserved.</p>
         </div>
-      </div>
-    `
+        </body>
+        </html>
+      `
 
-    // Send email
+    // Send email (only if transporter is configured)
+    if (transporter) {
+      // Send to both user and support
+      const recipients = [email, process.env.ADMIN_EMAIL || "support@maamul.com"].filter(Boolean).join(", ")
+      
     const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: process.env.ADMIN_EMAIL || "admin@maamul.com",
+        from: emailUser,
+        to: recipients,
       subject: `New Business Registration: ${companyName}`,
       html: emailHtml,
       replyTo: email,
@@ -242,10 +446,24 @@ export async function POST(request: NextRequest) {
 
     try {
       await transporter.sendMail(mailOptions)
-      console.log("Registration email sent successfully")
-    } catch (error) {
+        console.log("Registration email sent successfully to:", recipients)
+      } catch (error: any) {
       console.error("Failed to send email:", error)
+        // Log more details for debugging
+        if (error.code) {
+          console.error("Email error code:", error.code)
+        }
+        if (error.response) {
+          console.error("Email error response:", error.response)
+        }
+        if (error.message) {
+          console.error("Email error message:", error.message)
+        }
       // Don't fail the request if email fails, just log it
+        // The user registration is still successful
+      }
+    } else {
+      console.warn("Email not configured - skipping email notification")
     }
 
     // Return success response
