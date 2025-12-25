@@ -157,3 +157,6 @@ Check the Arcjet Dashboard at [https://app.arcjet.com](https://app.arcjet.com) t
 6. ✅ Test actual signup endpoint with various email types
 7. ✅ Monitor Arcjet dashboard for activity
 
+
+
+

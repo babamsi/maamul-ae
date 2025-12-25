@@ -59,8 +59,8 @@ export async function POST(request: NextRequest) {
           { error: "Too many signup attempts. Please try again later." },
           { status: 429 }
         )
-      }
-      
+    }
+
       if (reason.isEmail()) {
         // Email validation failed - provide generic error message
         // Arcjet handles the specific validation (invalid, disposable, no MX records)
@@ -178,7 +178,7 @@ export async function POST(request: NextRequest) {
       auth: {
           user: emailUser,
           pass: emailPass,
-        },
+      },
         tls: {
           // Do not fail on invalid certs
           rejectUnauthorized: false,
@@ -223,7 +223,7 @@ export async function POST(request: NextRequest) {
             <div style="font-size: 60px; color: #D6B98F; margin-bottom: 15px; text-align: center;">𐒑</div>
             <h1 style="color: #fff; margin: 0; font-size: 24px;">New Business Registration</h1>
         </div>
-          
+        
           <div style="background-color: #f9f9f9; border: 1px solid #ddd; border-top: none; padding: 20px; border-radius: 0 0 5px 5px;">
             <div style="background-color: #fff; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #D6B98F;">
               <p style="margin-top: 0; font-size: 16px;">A new business has completed the onboarding process and registered for Maamul.</p>
@@ -237,7 +237,7 @@ export async function POST(request: NextRequest) {
                   <td style="padding: 8px 0; width: 40%;"><strong>Business Name:</strong></td>
                   <td style="padding: 8px 0;">${companyName}</td>
                 </tr>
-                <tr>
+            <tr>
                   <td style="padding: 8px 0; width: 40%;"><strong>Industry:</strong></td>
                   <td style="padding: 8px 0;">${industry ? (industry === "logistics" ? "Logistics & Distribution" : industry.charAt(0).toUpperCase() + industry.slice(1)) : "Not provided"}</td>
                 </tr>
@@ -429,7 +429,7 @@ export async function POST(request: NextRequest) {
         </div>
         </body>
         </html>
-      `
+    `
 
     // Send email (only if transporter is configured)
     if (transporter) {
