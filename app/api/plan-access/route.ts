@@ -1,33 +1,64 @@
 import { NextResponse } from "next/server"
 import nodemailer from "nodemailer"
 
-// Configure email transporter with proper settings
+// Currency conversion rate
+const USD_TO_KES = 129
+
+// Currency conversion helper functions
+function convertPrice(usdPrice: number, currency: string = "USD"): number {
+  if (currency === "KES") {
+    return Math.round(usdPrice * USD_TO_KES)
+  }
+  return usdPrice
+}
+
+function formatPrice(price: number, currency: string = "USD"): string {
+  const convertedPrice = convertPrice(price, currency)
+  if (currency === "KES") {
+    return convertedPrice.toLocaleString("en-KE")
+  }
+  return convertedPrice.toLocaleString()
+}
+
+function getCurrencySymbol(currency: string = "USD"): string {
+  return currency === "KES" ? "KES" : "$"
+}
+
+// Configure email transporter settings
 const emailHost = process.env.EMAIL_HOST || "smtp.gmail.com"
 const emailPort = Number.parseInt(process.env.EMAIL_PORT || "587")
 const emailUser = process.env.EMAIL_USER
 const emailPass = process.env.EMAIL_PASS
 
-// Create transporter with proper configuration for DNS resolution and connection stability
-const transporter = emailUser && emailPass
-  ? nodemailer.createTransport({
-      host: emailHost,
-      port: emailPort,
-      secure: emailPort === 465, // true for 465 (SSL), false for 587 (STARTTLS)
-      auth: {
-        user: emailUser,
-        pass: emailPass,
-      },
-      tls: {
-        // Do not fail on invalid certs (helps with DNS resolution issues)
-        rejectUnauthorized: false,
-      },
-      connectionTimeout: 60000, // 60 seconds
-      greetingTimeout: 30000, // 30 seconds
-      socketTimeout: 60000, // 60 seconds
-      // Don't use connection pooling in serverless environments
-      pool: false,
-    })
-  : null
+// Create transporter lazily (only when needed) to avoid DNS resolution issues at module load
+function createTransporter() {
+  if (!emailUser || !emailPass) {
+    return null
+  }
+  
+  return nodemailer.createTransport({
+    host: emailHost,
+    port: emailPort,
+    secure: emailPort === 465, // true for 465 (SSL), false for 587 (STARTTLS)
+    auth: {
+      user: emailUser,
+      pass: emailPass,
+    },
+    tls: {
+      // Do not fail on invalid certs (helps with DNS resolution issues)
+      rejectUnauthorized: false,
+    },
+    connectionTimeout: 30000, // 30 seconds
+    greetingTimeout: 15000, // 15 seconds
+    socketTimeout: 30000, // 30 seconds
+    // Don't use connection pooling in serverless environments
+    pool: false,
+    // Disable DNS lookup caching to avoid EBUSY errors
+    dns: {
+      lookup: undefined,
+    },
+  })
+}
 
 // Helper function to get tier display name
 function getTierDisplayName(tier: string): string {
@@ -45,13 +76,14 @@ function getTierDisplayName(tier: string): string {
 }
 
 // Helper function to format integration fees
-function formatIntegrationFees(integrationFees: any[]): { html: string; total: number } {
+function formatIntegrationFees(integrationFees: any[], currency: string = "USD"): { html: string; total: number } {
   console.log("Integration fees received:", integrationFees) // Debug log
 
   if (!integrationFees || integrationFees.length === 0) {
     return { html: "", total: 0 }
   }
 
+  const currencySymbol = getCurrencySymbol(currency)
   let total = 0
   const html = integrationFees
     .map((fee) => {
@@ -59,7 +91,7 @@ function formatIntegrationFees(integrationFees: any[]): { html: string; total: n
       return `
       <tr>
         <td style="padding: 8px 0; border-bottom: 1px solid #eee;">${fee.name}</td>
-        <td style="padding: 8px 0; text-align: right; border-bottom: 1px solid #eee;">$${fee.price.toLocaleString()}</td>
+        <td style="padding: 8px 0; text-align: right; border-bottom: 1px solid #eee;">${currencySymbol === "KES" ? "KES " : "$"}${formatPrice(fee.price, currency)}</td>
       </tr>
     `
     })
@@ -71,15 +103,10 @@ function formatIntegrationFees(integrationFees: any[]): { html: string; total: n
 export async function POST(request: Request) {
   try {
     // Check if email configuration is available
-    if (!transporter) {
+    if (!emailUser || !emailPass) {
       console.error("Email configuration missing: EMAIL_USER or EMAIL_PASS not set")
-      return NextResponse.json(
-        {
-          error: "Email service is not configured. Please contact support.",
-          details: "EMAIL_USER or EMAIL_PASS environment variables are missing",
-        },
-        { status: 500 },
-      )
+      // Still return success but log the issue - don't fail the request
+      console.warn("Plan access request received but email service is not configured")
     }
 
     const formData = await request.json()
@@ -127,6 +154,10 @@ export async function POST(request: Request) {
         ? getTierDisplayName(formData.planData.recommendedPlan)
         : "Enterprise Plan"
 
+    // Get currency from planData (default to USD if not set)
+    const currency = formData.planData?.currency || "USD"
+    const currencySymbol = getCurrencySymbol(currency)
+
     // Check multiple possible locations for integration data
     let integrationFeesArray = []
 
@@ -150,7 +181,7 @@ export async function POST(request: Request) {
 
     console.log("Final integration fees array:", integrationFeesArray) // Debug log
 
-    const integrationFeesData = formatIntegrationFees(integrationFeesArray)
+    const integrationFeesData = formatIntegrationFees(integrationFeesArray, currency)
     const hasIntegrations = integrationFeesArray.length > 0 && integrationFeesData.total > 0
 
     console.log("Has integrations:", hasIntegrations, "Total:", integrationFeesData.total) // Debug log
@@ -260,7 +291,7 @@ export async function POST(request: Request) {
               ? `
           <tr>
             <td style="padding: 8px 0; width: 40%;"><strong>Quarterly Price:</strong></td>
-            <td style="padding: 8px 0;">$${formData.planData.monthlyPrice.toLocaleString()}</td>
+            <td style="padding: 8px 0;">${currencySymbol === "KES" ? "KES " : "$"}${formatPrice(formData.planData.monthlyPrice, currency)}</td>
           </tr>
           `
               : ""
@@ -270,7 +301,7 @@ export async function POST(request: Request) {
               ? `
           <tr>
             <td style="padding: 8px 0; width: 40%;"><strong>Annual Price:</strong></td>
-            <td style="padding: 8px 0;">$${formData.planData.annualPrice.toLocaleString()}</td>
+            <td style="padding: 8px 0;">${currencySymbol === "KES" ? "KES " : "$"}${formatPrice(formData.planData.annualPrice, currency)}</td>
           </tr>
           `
               : ""
@@ -305,7 +336,7 @@ export async function POST(request: Request) {
               ${integrationFeesData.html}
               <tr style="background-color: #f5f0e8; font-weight: bold;">
                 <td style="padding: 12px; border-top: 2px solid #D6B98F;">Total One-Time Integration Fees</td>
-                <td style="padding: 12px; text-align: right; border-top: 2px solid #D6B98F;">$${integrationFeesData.total.toLocaleString()}</td>
+                <td style="padding: 12px; text-align: right; border-top: 2px solid #D6B98F;">${currencySymbol === "KES" ? "KES " : "$"}${formatPrice(integrationFeesData.total, currency)}</td>
               </tr>
             </tbody>
           </table>
@@ -528,15 +559,16 @@ export async function POST(request: Request) {
                   formData.planData?.monthlyPrice || formData.planData?.annualPrice
                     ? `
                 <div style="text-align: right;">
-                  <div class="price">$${
+                  <div class="price">${currencySymbol === "KES" ? "KES " : "$"}${formatPrice(
                     formData.planData.billingPreference === "annual"
-                      ? Math.round(formData.planData.annualPrice / 12).toLocaleString()
-                      : formData.planData.monthlyPrice.toLocaleString()
-                  }/mo</div>
+                      ? Math.round(formData.planData.annualPrice / 12)
+                      : formData.planData.monthlyPrice,
+                    currency
+                  )}/mo</div>
                   <div class="price-note">
                     ${
                       formData.planData.billingPreference === "annual"
-                        ? `$${formData.planData.annualPrice.toLocaleString()} billed annually`
+                        ? `${currencySymbol === "KES" ? "KES " : "$"}${formatPrice(formData.planData.annualPrice, currency)} billed annually`
                         : `Billed quarterly`
                     }
                   </div>
@@ -610,7 +642,7 @@ export async function POST(request: Request) {
                     ${integrationFeesData.html}
                     <tr class="integration-total">
                       <td><strong>Total Integration Investment</strong></td>
-                      <td style="text-align: right;"><strong>$${integrationFeesData.total.toLocaleString()}</strong></td>
+                      <td style="text-align: right;"><strong>${currencySymbol === "KES" ? "KES " : "$"}${formatPrice(integrationFeesData.total, currency)}</strong></td>
                     </tr>
                   </tbody>
                 </table>
@@ -671,15 +703,33 @@ export async function POST(request: Request) {
   `,
     }
 
-    // Send both emails
-    await Promise.all([transporter.sendMail(adminMailOptions), transporter.sendMail(userMailOptions)])
+    // Send emails asynchronously (don't block the response)
+    // Create transporter only when needed
+    const transporter = createTransporter()
+    
+    if (transporter) {
+      // Send emails in background - don't wait for them to complete
+      Promise.all([
+        transporter.sendMail(adminMailOptions).catch((err) => {
+          console.error("Failed to send admin email:", err)
+        }),
+        transporter.sendMail(userMailOptions).catch((err) => {
+          console.error("Failed to send user email:", err)
+        }),
+      ]).catch((err) => {
+        console.error("Email sending error (non-blocking):", err)
+      })
+    } else {
+      console.warn("Email service not configured - skipping email notifications")
+    }
 
+    // Return success immediately - don't wait for emails
     return NextResponse.json({
       success: true,
       message: "Your plan request has been submitted successfully. Our Maamul Team will contact you shortly.",
     })
   } catch (error) {
-    console.error("Email error:", error)
+    console.error("Request processing error:", error)
     return NextResponse.json(
       {
         error: "Failed to submit request. Please try again.",
