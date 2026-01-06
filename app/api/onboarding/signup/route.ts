@@ -5,7 +5,6 @@ import { isEmailWhitelisted } from "@/lib/email-whitelist"
 import { supabaseAdmin } from "@/lib/supabase"
 import { DatabaseNameService } from "@/lib/services/databaseNameService"
 import { DatabaseCreatorService } from "@/lib/services/databaseCreatorService"
-import aj from "@/lib/arcjet"
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,42 +36,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    // Arcjet protection: Bot detection, email validation, and rate limiting
-    // This must be called after we have the email from the request body
-    const decision = await aj.protect(request, {
-      email, // Pass email for validation
-    })
-    
-    if (decision.isDenied()) {
-      // Check the reason for denial
-      const reason = decision.reason
-      
-      if (reason.isBot()) {
-        return NextResponse.json(
-          { error: "Automated requests are not allowed. Please complete the signup manually." },
-          { status: 403 }
-        )
-      }
-      
-      if (reason.isRateLimit()) {
-        return NextResponse.json(
-          { error: "Too many signup attempts. Please try again later." },
-          { status: 429 }
-        )
-    }
-
-      if (reason.isEmail()) {
-        // Email validation failed - provide generic error message
-        // Arcjet handles the specific validation (invalid, disposable, no MX records)
-        return NextResponse.json(
-          { error: "Email validation failed. Please use a valid email address." },
-          { status: 400 }
-        )
-      }
-      
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
       return NextResponse.json(
-        { error: "Request blocked for security reasons" },
-        { status: 403 }
+        { error: "Please provide a valid email address" },
+        { status: 400 }
       )
     }
 
