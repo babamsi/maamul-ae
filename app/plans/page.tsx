@@ -26,6 +26,7 @@ import {
   ShieldCheck,
   Workflow,
   Calendar,
+  Coins,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -307,6 +308,9 @@ const industryOptions = [
   { id: "other", label: "Other", icon: Building2 },
 ]
 
+// Currency conversion rate
+const USD_TO_KES = 129
+
 // Questions for the typeform-like experience
 const questions = [
   {
@@ -314,6 +318,16 @@ const questions = [
     type: "welcome",
     title: "Find Your Perfect Enterprise Solution",
     description: "Answer a few questions to get a tailored plan recommendation for your business.",
+  },
+  {
+    id: "currency",
+    type: "single-select",
+    title: "Select your preferred currency",
+    description: "Choose the currency you'd like to see prices in.",
+    options: [
+      { id: "USD", label: "US Dollar (USD)", icon: DollarSign },
+      { id: "KES", label: "Kenyan Shilling (KES)", icon: Coins },
+    ],
   },
   {
     id: "industry",
@@ -339,12 +353,7 @@ const questions = [
     type: "single-select",
     title: "What is your monthly revenue?",
     description: "This helps us recommend the right plan tier.",
-    options: [
-      { id: "tier1", label: "Less than $10K", icon: DollarSign },
-      { id: "tier2", label: "$11K - $30K", icon: DollarSign },
-      { id: "tier3", label: "$31K - $60K", icon: DollarSign },
-      { id: "tier4", label: "$61K - $99K", icon: DollarSign },
-    ],
+    options: [], // Will be populated dynamically based on currency
   },
   {
     id: "locations",
@@ -411,6 +420,7 @@ const questions = [
 export default function PlansPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [answers, setAnswers] = useState<Record<string, any>>({
+    currency: "USD",
     industry: "",
     "company-size": "",
     revenue: "",
@@ -431,6 +441,45 @@ export default function PlansPage() {
     oneTime: 0,
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Currency conversion helper functions
+  const convertPrice = (usdPrice: number): number => {
+    if (answers.currency === "KES") {
+      return Math.round(usdPrice * USD_TO_KES)
+    }
+    return usdPrice
+  }
+
+  const formatPrice = (price: number): string => {
+    const convertedPrice = convertPrice(price)
+    if (answers.currency === "KES") {
+      return convertedPrice.toLocaleString("en-KE")
+    }
+    return convertedPrice.toString()
+  }
+
+  const getCurrencySymbol = (): string => {
+    return answers.currency === "KES" ? "KES" : "$"
+  }
+
+  // Get revenue options based on selected currency
+  const getRevenueOptions = () => {
+    const currency = answers.currency || "USD"
+    if (currency === "KES") {
+      return [
+        { id: "tier1", label: `Less than ${formatPrice(10000)}`, icon: DollarSign },
+        { id: "tier2", label: `${formatPrice(11000)} - ${formatPrice(30000)}`, icon: DollarSign },
+        { id: "tier3", label: `${formatPrice(31000)} - ${formatPrice(60000)}`, icon: DollarSign },
+        { id: "tier4", label: `${formatPrice(61000)} - ${formatPrice(99000)}`, icon: DollarSign },
+      ]
+    }
+    return [
+      { id: "tier1", label: "Less than $10K", icon: DollarSign },
+      { id: "tier2", label: "$11K - $30K", icon: DollarSign },
+      { id: "tier3", label: "$31K - $60K", icon: DollarSign },
+      { id: "tier4", label: "$61K - $99K", icon: DollarSign },
+    ]
+  }
 
   // Handle scroll events
   useEffect(() => {
@@ -675,6 +724,11 @@ export default function PlansPage() {
         }
       }
 
+      // Ensure we only have tier1-4
+      if (!["tier1", "tier2", "tier3", "tier4"].includes(recommendedPlanId)) {
+        recommendedPlanId = "tier1"
+      }
+
       // Calculate costs
       const plan = allPlans.find((p) => p.id === recommendedPlanId)
       if (!plan) return
@@ -709,6 +763,7 @@ export default function PlansPage() {
       if (typeof window !== "undefined") {
         window.__questionnaire_data = {
           recommendedPlan: recommendedPlanId,
+          currency: answers.currency || "USD",
           industry: answers.industry,
           companySize: answers["company-size"],
           revenue: answers.revenue,
@@ -737,6 +792,7 @@ export default function PlansPage() {
       industry: "",
       "company-size": "",
       revenue: "",
+      currency: "USD",
       locations: 1,
       needs: [] as string[],
       security: "",
@@ -799,13 +855,16 @@ export default function PlansPage() {
         )
 
       case "single-select":
+        // Get dynamic options for revenue question
+        const displayOptions = currentQuestion.id === "revenue" ? getRevenueOptions() : currentQuestion.options
+        
         return (
           <div key={currentQuestion.id} className="max-w-2xl mx-auto animate-fade-in">
             <h2 className="text-2xl font-bold mb-2">{currentQuestion.title}</h2>
             <p className="text-muted-foreground mb-6">{currentQuestion.description}</p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-              {currentQuestion.options.map((option) => (
+              {displayOptions?.map((option) => (
                 <div
                   key={option.id}
                   onClick={() => handleAnswerChange(currentQuestion.id, option.id)}
@@ -824,9 +883,9 @@ export default function PlansPage() {
                     </div>
                     <div className="flex-1">
                       <div className="font-medium">{option.label}</div>
-                      {option.description && (
-                        <div className="text-xs text-muted-foreground mt-1">{option.description}</div>
-                      )}
+                      {("description" in option && option.description) ? (
+                        <div className="text-xs text-muted-foreground mt-1">{String(option.description)}</div>
+                      ) : null}
                     </div>
                     {answers[currentQuestion.id] === option.id && <Check className="h-5 w-5 text-primary" />}
                   </div>
@@ -843,7 +902,7 @@ export default function PlansPage() {
             <p className="text-muted-foreground mb-6">{currentQuestion.description}</p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-              {currentQuestion.options.map((option) => {
+              {currentQuestion.options?.map((option) => {
                 const isSelected =
                   Array.isArray(answers[currentQuestion.id]) && answers[currentQuestion.id].includes(option.id)
 
@@ -879,7 +938,7 @@ export default function PlansPage() {
                       </div>
                       <div className="flex-1">
                         <div className="font-medium">{option.label}</div>
-                        {option.description && (
+                        {"description" in option && option.description && (
                           <div className="text-xs text-muted-foreground mt-1">{option.description}</div>
                         )}
                       </div>
@@ -934,14 +993,24 @@ export default function PlansPage() {
     if (!plan) return null
 
     // Generate features dynamically based on selected needs
-    const dynamicFeatures = generateFeatures(answers.needs || [], recommendedPlan)
+    const dynamicFeatures = generateFeatures(
+      answers.needs || [], 
+      recommendedPlan,
+      answers.locations || 1,
+      answers.users || 5
+    )
     const planWithFeatures = {
       ...plan,
       features: dynamicFeatures,
     }
 
     const billingCycle = answers.billing || "quarterly"
-    const monthlyDisplayPrice = billingCycle === "quarterly" ? plan.monthlyPrice : Math.round(plan.annualPrice / 12)
+    const monthlyDisplayPriceUSD = billingCycle === "quarterly" ? plan.monthlyPrice : Math.round(plan.annualPrice / 12)
+    const monthlyDisplayPrice = convertPrice(monthlyDisplayPriceUSD)
+    const annualPriceConverted = convertPrice(plan.annualPrice)
+    const monthlyPriceConverted = convertPrice(plan.monthlyPrice)
+    const savingsConverted = convertPrice(plan.monthlyPrice * 12 - plan.annualPrice)
+    const currencySymbol = getCurrencySymbol()
 
     return (
       <div className="max-w-4xl mx-auto animate-fade-in px-4 sm:px-0">
@@ -992,7 +1061,9 @@ export default function PlansPage() {
                 <div className="mb-4">
                   <div className="flex justify-between items-baseline mb-2">
                     <div className="flex items-baseline">
-                      <span className="text-2xl font-bold">${monthlyDisplayPrice}</span>
+                      <span className="text-2xl font-bold">
+                        {currencySymbol === "KES" ? "KES " : "$"}{formatPrice(monthlyDisplayPriceUSD)}
+                      </span>
                       <span className="text-muted-foreground ml-1">/month</span>
                     </div>
                     <Badge variant={billingCycle === "annual" ? "default" : "outline"} className="font-normal text-xs">
@@ -1004,11 +1075,11 @@ export default function PlansPage() {
                     <div className="bg-primary/5 rounded-lg p-2 border border-primary/10 text-xs mt-2">
                       <div className="flex justify-between font-medium">
                         <span>Annual payment:</span>
-                        <span>${plan.annualPrice}/year</span>
+                        <span>{currencySymbol === "KES" ? "KES " : "$"}{formatPrice(plan.annualPrice)}/year</span>
                       </div>
                       <div className="flex justify-between text-muted-foreground mt-1">
                         <span>You save:</span>
-                        <span>${plan.monthlyPrice * 12 - plan.annualPrice}/year</span>
+                        <span>{currencySymbol === "KES" ? "KES " : "$"}{formatPrice(plan.monthlyPrice * 12 - plan.annualPrice)}/year</span>
                       </div>
                     </div>
                   )}

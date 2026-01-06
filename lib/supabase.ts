@@ -22,8 +22,8 @@ export const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KE
 export type UserRow = {
   id: string
   manager_name: string
-  manager_email: string
   company_name: string
+  email: string
   phone?: string | null
   location?: string | null
   business_age?: string | null

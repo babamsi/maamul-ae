@@ -30,10 +30,6 @@ import {
   Settings,
   CheckCircle,
   Star,
-  UtensilsCrossed,
-  ChefHat,
-  Menu,
-  ShoppingCart,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -89,7 +85,6 @@ interface SliderQuestion extends BaseQuestion {
 }
 
 type RetailQuestion = WelcomeQuestion | SingleSelectQuestion | MultiSelectQuestion | SliderQuestion
-type RestaurantQuestion = WelcomeQuestion | SingleSelectQuestion | MultiSelectQuestion | SliderQuestion
 
 // Industry options
 const industryOptions = [
@@ -99,13 +94,6 @@ const industryOptions = [
     icon: Building2,
     available: true,
     description: "Stores, shops, and direct-to-consumer businesses",
-  },
-  {
-    id: "restaurant",
-    label: "Restaurant",
-    icon: UtensilsCrossed,
-    available: true,
-    description: "Restaurants, cafes, and food service businesses",
   },
   {
     id: "wholesale",
@@ -204,66 +192,6 @@ const businessModules: BusinessModuleOption[] = [
   },
 ]
 
-// Business modules for restaurant
-const restaurantModules: BusinessModuleOption[] = [
-  {
-    id: "menu",
-    label: "Menu Management",
-    description: "Manage your menu items, categories, and pricing",
-    icon: Menu,
-    essential: true,
-  },
-  {
-    id: "pos",
-    label: "Point of Sale",
-    description: "Process orders and transactions",
-    icon: Zap,
-    essential: true,
-  },
-  {
-    id: "tables",
-    label: "Table Management",
-    description: "Manage table reservations and seating",
-    icon: Building2,
-    essential: true,
-  },
-  {
-    id: "orders",
-    label: "Order Management",
-    description: "Track and manage dine-in, takeout, and delivery orders",
-    icon: ShoppingCart,
-    essential: false,
-  },
-  {
-    id: "inventory",
-    label: "Inventory Management",
-    description: "Track ingredients and kitchen supplies",
-    icon: Layers,
-    essential: false,
-  },
-  {
-    id: "employees",
-    label: "Staff Management",
-    description: "Manage staff schedules and roles",
-    icon: UserPlus,
-    essential: false,
-  },
-  {
-    id: "customers",
-    label: "Customer Management",
-    description: "Manage customer information and loyalty programs",
-    icon: Users,
-    essential: false,
-  },
-  {
-    id: "reporting",
-    label: "Analytics & Reporting",
-    description: "Generate detailed business reports and insights",
-    icon: PieChart,
-    essential: false,
-  },
-]
-
 // Questions for retail onboarding
 const retailQuestions: RetailQuestion[] = [
   {
@@ -320,69 +248,6 @@ const retailQuestions: RetailQuestion[] = [
     type: "slider",
     title: "How many user accounts do you need?",
     description: "This includes managers, employees, and any other team members who will use the system.",
-    min: 1,
-    max: 20,
-    step: 1,
-    defaultValue: 2,
-  },
-]
-
-// Questions for restaurant onboarding
-const restaurantQuestions: RestaurantQuestion[] = [
-  {
-    id: "welcome",
-    type: "welcome",
-    title: "Welcome to Maamul Setup",
-    description: "Let's configure your restaurant management system in just a few steps.",
-  },
-  {
-    id: "company-size",
-    type: "single-select",
-    title: "How many employees does your restaurant have?",
-    description: "This helps us configure the right user permissions and workflows.",
-    options: [
-      { id: "micro", label: "Just me (1 person)", icon: Users },
-      { id: "small", label: "2-5 employees", icon: Users },
-      { id: "medium", label: "6-15 employees", icon: Users },
-      { id: "large", label: "16-50 employees", icon: Users },
-      { id: "enterprise", label: "50+ employees", icon: Users },
-    ],
-  },
-  {
-    id: "revenue",
-    type: "single-select",
-    title: "What is your monthly revenue?",
-    description: "This helps us recommend the right features and pricing tier.",
-    options: [
-      { id: "startup", label: "Just starting out", icon: DollarSign },
-      { id: "tier1", label: "Less than $10K", icon: DollarSign },
-      { id: "tier2", label: "$10K - $30K", icon: DollarSign },
-      { id: "tier3", label: "$30K - $60K", icon: DollarSign },
-      { id: "tier4", label: "$60K+", icon: DollarSign },
-    ],
-  },
-  {
-    id: "locations",
-    type: "slider",
-    title: "How many locations does your restaurant operate?",
-    description: "We'll configure multi-location features if needed.",
-    min: 1,
-    max: 10,
-    step: 1,
-    defaultValue: 1,
-  },
-  {
-    id: "modules",
-    type: "multi-select",
-    title: "What are your primary business needs?",
-    description: "Select the modules you want included in your system. Essential modules are pre-selected.",
-    options: restaurantModules,
-  },
-  {
-    id: "users",
-    type: "slider",
-    title: "How many user accounts do you need?",
-    description: "This includes managers, chefs, servers, and any other staff who will use the system.",
     min: 1,
     max: 20,
     step: 1,
@@ -549,7 +414,7 @@ interface SignUpData {
 }
 
 export default function OnboardingPage() {
-  const [currentStep, setCurrentStep] = useState<"industry" | "waitlist" | "retail-setup" | "restaurant-setup" | "signup" | "success">(
+  const [currentStep, setCurrentStep] = useState<"industry" | "waitlist" | "retail-setup" | "signup" | "success">(
     "industry",
   )
   const [selectedIndustry, setSelectedIndustry] = useState<string>("")
@@ -560,13 +425,6 @@ export default function OnboardingPage() {
     revenue: "",
     locations: 1,
     modules: ["inventory", "pos"], // Essential modules pre-selected
-    users: 2,
-  })
-  const [restaurantAnswers, setRestaurantAnswers] = useState<Record<string, any>>({
-    "company-size": "",
-    revenue: "",
-    locations: 1,
-    modules: ["menu", "pos", "tables"], // Essential modules pre-selected
     users: 2,
   })
   const [signUpData, setSignUpData] = useState<SignUpData>({
@@ -632,7 +490,7 @@ export default function OnboardingPage() {
 
   // Business Setup Animation Sequence
   useEffect(() => {
-    if (currentStep === "retail-setup" || currentStep === "restaurant-setup") {
+    if (currentStep === "retail-setup") {
       const runBusinessAnimation = async () => {
         // Step 1: Show logo
         if (businessSetupStep === 0) {
@@ -918,7 +776,7 @@ export default function OnboardingPage() {
 
   // Reset animations when step changes
   useEffect(() => {
-    if (currentStep === "retail-setup" || currentStep === "restaurant-setup") {
+    if (currentStep === "retail-setup") {
       setBusinessSetupStep(0)
       setShowBusinessLogo(false)
       setBusinessHeadingText("")
@@ -959,11 +817,9 @@ export default function OnboardingPage() {
     }
   }, [currentStep])
 
-  // Calculate progress for setup
-  const setupProgressPercentage =
-    currentStep === "retail-setup" || currentStep === "restaurant-setup"
-      ? (currentQuestionIndex / (currentStep === "retail-setup" ? retailQuestions.length : restaurantQuestions.length)) * 100
-      : 0
+  // Calculate progress for retail setup
+  const retailProgressPercentage =
+    currentStep === "retail-setup" ? (currentQuestionIndex / retailQuestions.length) * 100 : 0
 
   // Calculate progress for signup
   const signupProgressPercentage = currentStep === "signup" ? ((currentSignupStep + 1) / signupSteps.length) * 100 : 0
@@ -973,8 +829,6 @@ export default function OnboardingPage() {
     setSelectedIndustry(industryId)
     if (industryId === "retail") {
       setCurrentStep("retail-setup")
-    } else if (industryId === "restaurant") {
-      setCurrentStep("restaurant-setup")
     } else {
       setCurrentStep("waitlist")
     }
@@ -982,8 +836,7 @@ export default function OnboardingPage() {
 
   // Handle retail question navigation
   const handleNextQuestion = () => {
-    const questions = currentStep === "retail-setup" ? retailQuestions : restaurantQuestions
-    if (currentQuestionIndex < questions.length - 1) {
+    if (currentQuestionIndex < retailQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1)
       window.scrollTo(0, 0)
     } else {
@@ -1041,8 +894,8 @@ export default function OnboardingPage() {
       // Prevent accidental form submission/line breaks
       e.preventDefault()
 
-      if (currentStep === "retail-setup" || currentStep === "restaurant-setup") {
-        // Only advance if current question is answered
+      if (currentStep === "retail-setup") {
+        // Only advance if current retail question is answered
         if (isCurrentQuestionAnswered()) {
           handleNextQuestion()
         }
@@ -1066,14 +919,6 @@ export default function OnboardingPage() {
     }))
   }
 
-  // Handle restaurant answer changes
-  const handleRestaurantAnswerChange = (questionId: string, value: any) => {
-    setRestaurantAnswers((prev) => ({
-      ...prev,
-      [questionId]: value,
-    }))
-  }
-
   // Handle signup data changes
   const handleSignupDataChange = (field: string, value: any) => {
     setSignUpData((prev) => ({
@@ -1082,22 +927,20 @@ export default function OnboardingPage() {
     }))
   }
 
-  // Check if current question is answered
+  // Check if current retail question is answered
   const isCurrentQuestionAnswered = () => {
-    const questions = currentStep === "retail-setup" ? retailQuestions : restaurantQuestions
-    const answers = currentStep === "retail-setup" ? retailAnswers : restaurantAnswers
-    const currentQuestion = questions[currentQuestionIndex]
+    const currentQuestion = retailQuestions[currentQuestionIndex]
     if (!currentQuestion) return true
 
     switch (currentQuestion.type) {
       case "welcome":
         return true
       case "single-select":
-        return !!answers[currentQuestion.id]
+        return !!retailAnswers[currentQuestion.id]
       case "multi-select":
-        return Array.isArray(answers[currentQuestion.id]) && answers[currentQuestion.id].length > 0
+        return Array.isArray(retailAnswers[currentQuestion.id]) && retailAnswers[currentQuestion.id].length > 0
       case "slider":
-        return answers[currentQuestion.id] !== undefined
+        return retailAnswers[currentQuestion.id] !== undefined
       default:
         return true
     }
@@ -1144,11 +987,10 @@ export default function OnboardingPage() {
   const handleSignUpSubmit = async () => {
     setIsSubmitting(true)
     try {
-      const onboardingData = currentStep === "retail-setup" ? retailAnswers : restaurantAnswers
       console.log(JSON.stringify({
         ...signUpData,
         industry: selectedIndustry,
-        onboardingData: onboardingData
+        onboardingData: retailAnswers
       }))
       const response = await fetch("/api/onboarding/signup", {
         method: "POST",
@@ -1156,7 +998,7 @@ export default function OnboardingPage() {
         body: JSON.stringify({
           ...signUpData,
           industry: selectedIndustry,
-          onboardingData: onboardingData,
+          onboardingData: retailAnswers,
         }),
       })
       if (response.ok) {
@@ -1238,14 +1080,14 @@ export default function OnboardingPage() {
       <div className="absolute inset-0 bg-gradient-to-br from-black/30 via-black/20 to-black/40"></div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col justify-center items-center px-4 sm:px-6 py-4 sm:py-6 h-full">
-        <div className="w-full max-w-[480px] backdrop-blur-[10%] bg-black/10 p-3 sm:p-4 rounded-xl border border-white/20 shadow-2xl overflow-hidden h-fit" style={{ fontWeight: 300 }}>
+      <div className="relative z-10 flex flex-col justify-center px-12 py-16 h-full">
+        <div className="max-w-lg backdrop-blur-[10%] bg-black/10 p-6 rounded-3xl border border-white/20 shadow-2xl overflow-hidden">
           {/* Messaging Platform Style Content */}
-          <div className="space-y-2">
+          <div className="space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-hide">
             {/* Logo */}
             {showBusinessLogo && (
-              <div className="transition-all duration-500 opacity-100 translate-y-0 mb-1">
-                <div className="text-white text-2xl sm:text-3xl font-serif drop-shadow-2xl">𐒑</div>
+              <div className="transition-all duration-500 opacity-100 translate-y-0">
+                <div className="text-white text-5xl font-serif drop-shadow-2xl">𐒑</div>
               </div>
             )}
 
@@ -1253,11 +1095,11 @@ export default function OnboardingPage() {
             {businessHeadingText && (
               <div className="transition-all duration-500 opacity-100 translate-y-0">
                 <div className="flex items-start">
-                  <div className="bg-primary/20 backdrop-blur-sm p-1 rounded-md mr-1.5 flex-shrink-0">
-                    <Settings className="h-3 w-3 text-white" />
+                  <div className="bg-primary/20 backdrop-blur-sm p-2 rounded-full mr-3 mt-1 flex-shrink-0">
+                    <Settings className="h-4 w-4 text-white" />
                   </div>
-                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-2 rounded-lg rounded-tl-none border border-white/20 max-w-[85%]">
-                    <h1 className="text-sm sm:text-base font-bold tracking-tight text-white drop-shadow-xl leading-tight">
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[85%]">
+                    <h1 className="text-2xl font-bold tracking-tight text-white drop-shadow-xl leading-tight">
                       {businessHeadingText}
                       {isTypingBusinessHeading && <span className="animate-pulse">|</span>}
                     </h1>
@@ -1270,8 +1112,8 @@ export default function OnboardingPage() {
             {businessDescText && (
               <div className="transition-all duration-500 opacity-100 translate-y-0">
                 <div className="flex items-start justify-end">
-                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-2 rounded-lg rounded-tr-none border border-primary/30 max-w-[85%]">
-                    <p className="text-xs text-white leading-tight drop-shadow-sm">
+                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-3 rounded-2xl rounded-tr-none border border-primary/30 max-w-[85%]">
+                    <p className="text-base text-white leading-relaxed drop-shadow-sm">
                       {businessDescText}
                       {isTypingBusinessDesc && <span className="animate-pulse">|</span>}
                     </p>
@@ -1284,10 +1126,10 @@ export default function OnboardingPage() {
             {businessFeature1Text && (
               <div className="transition-all duration-500 opacity-100 translate-y-0">
                 <div className="flex items-start">
-                  <div className="bg-white/20 backdrop-blur-sm p-1 rounded-md mr-1.5 border border-white/30 shadow-xl flex-shrink-0">
-                    <Settings className="h-3 w-3 text-white" />
+                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl mr-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Settings className="h-4 w-4 text-white" />
                   </div>
-                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-2 rounded-lg rounded-tl-none border border-white/20 max-w-[80%]">
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
                     {renderTypedText(businessFeature1Text)}
                     {isTypingBusinessFeature1 && <span className="animate-pulse">|</span>}
                   </div>
@@ -1299,12 +1141,12 @@ export default function OnboardingPage() {
             {businessFeature2Text && (
               <div className="transition-all duration-500 opacity-100 translate-y-0">
                 <div className="flex items-start justify-end">
-                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-2 rounded-lg rounded-tr-none border border-primary/30 max-w-[80%]">
+                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-3 rounded-2xl rounded-tr-none border border-primary/30 max-w-[80%]">
                     {renderTypedText(businessFeature2Text)}
                     {isTypingBusinessFeature2 && <span className="animate-pulse">|</span>}
                   </div>
-                  <div className="bg-white/20 backdrop-blur-sm p-1 rounded-md ml-1.5 border border-white/30 shadow-xl flex-shrink-0">
-                    <Layers className="h-3 w-3 text-white" />
+                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl ml-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Layers className="h-4 w-4 text-white" />
                   </div>
                 </div>
               </div>
@@ -1314,10 +1156,10 @@ export default function OnboardingPage() {
             {businessFeature3Text && (
               <div className="transition-all duration-500 opacity-100 translate-y-0">
                 <div className="flex items-start">
-                  <div className="bg-white/20 backdrop-blur-sm p-1 rounded-md mr-1.5 border border-white/30 shadow-xl flex-shrink-0">
-                    <TrendingUp className="h-3 w-3 text-white" />
+                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl mr-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <TrendingUp className="h-4 w-4 text-white" />
                   </div>
-                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-2 rounded-lg rounded-tl-none border border-white/20 max-w-[80%]">
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
                     {renderTypedText(businessFeature3Text)}
                     {isTypingBusinessFeature3 && <span className="animate-pulse">|</span>}
                   </div>
@@ -1329,12 +1171,12 @@ export default function OnboardingPage() {
             {businessFeature4Text && (
               <div className="transition-all duration-500 opacity-100 translate-y-0">
                 <div className="flex items-start justify-end">
-                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-2 rounded-lg rounded-tr-none border border-primary/30 max-w-[80%]">
+                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-3 rounded-2xl rounded-tr-none border border-primary/30 max-w-[80%]">
                     {renderTypedText(businessFeature4Text)}
                     {isTypingBusinessFeature4 && <span className="animate-pulse">|</span>}
                   </div>
-                  <div className="bg-white/20 backdrop-blur-sm p-1 rounded-md ml-1.5 border border-white/30 shadow-xl flex-shrink-0">
-                    <DollarSign className="h-3 w-3 text-white" />
+                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl ml-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <DollarSign className="h-4 w-4 text-white" />
                   </div>
                 </div>
               </div>
@@ -1344,10 +1186,10 @@ export default function OnboardingPage() {
             {businessFeature5Text && (
               <div className="transition-all duration-500 opacity-100 translate-y-0">
                 <div className="flex items-start">
-                  <div className="bg-white/20 backdrop-blur-sm p-1 rounded-md mr-1.5 border border-white/30 shadow-xl flex-shrink-0">
-                    <Shield className="h-3 w-3 text-white" />
+                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl mr-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Shield className="h-4 w-4 text-white" />
                   </div>
-                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-2 rounded-lg rounded-tl-none border border-white/20 max-w-[80%]">
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
                     {renderTypedText(businessFeature5Text)}
                     {isTypingBusinessFeature5 && <span className="animate-pulse">|</span>}
                   </div>
@@ -1355,6 +1197,43 @@ export default function OnboardingPage() {
               </div>
             )}
 
+            {/* Trust Badge */}
+            {showBusinessTrust && (
+              <div className="transition-all duration-700 opacity-100 scale-100">
+                <div className="mt-4 p-4 bg-white/15 backdrop-blur-md rounded-2xl border border-white/30 shadow-2xl">
+                  <div className="flex items-center gap-3 mb-2">
+                    <CheckCircle className="h-4 w-4 text-green-400 animate-pulse" />
+                    <span className="font-medium text-white drop-shadow-sm text-sm">Trusted by 58+ businesses</span>
+                  </div>
+                  <div className="flex gap-1 flex-wrap">
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 backdrop-blur-sm text-white border-white/40 hover:bg-white/25 transition-colors text-xs"
+                    >
+                      Somalia
+                    </Badge>
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 backdrop-blur-sm text-white border-white/40 hover:bg-white/25 transition-colors text-xs"
+                    >
+                      Kenya
+                    </Badge>
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 backdrop-blur-sm text-white border-white/40 hover:bg-white/25 transition-colors text-xs"
+                    >
+                      Ethiopia
+                    </Badge>
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 backdrop-blur-sm text-white border-white/40 hover:bg-white/25 transition-colors text-xs"
+                    >
+                      Djibouti
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -1376,10 +1255,10 @@ export default function OnboardingPage() {
       <div className="absolute inset-0 bg-gradient-to-br from-black/25 via-black/15 to-black/35"></div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col justify-center items-center px-4 sm:px-6 py-4 sm:py-6 h-full">
-        <div className="w-full max-w-[480px] backdrop-blur-[10%] bg-black/10 p-3 sm:p-4 rounded-xl border border-white/20 shadow-2xl overflow-hidden h-fit" style={{ fontWeight: 300 }}>
+      <div className="relative z-10 flex flex-col justify-center px-12 py-16 h-full">
+        <div className="max-w-lg backdrop-blur-[10%] bg-black/10 p-6 rounded-3xl border border-white/20 shadow-2xl overflow-hidden">
           {/* Messaging Platform Style Content */}
-          <div className="space-y-2">
+          <div className="space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-hide">
             {/* Logo */}
             {showAccountLogo && (
               <div className="transition-all duration-500 opacity-100 translate-y-0">
@@ -1408,8 +1287,8 @@ export default function OnboardingPage() {
             {accountDescText && (
               <div className="transition-all duration-500 opacity-100 translate-y-0">
                 <div className="flex items-start justify-end">
-                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-2 rounded-lg rounded-tr-none border border-primary/30 max-w-[85%]">
-                    <p className="text-xs text-white leading-tight drop-shadow-sm">
+                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-3 rounded-2xl rounded-tr-none border border-primary/30 max-w-[85%]">
+                    <p className="text-base text-white leading-relaxed drop-shadow-sm">
                       {accountDescText}
                       {isTypingAccountDesc && <span className="animate-pulse">|</span>}
                     </p>
@@ -1422,10 +1301,10 @@ export default function OnboardingPage() {
             {accountFeature1Text && (
               <div className="transition-all duration-500 opacity-100 translate-y-0">
                 <div className="flex items-start">
-                  <div className="bg-white/20 backdrop-blur-sm p-1 rounded-md mr-1.5 border border-white/30 shadow-xl flex-shrink-0">
-                    <Shield className="h-3 w-3 text-white" />
+                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl mr-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Shield className="h-4 w-4 text-white" />
                   </div>
-                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-2 rounded-lg rounded-tl-none border border-white/20 max-w-[80%]">
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
                     {renderTypedText(accountFeature1Text)}
                     {isTypingAccountFeature1 && <span className="animate-pulse">|</span>}
                   </div>
@@ -1437,12 +1316,12 @@ export default function OnboardingPage() {
             {accountFeature2Text && (
               <div className="transition-all duration-500 opacity-100 translate-y-0">
                 <div className="flex items-start justify-end">
-                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-2 rounded-lg rounded-tr-none border border-primary/30 max-w-[80%]">
+                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-3 rounded-2xl rounded-tr-none border border-primary/30 max-w-[80%]">
                     {renderTypedText(accountFeature2Text)}
                     {isTypingAccountFeature2 && <span className="animate-pulse">|</span>}
                   </div>
-                  <div className="bg-white/20 backdrop-blur-sm p-1 rounded-md ml-1.5 border border-white/30 shadow-xl flex-shrink-0">
-                    <Users className="h-3 w-3 text-white" />
+                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl ml-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Users className="h-4 w-4 text-white" />
                   </div>
                 </div>
               </div>
@@ -1452,10 +1331,10 @@ export default function OnboardingPage() {
             {accountFeature3Text && (
               <div className="transition-all duration-500 opacity-100 translate-y-0">
                 <div className="flex items-start">
-                  <div className="bg-white/20 backdrop-blur-sm p-1 rounded-md mr-1.5 border border-white/30 shadow-xl flex-shrink-0">
-                    <Zap className="h-3 w-3 text-white" />
+                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl mr-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Zap className="h-4 w-4 text-white" />
                   </div>
-                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-2 rounded-lg rounded-tl-none border border-white/20 max-w-[80%]">
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
                     {renderTypedText(accountFeature3Text)}
                     {isTypingAccountFeature3 && <span className="animate-pulse">|</span>}
                   </div>
@@ -1467,12 +1346,12 @@ export default function OnboardingPage() {
             {accountFeature4Text && (
               <div className="transition-all duration-500 opacity-100 translate-y-0">
                 <div className="flex items-start justify-end">
-                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-2 rounded-lg rounded-tr-none border border-primary/30 max-w-[80%]">
+                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-3 rounded-2xl rounded-tr-none border border-primary/30 max-w-[80%]">
                     {renderTypedText(accountFeature4Text)}
                     {isTypingAccountFeature4 && <span className="animate-pulse">|</span>}
                   </div>
-                  <div className="bg-white/20 backdrop-blur-sm p-1 rounded-md ml-1.5 border border-white/30 shadow-xl flex-shrink-0">
-                    <Lock className="h-3 w-3 text-white" />
+                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl ml-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Lock className="h-4 w-4 text-white" />
                   </div>
                 </div>
               </div>
@@ -1482,10 +1361,10 @@ export default function OnboardingPage() {
             {accountFeature5Text && (
               <div className="transition-all duration-500 opacity-100 translate-y-0">
                 <div className="flex items-start">
-                  <div className="bg-white/20 backdrop-blur-sm p-1 rounded-md mr-1.5 border border-white/30 shadow-xl flex-shrink-0">
-                    <Users className="h-3 w-3 text-white" />
+                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl mr-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Users className="h-4 w-4 text-white" />
                   </div>
-                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-2 rounded-lg rounded-tl-none border border-white/20 max-w-[80%]">
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
                     {renderTypedText(accountFeature5Text)}
                     {isTypingAccountFeature5 && <span className="animate-pulse">|</span>}
                   </div>
@@ -1493,6 +1372,45 @@ export default function OnboardingPage() {
               </div>
             )}
 
+            {/* Trust Badge */}
+            {showAccountTrust && (
+              <div className="transition-all duration-700 opacity-100 scale-100">
+                <div className="mt-4 p-4 bg-white/15 backdrop-blur-md rounded-2xl border border-white/30 shadow-2xl">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Star className="h-4 w-4 text-yellow-400 animate-pulse" />
+                    <span className="font-medium text-white drop-shadow-sm text-sm">
+                      Join thousands of successful businesses
+                    </span>
+                  </div>
+                  <div className="flex gap-1 flex-wrap">
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 backdrop-blur-sm text-white border-white/40 hover:bg-white/25 transition-colors text-xs"
+                    >
+                      Somalia
+                    </Badge>
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 backdrop-blur-sm text-white border-white/40 hover:bg-white/25 transition-colors text-xs"
+                    >
+                      Kenya
+                    </Badge>
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 backdrop-blur-sm text-white border-white/40 hover:bg-white/25 transition-colors text-xs"
+                    >
+                      Ethiopia
+                    </Badge>
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 backdrop-blur-sm text-white border-white/40 hover:bg-white/25 transition-colors text-xs"
+                    >
+                      Djibouti
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -1604,64 +1522,60 @@ export default function OnboardingPage() {
     )
   }
 
-  // Render setup questions (retail or restaurant)
-  const renderSetupQuestions = () => {
-    const questions = currentStep === "retail-setup" ? retailQuestions : restaurantQuestions
-    const answers = currentStep === "retail-setup" ? retailAnswers : restaurantAnswers
-    const handleAnswerChange = currentStep === "retail-setup" ? handleRetailAnswerChange : handleRestaurantAnswerChange
-    const currentQuestion = questions[currentQuestionIndex]
+  // Render retail setup questions
+  const renderRetailSetup = () => {
+    const currentQuestion = retailQuestions[currentQuestionIndex]
     if (!currentQuestion) return null
 
     switch (currentQuestion.type) {
       case "welcome":
-        const WelcomeIcon = currentStep === "restaurant-setup" ? UtensilsCrossed : Building2
         return (
-          <div className="text-center w-full max-w-md mx-auto animate-fade-in px-2">
-            <div className="mb-4">
-              <div className="bg-primary/10 p-2.5 rounded-full w-fit mx-auto mb-2.5">
-                <WelcomeIcon className="h-5 w-5 text-primary" />
+          <div className="text-center max-w-2xl mx-auto animate-fade-in">
+            <div className="mb-8">
+              <div className="bg-primary/10 p-4 rounded-full w-fit mx-auto mb-4">
+                <Building2 className="h-8 w-8 text-primary" />
               </div>
-              <h1 className="text-lg sm:text-xl font-bold tracking-tight mb-1.5">{currentQuestion.title}</h1>
-              <p className="text-xs sm:text-sm text-muted-foreground">{currentQuestion.description}</p>
+              <h1 className="text-4xl font-bold tracking-tight mb-4">{currentQuestion.title}</h1>
+              <p className="text-lg text-muted-foreground">{currentQuestion.description}</p>
             </div>
             <Button
-              size="sm"
+              size="lg"
               onClick={handleNextQuestion}
               className="bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               Let's Get Started
-              <ArrowRight className="ml-2 h-3.5 w-3.5" />
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
         )
 
       case "single-select":
         return (
-          <div className="w-full max-w-lg mx-auto animate-fade-in px-2">
-            <h2 className="text-base sm:text-lg font-bold mb-1.5">{currentQuestion.title}</h2>
-            <p className="text-xs sm:text-sm text-muted-foreground mb-3">{currentQuestion.description}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div className="max-w-2xl mx-auto animate-fade-in">
+            <h2 className="text-2xl font-bold mb-2">{currentQuestion.title}</h2>
+            <p className="text-muted-foreground mb-6">{currentQuestion.description}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {currentQuestion.options.map((option) => (
                 <div
                   key={option.id}
-                  onClick={() => handleAnswerChange(currentQuestion.id, option.id)}
+                  onClick={() => handleRetailAnswerChange(currentQuestion.id, option.id)}
                   className={`
-                    p-2.5 rounded-md border cursor-pointer transition-all duration-200
+                    p-4 rounded-lg border cursor-pointer transition-all duration-200
                     ${
-                      answers[currentQuestion.id] === option.id
+                      retailAnswers[currentQuestion.id] === option.id
                         ? "border-primary bg-primary/5 shadow-sm"
                         : "border-border hover:border-primary/50 hover:bg-muted/50"
                     }
                   `}
                 >
-                  <div className="flex items-center gap-2">
-                    <div className="bg-primary/10 p-1.5 rounded-full flex-shrink-0">
-                      {React.createElement(option.icon, { className: "h-4 w-4 text-primary" })}
+                  <div className="flex items-center gap-3">
+                    <div className="bg-primary/10 p-2 rounded-full">
+                      {React.createElement(option.icon, { className: "h-5 w-5 text-primary" })}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium text-sm">{option.label}</div>
+                    <div className="flex-1">
+                      <div className="font-medium">{option.label}</div>
                     </div>
-                    {answers[currentQuestion.id] === option.id && <Check className="h-4 w-4 text-primary flex-shrink-0" />}
+                    {retailAnswers[currentQuestion.id] === option.id && <Check className="h-5 w-5 text-primary" />}
                   </div>
                 </div>
               ))}
@@ -1671,34 +1585,34 @@ export default function OnboardingPage() {
 
       case "multi-select":
         return (
-          <div className="w-full max-w-lg mx-auto animate-fade-in px-2">
-            <h2 className="text-base sm:text-lg font-bold mb-1.5">{currentQuestion.title}</h2>
-            <p className="text-xs sm:text-sm text-muted-foreground mb-3">{currentQuestion.description}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div className="max-w-2xl mx-auto animate-fade-in">
+            <h2 className="text-2xl font-bold mb-2">{currentQuestion.title}</h2>
+            <p className="text-muted-foreground mb-6">{currentQuestion.description}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {currentQuestion.options.map((option) => {
                 const isSelected =
-                  Array.isArray(answers[currentQuestion.id]) &&
-                  answers[currentQuestion.id].includes(option.id)
+                  Array.isArray(retailAnswers[currentQuestion.id]) &&
+                  retailAnswers[currentQuestion.id].includes(option.id)
                 const isEssential = option.essential
                 return (
                   <div
                     key={option.id}
                     onClick={() => {
                       if (isEssential) return // Can't deselect essential modules
-                      const currentAnswers = Array.isArray(answers[currentQuestion.id])
-                        ? [...answers[currentQuestion.id]]
+                      const currentAnswers = Array.isArray(retailAnswers[currentQuestion.id])
+                        ? [...retailAnswers[currentQuestion.id]]
                         : []
                       if (isSelected) {
-                        handleAnswerChange(
+                        handleRetailAnswerChange(
                           currentQuestion.id,
                           currentAnswers.filter((id) => id !== option.id),
                         )
                       } else {
-                        handleAnswerChange(currentQuestion.id, [...currentAnswers, option.id])
+                        handleRetailAnswerChange(currentQuestion.id, [...currentAnswers, option.id])
                       }
                     }}
                     className={`
-                      p-2.5 rounded-md border transition-all duration-200
+                      p-4 rounded-lg border transition-all duration-200
                       ${
                         isEssential
                           ? "border-primary bg-primary/5 cursor-default"
@@ -1708,24 +1622,24 @@ export default function OnboardingPage() {
                       }
                     `}
                   >
-                    <div className="flex items-start gap-2">
-                      <div className="bg-primary/10 p-1.5 rounded-full flex-shrink-0 mt-0.5">
-                        {React.createElement(option.icon, { className: "h-4 w-4 text-primary" })}
+                    <div className="flex items-center gap-3">
+                      <div className="bg-primary/10 p-2 rounded-full">
+                        {React.createElement(option.icon, { className: "h-5 w-5 text-primary" })}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium text-sm flex items-center gap-1.5 flex-wrap">
-                          <span className="leading-tight">{option.label}</span>
+                      <div className="flex-1">
+                        <div className="font-medium flex items-center gap-2">
+                          {option.label}
                           {isEssential && (
-                            <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 leading-none">
+                            <Badge variant="secondary" className="text-xs">
                               Essential
                             </Badge>
                           )}
                         </div>
-                        <div className="text-[11px] sm:text-xs text-muted-foreground mt-0.5 leading-tight">
+                        <div className="text-xs text-muted-foreground mt-1">
                           {option.description}
                         </div>
                       </div>
-                      {(isSelected || isEssential) && <Check className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />}
+                      {(isSelected || isEssential) && <Check className="h-5 w-5 text-primary" />}
                     </div>
                   </div>
                 )
@@ -1736,27 +1650,27 @@ export default function OnboardingPage() {
 
       case "slider":
         return (
-          <div className="w-full max-w-lg mx-auto animate-fade-in px-2">
-            <h2 className="text-base sm:text-lg font-bold mb-1.5">{currentQuestion.title}</h2>
-            <p className="text-xs sm:text-sm text-muted-foreground mb-3">{currentQuestion.description}</p>
-            <div className="space-y-3 mt-3">
-              <div className="flex justify-between items-center text-xs text-muted-foreground">
+          <div className="max-w-2xl mx-auto animate-fade-in">
+            <h2 className="text-2xl font-bold mb-2">{currentQuestion.title}</h2>
+            <p className="text-muted-foreground mb-6">{currentQuestion.description}</p>
+            <div className="space-y-8 mt-8">
+              <div className="flex justify-between items-center text-sm text-muted-foreground">
                 <span>{currentQuestion.min}</span>
                 <span>{currentQuestion.max}</span>
               </div>
               <Slider
-                value={[answers[currentQuestion.id] || currentQuestion.defaultValue]}
+                value={[retailAnswers[currentQuestion.id] || currentQuestion.defaultValue]}
                 min={currentQuestion.min}
                 max={currentQuestion.max}
                 step={currentQuestion.step}
-                onValueChange={(value) => handleAnswerChange(currentQuestion.id, value[0])}
+                onValueChange={(value) => handleRetailAnswerChange(currentQuestion.id, value[0])}
               />
-              <div className="text-center text-base sm:text-lg font-bold">
-                {answers[currentQuestion.id] || currentQuestion.defaultValue}
+              <div className="text-center text-2xl font-bold">
+                {retailAnswers[currentQuestion.id] || currentQuestion.defaultValue}
                 {currentQuestion.id === "locations" &&
-                  ` location${(answers[currentQuestion.id] || currentQuestion.defaultValue) !== 1 ? "s" : ""}`}
+                  ` location${(retailAnswers[currentQuestion.id] || currentQuestion.defaultValue) !== 1 ? "s" : ""}`}
                 {currentQuestion.id === "users" &&
-                  ` user${(answers[currentQuestion.id] || currentQuestion.defaultValue) !== 1 ? "s" : ""}`}
+                  ` user${(retailAnswers[currentQuestion.id] || currentQuestion.defaultValue) !== 1 ? "s" : ""}`}
               </div>
             </div>
           </div>
@@ -1927,25 +1841,25 @@ export default function OnboardingPage() {
 
       {/* Main Content */}
       <div className="flex h-[calc(100vh-4rem)]">
-        {/* Split Layout for setup and signup */}
-        {currentStep === "retail-setup" || currentStep === "restaurant-setup" || currentStep === "signup" ? (
+        {/* Split Layout for retail-setup and signup */}
+        {currentStep === "retail-setup" || currentStep === "signup" ? (
           <>
             {/* Video Section - Left Side */}
             <div className="hidden lg:block lg:w-3/5 relative">
-              {currentStep === "retail-setup" || currentStep === "restaurant-setup" ? renderBusinessSetupVideo() : renderAccountSetupVideo()}
+              {currentStep === "retail-setup" ? renderBusinessSetupVideo() : renderAccountSetupVideo()}
             </div>
 
             {/* Form Section - Right Side */}
             <div className="w-full lg:w-2/5 flex flex-col overflow-hidden">
               {/* Progress bar */}
-              <div className="px-3 sm:px-4 py-2 sm:py-3 border-b bg-background/95 backdrop-blur-sm">
-                {(currentStep === "retail-setup" || currentStep === "restaurant-setup") && (
+              <div className="px-6 py-4 border-b bg-background/95 backdrop-blur-sm">
+                {currentStep === "retail-setup" && (
                   <div>
                     <div className="flex justify-between text-xs text-muted-foreground mb-2">
                       <span>Business Setup</span>
-                      <span>{Math.round(setupProgressPercentage)}% Complete</span>
+                      <span>{Math.round(retailProgressPercentage)}% Complete</span>
                     </div>
-                    <Progress value={setupProgressPercentage} className="h-2" />
+                    <Progress value={retailProgressPercentage} className="h-2" />
                   </div>
                 )}
                 {currentStep === "signup" && (
@@ -1963,17 +1877,15 @@ export default function OnboardingPage() {
 
               {/* Form Content */}
               <div className="flex-1 overflow-y-auto scrollbar-hide">
-                <div className="p-3 sm:p-4 flex items-center justify-center min-h-full">
-                  {(currentStep === "retail-setup" || currentStep === "restaurant-setup") && renderSetupQuestions()}
+                <div className="p-6 flex items-center justify-center min-h-full">
+                  {currentStep === "retail-setup" && renderRetailSetup()}
                   {currentStep === "signup" && renderStepByStepSignup()}
                 </div>
               </div>
 
               {/* Navigation */}
-              <div className="px-3 sm:px-4 py-2 sm:py-3 border-t bg-background/95 backdrop-blur-sm">
-                {(currentStep === "retail-setup" || currentStep === "restaurant-setup") && (() => {
-                  const questions = currentStep === "retail-setup" ? retailQuestions : restaurantQuestions
-                  return questions[currentQuestionIndex]?.type !== "welcome" && (
+              <div className="px-6 py-4 border-t bg-background/95 backdrop-blur-sm">
+                {currentStep === "retail-setup" && retailQuestions[currentQuestionIndex]?.type !== "welcome" && (
                   <div className="flex justify-between">
                     <Button variant="outline" onClick={handlePreviousQuestion} disabled={currentQuestionIndex === 0}>
                       Back
@@ -1983,11 +1895,10 @@ export default function OnboardingPage() {
                       disabled={!isCurrentQuestionAnswered()}
                       className="bg-primary hover:bg-primary/90 text-primary-foreground"
                     >
-                        {currentQuestionIndex === questions.length - 1 ? "Continue to Account Setup" : "Next"}
+                      {currentQuestionIndex === retailQuestions.length - 1 ? "Continue to Account Setup" : "Next"}
                     </Button>
                   </div>
-                  )
-                })()}
+                )}
                 {currentStep === "signup" && (
                   <div className="flex justify-between">
                     <Button variant="outline" onClick={handlePreviousSignupStep} disabled={currentSignupStep === 0}>

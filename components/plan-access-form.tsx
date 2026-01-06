@@ -35,21 +35,25 @@ export function PlanAccessForm({ onClose }: { onClose: () => void }) {
     if (typeof window !== "undefined" && window.__questionnaire_data) {
       const questionnaireData = window.__questionnaire_data
 
-      // Store all questionnaire data in planData
-      setFormData((prev) => ({
-        ...prev,
-        planData: questionnaireData,
-      }))
+      // Pre-fill form data from questionnaire
+      setFormData((prev) => {
+        const newData = { ...prev }
+
+        // Store all questionnaire data in planData
+        newData.planData = questionnaireData
+
+        return newData
+      })
     }
   }, [])
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
   const isFormValid = () => {
-    return formData.businessName && formData.contactName && formData.email && formData.phone
+    return formData.businessName && formData.contactName && formData.email
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -99,6 +103,31 @@ export function PlanAccessForm({ onClose }: { onClose: () => void }) {
     }
   }
 
+  // Currency conversion helper functions
+  const USD_TO_KES = 129
+  
+  const convertPrice = (usdPrice: number): number => {
+    const currency = formData.planData?.currency || "USD"
+    if (currency === "KES") {
+      return Math.round(usdPrice * USD_TO_KES)
+    }
+    return usdPrice
+  }
+
+  const formatPrice = (price: number): string => {
+    const currency = formData.planData?.currency || "USD"
+    const convertedPrice = convertPrice(price)
+    if (currency === "KES") {
+      return convertedPrice.toLocaleString("en-KE")
+    }
+    return convertedPrice.toString()
+  }
+
+  const getCurrencySymbol = (): string => {
+    const currency = formData.planData?.currency || "USD"
+    return currency === "KES" ? "KES" : "$"
+  }
+
   // Render form content
   const renderFormContent = () => {
     return (
@@ -144,9 +173,7 @@ export function PlanAccessForm({ onClose }: { onClose: () => void }) {
           />
         </div>
         <div className="grid gap-2">
-          <Label htmlFor="phone">
-            Phone Number <span className="text-red-500">*</span>
-          </Label>
+          <Label htmlFor="phone">Phone Number</Label>
           <Input
             id="phone"
             name="phone"
@@ -154,12 +181,11 @@ export function PlanAccessForm({ onClose }: { onClose: () => void }) {
             value={formData.phone}
             onChange={handleInputChange}
             placeholder="Your phone number"
-            required
           />
         </div>
 
         {formData.planData && formData.planData.recommendedPlan && (
-          <div className="rounded-lg bg-primary/5 p-4 border border-primary/20 mt-4">
+          <div className="rounded-lg bg-primary/5 p-4 border border-primary/20">
             <h4 className="font-medium mb-2 flex items-center">
               <CheckCircle className="h-4 w-4 text-primary mr-2" />
               Selected Plan
@@ -180,28 +206,28 @@ export function PlanAccessForm({ onClose }: { onClose: () => void }) {
                 }
               </span>
               <Badge variant="outline" className="bg-primary/10">
-                {formData.planData.billingPreference === "annual" ? "Annual" : "Quarterly"}
+                {formData.planData.billingPreference === "annual" ? "Annual" : "Monthly"}
               </Badge>
             </div>
             {formData.planData.monthlyPrice && (
               <div className="mt-2 text-sm text-muted-foreground">
                 {formData.planData.billingPreference === "annual"
-                  ? `$${Math.round(formData.planData.annualPrice / 12)}/month (billed annually)`
-                  : `$${formData.planData.monthlyPrice}/month`}
+                  ? `${getCurrencySymbol()} ${formatPrice(Math.round(formData.planData.annualPrice / 12))}/month (billed annually)`
+                  : `${getCurrencySymbol()} ${formatPrice(formData.planData.monthlyPrice)}/month`}
               </div>
             )}
           </div>
         )}
 
         {error && (
-          <div className="bg-destructive/10 text-destructive p-3 rounded-md flex items-start mt-4">
+          <div className="bg-destructive/10 text-destructive p-3 rounded-md flex items-start">
             <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
             <p className="text-sm">{error}</p>
           </div>
         )}
 
         {isSuccess && (
-          <div className="bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300 p-3 rounded-md flex items-start mt-4">
+          <div className="bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300 p-3 rounded-md flex items-start">
             <CheckCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
             <p className="text-sm">
               Your plan request has been submitted successfully! Our team will contact you shortly to discuss next
@@ -215,7 +241,7 @@ export function PlanAccessForm({ onClose }: { onClose: () => void }) {
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Request Your Plan</DialogTitle>
           <DialogDescription>
@@ -227,7 +253,7 @@ export function PlanAccessForm({ onClose }: { onClose: () => void }) {
           {renderFormContent()}
         </form>
 
-        <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+        <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-between sm:space-x-2">
           <Button type="button" variant="outline" onClick={onClose} disabled={isLoading || isSuccess}>
             Cancel
           </Button>
@@ -248,7 +274,7 @@ export function PlanAccessForm({ onClose }: { onClose: () => void }) {
                 Submitted!
               </>
             ) : (
-              "Request Plan"
+              "Request Plan Access"
             )}
           </Button>
         </DialogFooter>

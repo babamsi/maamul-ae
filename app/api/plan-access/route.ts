@@ -1,15 +1,33 @@
 import { NextResponse } from "next/server"
 import nodemailer from "nodemailer"
 
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || "smtp.gmail.com",
-  port: Number.parseInt(process.env.EMAIL_PORT || "587"),
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-})
+// Configure email transporter with proper settings
+const emailHost = process.env.EMAIL_HOST || "smtp.gmail.com"
+const emailPort = Number.parseInt(process.env.EMAIL_PORT || "587")
+const emailUser = process.env.EMAIL_USER
+const emailPass = process.env.EMAIL_PASS
+
+// Create transporter with proper configuration for DNS resolution and connection stability
+const transporter = emailUser && emailPass
+  ? nodemailer.createTransport({
+      host: emailHost,
+      port: emailPort,
+      secure: emailPort === 465, // true for 465 (SSL), false for 587 (STARTTLS)
+      auth: {
+        user: emailUser,
+        pass: emailPass,
+      },
+      tls: {
+        // Do not fail on invalid certs (helps with DNS resolution issues)
+        rejectUnauthorized: false,
+      },
+      connectionTimeout: 60000, // 60 seconds
+      greetingTimeout: 30000, // 30 seconds
+      socketTimeout: 60000, // 60 seconds
+      // Don't use connection pooling in serverless environments
+      pool: false,
+    })
+  : null
 
 // Helper function to get tier display name
 function getTierDisplayName(tier: string): string {
@@ -52,6 +70,18 @@ function formatIntegrationFees(integrationFees: any[]): { html: string; total: n
 
 export async function POST(request: Request) {
   try {
+    // Check if email configuration is available
+    if (!transporter) {
+      console.error("Email configuration missing: EMAIL_USER or EMAIL_PASS not set")
+      return NextResponse.json(
+        {
+          error: "Email service is not configured. Please contact support.",
+          details: "EMAIL_USER or EMAIL_PASS environment variables are missing",
+        },
+        { status: 500 },
+      )
+    }
+
     const formData = await request.json()
 
     // Debug log to see the complete form data structure

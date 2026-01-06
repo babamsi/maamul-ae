@@ -142,19 +142,19 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="relative bg-gradient-to-b from-background to-muted dark:from-gray-900 dark:to-gray-800 py-8 sm:py-12 md:py-20 lg:py-32 transition-colors duration-300"
+          className="relative bg-gradient-to-b from-background to-muted dark:from-gray-900 dark:to-gray-800 py-20 md:py-32 transition-colors duration-300"
         >
-          <div className="container max-w-6xl mx-auto flex flex-col items-center justify-center gap-4 sm:gap-6 md:gap-8 px-4 md:px-6">
+          <div className="container max-w-6xl mx-auto flex flex-col items-center justify-center gap-8 px-4 md:px-6">
             <div className="max-w-3xl text-center">
               <motion.h1
-                className="text-2xl sm:text-3xl font-bold tracking-tighter md:text-4xl lg:text-5xl xl:text-6xl mb-4 sm:mb-6 dark:text-white"
+                className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl mb-6 dark:text-white"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
               >
                 Streamline your business with <span className="text-primary italic">Maamul</span>
               </motion.h1>
-              <div className="space-y-2 sm:space-y-4 mt-4 sm:mt-6 md:mt-8">
+              <div className="space-y-4 mt-8">
                 <SentenceAnimation />
               </div>
             </div>
