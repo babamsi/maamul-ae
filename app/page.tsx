@@ -367,7 +367,7 @@ export default function LandingPage() {
       <footer className="bg-muted dark:bg-gray-900 py-6 text-sm text-muted-foreground dark:text-gray-400 transition-colors duration-300">
         <div className="container max-w-6xl mx-auto flex flex-col items-center justify-between gap-4 px-4 md:flex-row md:px-6">
           <p className="flex items-center">
-            <span className="mr-2 text-lg">𐒑</span>© 2025 Maamul. All rights reserved.
+            <span className="mr-2 text-lg">𐒑</span>© 2026 Maamul. All rights reserved.
           </p>
           <nav className="flex gap-4">
             <Link href="/privacy-policy" className="hover:underline underline-offset-4">
