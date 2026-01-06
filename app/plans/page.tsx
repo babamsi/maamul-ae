@@ -388,10 +388,10 @@ const questions = [
     type: "slider",
     title: "How many user accounts do you need?",
     description: "This helps us determine your access requirements.",
-    min: 5,
-    max: 100,
-    step: 5,
-    defaultValue: 10,
+    min: 1,
+    max: 15,
+    step: 1,
+    defaultValue: 5,
   },
   {
     id: "implementation-timeline",
@@ -427,7 +427,7 @@ export default function PlansPage() {
     locations: 1,
     needs: [] as string[],
     security: "",
-    users: 10,
+    users: 5,
     "implementation-timeline": "",
     billing: "quarterly",
   })
@@ -467,10 +467,10 @@ export default function PlansPage() {
     const currency = answers.currency || "USD"
     if (currency === "KES") {
       return [
-        { id: "tier1", label: `Less than ${formatPrice(10000)}`, icon: DollarSign },
-        { id: "tier2", label: `${formatPrice(11000)} - ${formatPrice(30000)}`, icon: DollarSign },
-        { id: "tier3", label: `${formatPrice(31000)} - ${formatPrice(60000)}`, icon: DollarSign },
-        { id: "tier4", label: `${formatPrice(61000)} - ${formatPrice(99000)}`, icon: DollarSign },
+        { id: "tier1", label: `Less than ${formatPrice(10000)}`, icon: Coins },
+        { id: "tier2", label: `${formatPrice(11000)} - ${formatPrice(30000)}`, icon: Coins },
+        { id: "tier3", label: `${formatPrice(31000)} - ${formatPrice(60000)}`, icon: Coins },
+        { id: "tier4", label: `${formatPrice(61000)} - ${formatPrice(99000)}`, icon: Coins },
       ]
     }
     return [
@@ -649,13 +649,14 @@ export default function PlansPage() {
     }
     
     // Users (constraint)
-    if (users <= 3) {
+    // Tier1: 1-3 users, Tier2: 4-6 users, Tier3: 7-9 users, Tier4: 10-15 users
+    if (users >= 1 && users <= 3) {
       tierFromUsers = "tier1"
-    } else if (users <= 6) {
+    } else if (users >= 4 && users <= 6) {
       tierFromUsers = "tier2"
-    } else if (users <= 9) {
+    } else if (users >= 7 && users <= 9) {
       tierFromUsers = "tier3"
-    } else if (users <= 15) {
+    } else if (users >= 10 && users <= 15) {
       tierFromUsers = "tier4"
     } else {
       tierFromUsers = "tier4" // Max 15 users for tier4
@@ -796,7 +797,7 @@ export default function PlansPage() {
       locations: 1,
       needs: [] as string[],
       security: "",
-      users: 10,
+      users: 5,
       "implementation-timeline": "",
       billing: "quarterly",
     })

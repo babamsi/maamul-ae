@@ -703,27 +703,26 @@ export async function POST(request: Request) {
   `,
     }
 
-    // Send emails asynchronously (don't block the response)
-    // Create transporter only when needed
+    // Send emails - create transporter only when needed
     const transporter = createTransporter()
     
     if (transporter) {
-      // Send emails in background - don't wait for them to complete
-      Promise.all([
-        transporter.sendMail(adminMailOptions).catch((err) => {
-          console.error("Failed to send admin email:", err)
-        }),
-        transporter.sendMail(userMailOptions).catch((err) => {
-          console.error("Failed to send user email:", err)
-        }),
-      ]).catch((err) => {
-        console.error("Email sending error (non-blocking):", err)
-      })
+      try {
+        // Send both emails
+        await Promise.all([
+          transporter.sendMail(adminMailOptions),
+          transporter.sendMail(userMailOptions),
+        ])
+        console.log("Plan access emails sent successfully")
+      } catch (emailError) {
+        // Log error but don't fail the request - email is not critical
+        console.error("Failed to send plan access emails:", emailError)
+        // Continue to return success even if email fails
+      }
     } else {
       console.warn("Email service not configured - skipping email notifications")
     }
 
-    // Return success immediately - don't wait for emails
     return NextResponse.json({
       success: true,
       message: "Your plan request has been submitted successfully. Our Maamul Team will contact you shortly.",
