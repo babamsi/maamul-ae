@@ -102,11 +102,7 @@ export async function POST(request: NextRequest) {
 
     if (existingErr) {
       console.error('Supabase select error:', existingErr)
-      return NextResponse.json({ 
-        error: existingErr.message || "Database error",
-        details: existingErr.details || null,
-        code: existingErr.code || null
-      }, { status: 500 })
+      return NextResponse.json({ error: "Database error" }, { status: 500 })
     }
 
     if (existing) {
@@ -154,28 +150,7 @@ export async function POST(request: NextRequest) {
 
     if (insertErr) {
       console.error('Supabase insert error:', insertErr)
-      
-      // Check if it's a duplicate email error
-      const isDuplicateEmail = 
-        insertErr.code === '23505' || // PostgreSQL unique violation code
-        insertErr.message?.toLowerCase().includes('duplicate key') ||
-        insertErr.message?.toLowerCase().includes('unique constraint') ||
-        insertErr.details?.toLowerCase().includes('email') ||
-        insertErr.hint?.toLowerCase().includes('email')
-      
-      if (isDuplicateEmail) {
-        return NextResponse.json({ 
-          error: "An account with this email already exists. Please use a different email or try logging in."
-        }, { status: 409 })
-      }
-      
-      // For other errors, return sanitized error message
-      return NextResponse.json({ 
-        error: insertErr.message || "Failed to create user",
-        details: insertErr.details || null,
-        code: insertErr.code || null,
-        hint: insertErr.hint || null
-      }, { status: 500 })
+      return NextResponse.json({ error: "Failed to create user" }, { status: 500 })
     }
 
     // Create new database and models for the user
@@ -506,11 +481,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error("Registration error:", error)
-    const errorMessage = error instanceof Error ? error.message : "Internal server error during registration"
-    const errorStack = error instanceof Error ? error.stack : null
-    return NextResponse.json({ 
-      error: errorMessage,
-      ...(process.env.NODE_ENV === "development" && errorStack ? { stack: errorStack } : {})
-    }, { status: 500 })
+    return NextResponse.json({ error: "Internal server error during registration" }, { status: 500 })
   }
 }

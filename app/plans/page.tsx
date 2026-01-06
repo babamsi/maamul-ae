@@ -53,7 +53,7 @@ const allPlans = [
     name: "Starter",
     description: "For small businesses just getting started",
     monthlyPrice: 58,
-    annualPrice: 696, // Annual price
+    annualPrice: Math.round(58 * 12 * 0.85), // 15% discount on annual
     revenue: "< 10k",
     useCase: "Perfect for: New businesses with 1-3 employees handling up to 500 inventory items per month",
     features: [
@@ -84,7 +84,7 @@ const allPlans = [
     name: "Growth",
     description: "For growing businesses with expanding needs",
     monthlyPrice: 145,
-    annualPrice: 1740, // Annual price
+    annualPrice: Math.round(145 * 12 * 0.85), // 15% discount on annual
     revenue: "11k - 30k",
     useCase: "Ideal for: Established businesses with 4-10 employees managing 1,000+ monthly transactions",
     features: [
@@ -100,7 +100,6 @@ const allPlans = [
         category: "Advanced",
         highlight: true,
       },
-      { name: "Online/offline operation - Continue working even without internet", category: "Core" },
     ],
     color: "from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/10",
     borderColor: "border-green-200 dark:border-green-800/30",
@@ -111,7 +110,7 @@ const allPlans = [
     name: "Professional",
     description: "For established businesses with significant operations",
     monthlyPrice: 290,
-    annualPrice: 3480, // Annual price
+    annualPrice: Math.round(290 * 12 * 0.85), // 15% discount on annual
     revenue: "31k - 60k",
     useCase: "Perfect for: Growing businesses with 11-25 employees needing advanced reporting and analytics",
     features: [
@@ -138,232 +137,13 @@ const allPlans = [
     name: "Business",
     description: "For larger businesses with complex requirements",
     monthlyPrice: 580,
-    annualPrice: 6960, // Annual price
+    annualPrice: Math.round(580 * 12 * 0.85), // 15% discount on annual
     revenue: "61k - 99k",
     useCase: "Ideal for: Businesses with 26-50 employees operating across multiple locations",
-    features: [
-      { name: "All Professional features - Everything in the Professional plan plus more", category: "Core" },
-      {
-        name: "Advanced multi-location management - Seamlessly manage up to 10 locations",
-        category: "Advanced",
-        highlight: true,
-      },
-      {
-        name: "Custom reporting - Build reports tailored to your specific business needs",
-        category: "Analytics",
-        highlight: true,
-      },
-      { name: "API access - Integrate with other business systems and applications", category: "Advanced" },
-      {
-        name: "Dedicated account manager - Get personalized support from a dedicated representative",
-        category: "Support",
-        highlight: true,
-      },
-    ],
+    features: [], // Features will be dynamically generated based on selected needs
     color: "from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/10",
     borderColor: "border-orange-200 dark:border-orange-800/30",
     icon: Briefcase,
-  },
-  {
-    id: "tier5",
-    name: "Enterprise S",
-    description: "For large businesses with complex operations",
-    monthlyPrice: 1160,
-    annualPrice: 1160 * 12 * 0.85, // Apply 15% discount
-    revenue: "100k - 300k",
-    useCase: "Perfect for: Medium enterprises with 51-100 employees requiring advanced customization",
-    features: [
-      {
-        name: "Advanced inventory management - Multi-warehouse tracking with automated workflows",
-        category: "Core",
-        highlight: true,
-      },
-      { name: "Advanced expense tracking - Detailed expense categorization and approval workflows", category: "Core" },
-      {
-        name: "Up to 25 user accounts - Provide access to your entire team with role-based permissions",
-        category: "Access",
-      },
-      {
-        name: "Advanced supply chain management - Optimize your entire supply chain with forecasting",
-        category: "Advanced",
-        highlight: true,
-      },
-      {
-        name: "Custom integrations - Connect with your existing business systems",
-        category: "Advanced",
-        highlight: true,
-      },
-      { name: "Dedicated account manager - Get personalized support and strategic guidance", category: "Support" },
-      { name: "24/7 priority support - Get help whenever you need it", category: "Support" },
-      {
-        name: "Advanced security features - Enterprise-grade protection for your data",
-        category: "Security",
-        highlight: true,
-      },
-    ],
-    color: "from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/10",
-    borderColor: "border-emerald-200 dark:border-emerald-800/30",
-    icon: Shield,
-  },
-  {
-    id: "tier6",
-    name: "Enterprise M",
-    description: "For major businesses with extensive operations",
-    monthlyPrice: 2320,
-    annualPrice: 2320 * 12 * 0.85, // Apply 15% discount
-    revenue: "301k - 600k",
-    useCase: "Ideal for: Large enterprises with 101-250 employees across multiple regions",
-    features: [
-      { name: "All Enterprise S features - Everything in the Enterprise S plan plus more", category: "Core" },
-      { name: "Multi-location support - Seamlessly manage up to 25 locations", category: "Advanced", highlight: true },
-      {
-        name: "Advanced analytics - AI-powered insights and predictive analytics",
-        category: "Analytics",
-        highlight: true,
-      },
-      { name: "Custom development - Tailored solutions for your specific business needs", category: "Advanced" },
-      { name: "Quarterly business reviews - Strategic planning sessions with our experts", category: "Support" },
-      {
-        name: "Advanced API access - Deep integration capabilities with your tech stack",
-        category: "Advanced",
-        highlight: true,
-      },
-      { name: "Up to 50 user accounts - Comprehensive access for your entire organization", category: "Access" },
-    ],
-    color: "from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-800/10",
-    borderColor: "border-indigo-200 dark:border-indigo-800/30",
-    icon: Cloud,
-  },
-  {
-    id: "tier7",
-    name: "Enterprise L",
-    description: "For large enterprises with complex requirements",
-    monthlyPrice: 4640,
-    annualPrice: 4640 * 12 * 0.85, // Apply 15% discount
-    revenue: "601k - 999k",
-    useCase: "Perfect for: Major enterprises with 251-500 employees requiring global operations support",
-    features: [
-      { name: "All Enterprise M features - Everything in the Enterprise M plan plus more", category: "Core" },
-      {
-        name: "Global operations support - Manage business across multiple countries",
-        category: "Advanced",
-        highlight: true,
-      },
-      {
-        name: "Enterprise-grade security - Advanced security protocols and compliance",
-        category: "Security",
-        highlight: true,
-      },
-      { name: "Custom workflows - Design and implement your own business processes", category: "Advanced" },
-      {
-        name: "Dedicated development team - Get a team focused on your implementation",
-        category: "Support",
-        highlight: true,
-      },
-      { name: "Executive business reviews - Strategic planning with our leadership team", category: "Support" },
-      { name: "Unlimited user accounts - No restrictions on user access", category: "Access", highlight: true },
-    ],
-    color: "from-rose-50 to-rose-100 dark:from-rose-900/20 dark:to-rose-800/10",
-    borderColor: "border-rose-200 dark:border-rose-800/30",
-    icon: Server,
-  },
-  {
-    id: "tier8",
-    name: "Enterprise XL",
-    description: "For major corporations with global operations",
-    monthlyPrice: 9000,
-    annualPrice: 9000 * 12 * 0.85, // Apply 15% discount
-    revenue: "1m+",
-    useCase: "Ideal for: Global corporations with 500+ employees requiring maximum customization",
-    features: [
-      { name: "All Enterprise L features - Everything in the Enterprise L plan plus more", category: "Core" },
-      {
-        name: "Unlimited everything - No restrictions on any platform capabilities",
-        category: "Access",
-        highlight: true,
-      },
-      { name: "Custom infrastructure - Dedicated hosting and infrastructure", category: "Advanced", highlight: true },
-      { name: "White-glove onboarding - Comprehensive implementation support", category: "Support" },
-      { name: "Executive support line - Direct access to senior support staff", category: "Support", highlight: true },
-      { name: "Strategic partnership - Become a strategic partner in our roadmap", category: "Support" },
-    ],
-    color: "from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/10",
-    borderColor: "border-amber-200 dark:border-amber-800/30",
-    icon: Award,
-  },
-]
-
-// Integration fees (one-time)
-const integrationFees = [
-  {
-    id: "inventory",
-    name: "Inventory Management",
-    price: 1000,
-    description: "Data migration from your existing inventory system with business-specific customization",
-    icon: BarChart,
-  },
-  {
-    id: "expenses",
-    name: "Expenses",
-    price: 1000,
-    description: "Import historical expense data from your current system with tailored categorization",
-    icon: Calculator,
-  },
-  {
-    id: "customer",
-    name: "Customer Management",
-    price: 1000,
-    description: "Migrate customer database and purchase history with custom field mapping",
-    icon: Users,
-  },
-  {
-    id: "employee",
-    name: "Employee Management",
-    price: 1000,
-    description: "Transfer employee records and schedules with customized role structures",
-    icon: UserPlus,
-  },
-  {
-    id: "supply",
-    name: "Supply Chain Management",
-    price: 1000,
-    description: "Import supplier data and purchase history with custom workflow setup",
-    icon: Workflow,
-  },
-  {
-    id: "dashboard",
-    name: "Dashboard",
-    price: 2000,
-    description: "Custom dashboard setup with your specific KPIs and business metrics",
-    icon: PieChart,
-  },
-  {
-    id: "payment",
-    name: "Payment Solution",
-    price: 3000,
-    description: "Integration with eDahab, WAAFI, and Mpesa payment systems with custom configurations",
-    icon: DollarSign,
-  },
-  {
-    id: "purchasing",
-    name: "Purchasing & Invoicing",
-    price: 1500,
-    description: "Import purchase orders and invoice templates with business-specific customization",
-    icon: Briefcase,
-  },
-  {
-    id: "pos",
-    name: "POS",
-    price: 500,
-    description: "Setup and configuration of point of sale hardware tailored to your business needs",
-    icon: Zap,
-  },
-  {
-    id: "website",
-    name: "Website for Business",
-    price: 2000,
-    description: "Custom business website development with your branding and specific requirements",
-    icon: Globe,
   },
 ]
 
@@ -418,48 +198,101 @@ const businessNeeds = [
   {
     id: "inventory",
     label: "Inventory Management",
-    description: "Track and manage your product inventory",
+    description: "Track and manage product inventory, including data migration from legacy systems",
     icon: Layers,
+    category: "Core",
   },
-  { id: "pos", label: "Point of Sale", description: "Process sales and transactions", icon: Zap },
+  {
+    id: "pos",
+    label: "Point of Sale (POS)",
+    description: "Process sales and transactions with tailored hardware setup and configuration",
+    icon: Zap,
+    category: "Core",
+  },
   {
     id: "customers",
     label: "Customer Management",
-    description: "Manage customer information and relationships",
+    description: "Manage customer information, relationships, and purchase history with custom data fields",
     icon: Users,
+    category: "Core",
   },
   {
     id: "employees",
     label: "Employee Management",
-    description: "Track employee information and performance",
+    description: "Track employee information, performance, schedules, and role structures",
     icon: UserPlus,
+    category: "Core",
   },
   {
     id: "expenses",
     label: "Expense Tracking",
-    description: "Monitor and categorize business expenses",
+    description: "Monitor, categorize, and import historical business expense data",
     icon: DollarSign,
+    category: "Core",
   },
   {
     id: "reporting",
-    label: "Advanced Reporting",
-    description: "Generate detailed business reports and analytics",
+    label: "Advanced Reporting & Analytics",
+    description: "Generate detailed business reports and analytics via custom dashboards with specific KPIs",
     icon: PieChart,
+    category: "Advanced",
   },
-  { id: "multi", label: "Multiple Locations", description: "Manage multiple business locations", icon: MapPin },
+  {
+    id: "multi",
+    label: "Multi-Location Management",
+    description: "Operate and manage inventory, sales, and data across multiple business locations",
+    icon: MapPin,
+    category: "Advanced",
+  },
   {
     id: "supply",
     label: "Supply Chain Management",
-    description: "Optimize your supply chain processes",
+    description: "Optimize supply chain processes, including supplier data and purchase history migration",
     icon: Workflow,
+    category: "Core",
+  },
+  {
+    id: "purchasing",
+    label: "Purchasing & Invoicing",
+    description: "Manage purchase orders and invoicing with business-specific templates and workflows",
+    icon: Briefcase,
+    category: "Core",
+  },
+  {
+    id: "payment",
+    label: "Payment Processing Integration",
+    description: "Accept and process payments through integrated systems (e.g., eDahab, WAAFI, Mpesa)",
+    icon: DollarSign,
+    category: "Core",
+  },
+  {
+    id: "website",
+    label: "Business Website",
+    description: "Maintain a custom website for branding, information, and customer engagement",
+    icon: Globe,
+    category: "Advanced",
   },
   {
     id: "security",
     label: "Enhanced Security",
-    description: "Advanced security features for sensitive data",
+    description: "Implement advanced security features and protocols to protect sensitive business data",
     icon: ShieldCheck,
+    category: "Advanced",
   },
-  { id: "api", label: "API Access", description: "Connect with other systems via API", icon: Database },
+  {
+    id: "kra",
+    label: "KRA (Tax Compliance)",
+    description: "Generate and submit statutory reports, including VAT returns and income statements, in compliance with Kenya Revenue Authority regulations",
+    icon: Shield,
+    category: "Advanced",
+  },
+  {
+    id: "api",
+    label: "API Access",
+    description: "Connect the core business system with other software and tools via API for extended functionality",
+    icon: Database,
+    category: "Advanced",
+  },
 ]
 
 // Industry options
@@ -497,9 +330,8 @@ const questions = [
     options: [
       { id: "micro", label: "1-3 employees", icon: Users },
       { id: "small", label: "4-10 employees", icon: Users },
-      { id: "medium", label: "11-50 employees", icon: Users },
-      { id: "large", label: "51-200 employees", icon: Users },
-      { id: "enterprise", label: "200+ employees", icon: Users },
+      { id: "medium", label: "11-19 employees", icon: Users },
+      { id: "enterprise", label: "20+ employees", icon: Users },
     ],
   },
   {
@@ -512,10 +344,6 @@ const questions = [
       { id: "tier2", label: "$11K - $30K", icon: DollarSign },
       { id: "tier3", label: "$31K - $60K", icon: DollarSign },
       { id: "tier4", label: "$61K - $99K", icon: DollarSign },
-      { id: "tier5", label: "$100K - $300K", icon: DollarSign },
-      { id: "tier6", label: "$301K - $600K", icon: DollarSign },
-      { id: "tier7", label: "$601K - $999K", icon: DollarSign },
-      { id: "tier8", label: "Over $1M", icon: DollarSign },
     ],
   },
   {
@@ -569,18 +397,6 @@ const questions = [
     ],
   },
   {
-    id: "integrations",
-    type: "multi-select",
-    title: "Which integrations are you interested in? (Optional)",
-    description: "These are one-time setup fees. All selections include customization tailored to your business needs.",
-    options: integrationFees.map((fee) => ({
-      id: fee.id,
-      label: fee.name,
-      description: `${fee.description} ($${fee.price} one-time)`,
-      icon: fee.icon,
-    })),
-  },
-  {
     id: "billing",
     type: "single-select",
     title: "Which billing cycle do you prefer?",
@@ -603,7 +419,6 @@ export default function PlansPage() {
     security: "",
     users: 10,
     "implementation-timeline": "",
-    integrations: [] as string[],
     billing: "quarterly",
   })
   const [showBetaForm, setShowBetaForm] = useState(false)
@@ -656,56 +471,126 @@ export default function PlansPage() {
     }))
   }
 
+  // Generate features dynamically based on selected needs and tier
+  const generateFeatures = (selectedNeeds: string[], tierId: string) => {
+    const tier = Number.parseInt(tierId.replace("tier", ""))
+    const features: Array<{ name: string; category: string; highlight?: boolean }> = []
+    
+    // Tier1 can only have up to 3 needs
+    let processedNeeds = selectedNeeds
+    if (tier === 1 && selectedNeeds.length > 3) {
+      processedNeeds = selectedNeeds.slice(0, 3)
+    }
+    
+    // Filter out advanced features for tier1 and tier2
+    const allowedNeeds = processedNeeds.filter((needId) => {
+      const need = businessNeeds.find((n) => n.id === needId)
+      if (!need) return false
+      // Tier1 and tier2 cannot have advanced features
+      if (tier <= 2 && need.category === "Advanced") {
+        return false
+      }
+      return true
+    })
+
+    // Generate features from selected needs
+    allowedNeeds.forEach((needId) => {
+      const need = businessNeeds.find((n) => n.id === needId)
+      if (need) {
+        features.push({
+          name: need.description || need.label,
+          category: need.category || "Core",
+          highlight: need.category === "Advanced" || ["inventory", "pos", "payment"].includes(needId),
+        })
+      }
+    })
+
+    // Add tier-specific base features
+    if (tier >= 1) {
+      features.push({
+        name: "Secure cloud storage - Keep your data safe in the cloud",
+        category: "Security",
+      })
+    }
+    if (tier >= 3) {
+      features.push({
+        name: "Priority support - Get faster responses to your support requests",
+        category: "Support",
+        highlight: true,
+      })
+    }
+    if (tier >= 4) {
+      features.push({
+        name: "Dedicated account manager - Get personalized support from a dedicated representative",
+        category: "Support",
+        highlight: true,
+      })
+    }
+
+    return features
+  }
+
   // Process answers to determine recommended plan
   const processAnswers = () => {
     setIsSubmitting(true)
 
     // Simulate processing delay
     setTimeout(() => {
-      // Determine plan based on revenue directly
+      // Determine plan based on revenue directly (tier1-4 only)
       let recommendedPlanId = answers.revenue || "tier1" // Default to Starter if no revenue selected
 
-      // Adjust based on company size
-      if (answers["company-size"] === "enterprise" && !["tier7", "tier8"].includes(recommendedPlanId)) {
-        // Upgrade one tier for very large companies
-        const currentTierIndex = Number.parseInt(recommendedPlanId.replace("tier", ""))
-        recommendedPlanId = `tier${Math.min(currentTierIndex + 1, 8)}`
+      // Ensure we only have tier1-4
+      if (!["tier1", "tier2", "tier3", "tier4"].includes(recommendedPlanId)) {
+        recommendedPlanId = "tier1"
       }
 
-      // Adjust based on number of locations
-      if (answers.locations > 5 && !["tier7", "tier8"].includes(recommendedPlanId)) {
-        // Upgrade one tier for many locations
+      // Adjust based on company size (20+ employees = enterprise)
+      if (answers["company-size"] === "enterprise" && recommendedPlanId !== "tier4") {
         const currentTierIndex = Number.parseInt(recommendedPlanId.replace("tier", ""))
-        recommendedPlanId = `tier${Math.min(currentTierIndex + 1, 8)}`
+        recommendedPlanId = `tier${Math.min(currentTierIndex + 1, 4)}`
       }
 
-      // Adjust based on needs complexity
-      if (answers.needs.length > 6 && !["tier7", "tier8"].includes(recommendedPlanId)) {
-        // Upgrade one tier for complex needs
+      // Adjust based on number of locations (> 1 location)
+      if (answers.locations > 1 && recommendedPlanId !== "tier4") {
         const currentTierIndex = Number.parseInt(recommendedPlanId.replace("tier", ""))
-        recommendedPlanId = `tier${Math.min(currentTierIndex + 1, 8)}`
+        recommendedPlanId = `tier${Math.min(currentTierIndex + 1, 4)}`
+      }
+
+      // Adjust based on needs complexity (> 3 needs)
+      if (answers.needs.length > 3 && recommendedPlanId !== "tier4") {
+        const currentTierIndex = Number.parseInt(recommendedPlanId.replace("tier", ""))
+        recommendedPlanId = `tier${Math.min(currentTierIndex + 1, 4)}`
+      }
+
+      // Adjust based on number of users (> 5 users)
+      if (answers.users > 5 && recommendedPlanId !== "tier4") {
+        const currentTierIndex = Number.parseInt(recommendedPlanId.replace("tier", ""))
+        recommendedPlanId = `tier${Math.min(currentTierIndex + 1, 4)}`
       }
 
       // Calculate costs
       const plan = allPlans.find((p) => p.id === recommendedPlanId)
       if (!plan) return
 
-      // Calculate one-time integration costs
-      const oneTimeCost = answers.integrations.reduce((total: number, integrationId: string) => {
-        const integration = integrationFees.find((i) => i.id === integrationId)
-        return total + (integration ? integration.price : 0)
-      }, 0)
+      // Generate dynamic features based on selected needs
+      const dynamicFeatures = generateFeatures(answers.needs || [], recommendedPlanId)
+      
+      // Update plan with dynamic features
+      const planWithFeatures = {
+        ...plan,
+        features: dynamicFeatures,
+      }
 
       // Calculate monthly and annual costs
       const monthlyCost = plan.monthlyPrice
       const annualCost = plan.annualPrice
 
-      // Set recommended plan and costs
+      // Set recommended plan and costs (no one-time costs)
       setRecommendedPlan(recommendedPlanId)
       setTotalCost({
         monthly: monthlyCost,
         annual: annualCost,
-        oneTime: oneTimeCost,
+        oneTime: 0,
       })
 
       // Store questionnaire data for the beta access form
@@ -720,11 +605,11 @@ export default function PlansPage() {
           security: answers.security,
           users: answers.users,
           implementationTimeline: answers["implementation-timeline"],
-          integrations: answers.integrations.join(", "),
           billingPreference: answers.billing,
           monthlyPrice: monthlyCost,
           annualPrice: annualCost,
-          oneTimeCost: oneTimeCost,
+          oneTimeCost: 0,
+          selectedFeatures: dynamicFeatures.map((f) => f.name).join(", "),
         }
       }
 
@@ -745,7 +630,6 @@ export default function PlansPage() {
       security: "",
       users: 10,
       "implementation-timeline": "",
-      integrations: [] as string[],
       billing: "quarterly",
     })
     setRecommendedPlan(null)
@@ -770,10 +654,6 @@ export default function PlansPage() {
       case "single-select":
         return !!answers[currentQuestion.id]
       case "multi-select":
-        // Make integrations question optional
-        if (currentQuestion.id === "integrations") {
-          return true
-        }
         return Array.isArray(answers[currentQuestion.id]) && answers[currentQuestion.id].length > 0
       case "slider":
         return answers[currentQuestion.id] !== undefined
@@ -941,9 +821,12 @@ export default function PlansPage() {
     const plan = allPlans.find((p) => p.id === recommendedPlan)
     if (!plan) return null
 
-    const selectedIntegrations = answers.integrations
-      .map((id: string) => integrationFees.find((integration) => integration.id === id))
-      .filter(Boolean)
+    // Generate features dynamically based on selected needs
+    const dynamicFeatures = generateFeatures(answers.needs || [], recommendedPlan)
+    const planWithFeatures = {
+      ...plan,
+      features: dynamicFeatures,
+    }
 
     const billingCycle = answers.billing || "quarterly"
     const monthlyDisplayPrice = billingCycle === "quarterly" ? plan.monthlyPrice : Math.round(plan.annualPrice / 12)
@@ -979,18 +862,16 @@ export default function PlansPage() {
                   Key Features
                 </h4>
                 <div className="grid sm:grid-cols-2 gap-x-6 gap-y-3">
-                  {plan.features
-                    .filter((feature) => feature.highlight)
-                    .map((feature, idx) => (
-                      <div key={idx} className="flex items-start">
-                        <div className="text-primary mr-2 mt-1 flex-shrink-0">
-                          <Check className="h-4 w-4" />
-                        </div>
-                        <div>
-                          <span className="text-sm">{feature.name}</span>
-                        </div>
+                  {planWithFeatures.features.map((feature, idx) => (
+                    <div key={idx} className="flex items-start">
+                      <div className="text-primary mr-2 mt-1 flex-shrink-0">
+                        <Check className="h-4 w-4" />
                       </div>
-                    ))}
+                      <div>
+                        <span className="text-sm">{feature.name}</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -1020,41 +901,31 @@ export default function PlansPage() {
                     </div>
                   )}
                 </div>
-
-                {totalCost.oneTime > 0 && (
-                  <div className="text-xs mb-3 pb-3 border-b border-border/40">
-                    <div className="font-medium mb-1">One-Time Setup</div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Integration fees</span>
-                      <span className="font-medium">${totalCost.oneTime}</span>
-                    </div>
-                  </div>
-                )}
-
-                <div className="text-xs font-medium">
-                  First Payment: <span className="text-base font-bold">${monthlyDisplayPrice + totalCost.oneTime}</span>
-                </div>
               </div>
             </div>
 
-            {selectedIntegrations.length > 0 && (
+            {answers.needs && answers.needs.length > 0 && (
               <div className="mt-6 pt-4 border-t border-border/40">
                 <h4 className="font-semibold text-base mb-3 flex items-center">
                   <Layers className="h-4 w-4 text-primary mr-2" />
-                  Selected Integrations
+                  Selected Business Needs
                 </h4>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {selectedIntegrations.map((integration, idx) => (
-                    <div
-                      key={idx}
-                      className="bg-muted/40 rounded-lg p-2 flex items-center gap-2 border border-border/50 text-sm"
-                    >
-                      {React.createElement(integration?.icon || Check, {
-                        className: "h-4 w-4 text-primary flex-shrink-0",
-                      })}
-                      <span className="font-medium">{integration?.name}</span>
-                    </div>
-                  ))}
+                  {answers.needs.map((needId: string) => {
+                    const need = businessNeeds.find((n) => n.id === needId)
+                    if (!need) return null
+                    return (
+                      <div
+                        key={needId}
+                        className="bg-muted/40 rounded-lg p-2 flex items-center gap-2 border border-border/50 text-sm"
+                      >
+                        {React.createElement(need.icon, {
+                          className: "h-4 w-4 text-primary flex-shrink-0",
+                        })}
+                        <span className="font-medium">{need.label}</span>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             )}
@@ -1071,9 +942,9 @@ export default function PlansPage() {
                   recommendedPlan: recommendedPlan,
                   monthlyPrice: totalCost.monthly,
                   annualPrice: totalCost.annual,
-                  oneTimeCost: totalCost.oneTime,
+                  oneTimeCost: 0,
                   billingPreference: answers.billing || "quarterly",
-                  selectedIntegrations: answers.integrations.join(", "),
+                  selectedNeeds: answers.needs.join(", "),
                 }
               }
               setShowBetaForm(true)

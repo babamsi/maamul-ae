@@ -194,18 +194,18 @@ export default function Dashboard({ className }: { className?: string }) {
     const interval = setInterval(() => {
       if (dashboardType === "retail") {
         setRetailTransactions((prev) => {
-          const newTransaction = {
-            id: prev[prev.length - 1].id + 1,
-            type: Math.random() > 0.5 ? "Payment Received" : "Refund Issued",
-            amount: (Math.random() * 1000).toFixed(2),
-            time: 0,
-            customerName: `Customer ${prev[prev.length - 1].id + 2}`,
-          }
-          return [newTransaction, ...prev.slice(0, -1)].map((t) => ({
-            ...t,
-            time: t.time + 1,
-          }))
-        })
+        const newTransaction = {
+          id: prev[prev.length - 1].id + 1,
+          type: Math.random() > 0.5 ? "Payment Received" : "Refund Issued",
+          amount: (Math.random() * 1000).toFixed(2),
+          time: 0,
+          customerName: `Customer ${prev[prev.length - 1].id + 2}`,
+        }
+        return [newTransaction, ...prev.slice(0, -1)].map((t) => ({
+          ...t,
+          time: t.time + 1,
+        }))
+      })
       } else {
         setRestaurantTransactions((prev) => {
           const newTransaction = {
@@ -235,7 +235,7 @@ export default function Dashboard({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "relative w-full max-w-5xl rounded-2xl bg-gradient-to-br from-card via-card to-primary/10 dark:from-gray-800 dark:via-gray-800 dark:to-primary/5 p-6 shadow-lg transition-all duration-300 hover:shadow-xl",
+        "relative w-full max-w-5xl rounded-2xl bg-gradient-to-br from-card via-card to-primary/10 dark:from-gray-800 dark:via-gray-800 dark:to-primary/5 p-4 sm:p-6 shadow-lg transition-all duration-300 hover:shadow-xl max-h-[85vh] sm:max-h-none overflow-hidden flex flex-col",
         className,
       )}
     >
@@ -244,10 +244,10 @@ export default function Dashboard({ className }: { className?: string }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="flex h-full flex-col overflow-y-auto"
+        className="flex flex-col overflow-y-auto overflow-x-hidden flex-1 min-h-0"
       >
-        <div className="flex justify-between items-center mb-6">
-          <h3 className={`text-3xl font-bold ${lightModeTextColor}`}>
+        <div className="flex justify-between items-center mb-4 sm:mb-6 flex-wrap gap-2">
+          <h3 className={`text-2xl sm:text-3xl font-bold ${lightModeTextColor}`}>
             Maamul Dashboard
           </h3>
           <div className="flex items-center gap-3">
@@ -293,14 +293,14 @@ export default function Dashboard({ className }: { className?: string }) {
                 )}
               </button>
             </div>
-            <div className="flex space-x-2">
-              <div className="w-3 h-3 rounded-full bg-red-500"></div>
-              <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-              <div className="w-3 h-3 rounded-full bg-green-500"></div>
-            </div>
+          <div className="flex space-x-2">
+            <div className="w-3 h-3 rounded-full bg-red-500"></div>
+            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+            <div className="w-3 h-3 rounded-full bg-green-500"></div>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
           <div className="bg-background/50 dark:bg-gray-700/50 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow backdrop-blur-sm">
             <h4 className="text-sm font-medium text-muted-foreground dark:text-gray-400 mb-2 flex items-center">
               <svg
@@ -320,7 +320,7 @@ export default function Dashboard({ className }: { className?: string }) {
               {dashboardType === "retail" ? "Total Sales" : "Daily Revenue"}
             </h4>
             <p className={`text-3xl font-bold ${lightModeContentColor}`}>${totalSales.toLocaleString()}</p>
-            <div className="h-32 mt-2">
+            <div className="h-24 sm:h-28 md:h-32 mt-2">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#9CA3AF" />
@@ -359,7 +359,7 @@ export default function Dashboard({ className }: { className?: string }) {
               {dashboardType === "retail" ? "New Customers" : "New Orders"}
             </h4>
             <p className={`text-3xl font-bold ${lightModeContentColor}`}>{newCustomers}</p>
-            <div className="h-32 mt-2">
+            <div className="h-24 sm:h-28 md:h-32 mt-2">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#9CA3AF" />
@@ -380,12 +380,12 @@ export default function Dashboard({ className }: { className?: string }) {
             </div>
           </div>
           {dashboardType === "retail" ? (
-            <div className="bg-background/50 dark:bg-gray-700/50 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow backdrop-blur-sm">
-              <h4 className="text-sm font-medium text-muted-foreground dark:text-gray-400 mb-4 flex items-center">
+          <div className="bg-background/50 dark:bg-gray-700/50 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow backdrop-blur-sm">
+            <h4 className="text-sm font-medium text-muted-foreground dark:text-gray-400 mb-4 flex items-center">
                 <Package className="h-5 w-5 mr-2 text-primary" />
                 Inventory Status
-              </h4>
-              <div className="space-y-4">
+            </h4>
+            <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium dark:text-gray-300">Total Products</span>
                   <span className={`text-lg font-bold ${lightModeContentColor}`}>
@@ -475,18 +475,18 @@ export default function Dashboard({ className }: { className?: string }) {
                     </span>
                   </div>
                 </div>
-              </div>
-              <div className={`mt-4 text-xs ${lightModeContentColor} dark:text-blue-400 flex items-center`}>
-                <RefreshCcw className="h-3 w-3 mr-1 animate-spin" />
-                Updating in real-time
-              </div>
             </div>
+            <div className={`mt-4 text-xs ${lightModeContentColor} dark:text-blue-400 flex items-center`}>
+              <RefreshCcw className="h-3 w-3 mr-1 animate-spin" />
+              Updating in real-time
+            </div>
+          </div>
           )}
         </div>
         
         {/* Sliding Section: Main Grid and Additional Metrics */}
         <div className="relative overflow-hidden">
-          <div className="relative h-[400px]">
+          <div className="relative h-[300px] sm:h-[350px] md:h-[400px]">
             <motion.div
               key={`${dashboardType}-${slideIndex}`}
               initial={{ opacity: 0, x: slideIndex === 0 ? -30 : 30 }}
@@ -496,39 +496,39 @@ export default function Dashboard({ className }: { className?: string }) {
             >
               {/* Slide 0: Top Selling Categories/Popular Menu Items + Real-time Transactions/Orders */}
               {slideIndex === 0 && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
-                  <div className="bg-background/50 dark:bg-gray-700/50 p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 backdrop-blur-sm">
-                    <h4 className={`text-lg font-semibold ${lightModeTextColor} mb-6 flex items-center`}>
-                      <BarChart3 className={`h-6 w-6 mr-3 ${lightModeContentColor}`} />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 h-full">
+          <div className="bg-background/50 dark:bg-gray-700/50 p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 backdrop-blur-sm">
+            <h4 className={`text-lg font-semibold ${lightModeTextColor} mb-6 flex items-center`}>
+              <BarChart3 className={`h-6 w-6 mr-3 ${lightModeContentColor}`} />
                       {dashboardType === "retail" ? "Top Selling Categories" : "Popular Menu Items"}
-                    </h4>
-                    <div className="space-y-6">
+            </h4>
+            <div className="space-y-6">
                       {(dashboardType === "retail"
                         ? [
-                            {
-                              category: "Electronics",
-                              sales: 45000,
-                              percentage: 70,
-                              icon: <Laptop className={`w-5 h-5 ${lightModeContentColor}`} />,
-                            },
-                            {
-                              category: "Clothing",
-                              sales: 32000,
-                              percentage: 50,
-                              icon: <Shirt className={`w-5 h-5 ${lightModeContentColor}`} />,
-                            },
-                            {
-                              category: "Home & Garden",
-                              sales: 28000,
-                              percentage: 43,
-                              icon: <Home className={`w-5 h-5 ${lightModeContentColor}`} />,
-                            },
-                            {
-                              category: "Books",
-                              sales: 20000,
-                              percentage: 31,
-                              icon: <BookOpen className={`w-5 h-5 ${lightModeContentColor}`} />,
-                            },
+                {
+                  category: "Electronics",
+                  sales: 45000,
+                  percentage: 70,
+                  icon: <Laptop className={`w-5 h-5 ${lightModeContentColor}`} />,
+                },
+                {
+                  category: "Clothing",
+                  sales: 32000,
+                  percentage: 50,
+                  icon: <Shirt className={`w-5 h-5 ${lightModeContentColor}`} />,
+                },
+                {
+                  category: "Home & Garden",
+                  sales: 28000,
+                  percentage: 43,
+                  icon: <Home className={`w-5 h-5 ${lightModeContentColor}`} />,
+                },
+                {
+                  category: "Books",
+                  sales: 20000,
+                  percentage: 31,
+                  icon: <BookOpen className={`w-5 h-5 ${lightModeContentColor}`} />,
+                },
                           ]
                         : [
                             {
@@ -557,67 +557,67 @@ export default function Dashboard({ className }: { className?: string }) {
                             },
                           ]
                       ).map((item, index) => (
-                        <div key={index} className="space-y-2 group">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm font-medium dark:text-gray-300 flex items-center">
-                              <span className="mr-2">{item.icon}</span>
-                              {item.category}
-                            </span>
-                            <p
-                              className={`text-sm font-semibold ${theme === "light" ? "text-gray-800" : ""}`}
-                            >{`${item.percentage}% (${item.sales})`}</p>
-                          </div>
-                          <div className="w-full bg-gray-200 rounded-full h-3 dark:bg-gray-700 overflow-hidden">
-                            <div
-                              className="bg-[#392A17] dark:bg-primary h-3 rounded-full transition-all duration-500 ease-out group-hover:saturate-[1.2]"
-                              style={{ width: `${item.percentage}%` }}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                <div key={index} className="space-y-2 group">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium dark:text-gray-300 flex items-center">
+                      <span className="mr-2">{item.icon}</span>
+                      {item.category}
+                    </span>
+                    <p
+                      className={`text-sm font-semibold ${theme === "light" ? "text-gray-800" : ""}`}
+                    >{`${item.percentage}% (${item.sales})`}</p>
                   </div>
-                  <div className="bg-background/50 dark:bg-gray-700/50 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow backdrop-blur-sm">
-                    <h4 className={`text-sm font-medium ${lightModeMutedColor} mb-4 flex items-center`}>
-                      <Activity className={`h-5 w-5 mr-2 ${lightModeContentColor}`} />
+                  <div className="w-full bg-gray-200 rounded-full h-3 dark:bg-gray-700 overflow-hidden">
+                    <div
+                      className="bg-[#392A17] dark:bg-primary h-3 rounded-full transition-all duration-500 ease-out group-hover:saturate-[1.2]"
+                      style={{ width: `${item.percentage}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="bg-background/50 dark:bg-gray-700/50 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow backdrop-blur-sm">
+            <h4 className={`text-sm font-medium ${lightModeMutedColor} mb-4 flex items-center`}>
+              <Activity className={`h-5 w-5 mr-2 ${lightModeContentColor}`} />
                       {dashboardType === "retail" ? "Real-time Transactions" : "Real-time Orders"}
-                    </h4>
-                    <div className="h-[340px] overflow-hidden relative">
-                      {transactions.slice(0, 8).map((transaction, index) => (
-                        <motion.div
-                          key={transaction.id}
-                          initial={{ opacity: 0, y: -20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.3, delay: index * 0.1 }}
-                          className="mb-3 p-3 rounded-md border border-primary/20 dark:border-gray-500/20 hover:bg-primary/5 dark:hover:bg-gray-600/50 transition-colors"
-                        >
-                          <div className="flex justify-between items-center">
-                            <div className="flex items-center">
+            </h4>
+                    <div className="h-[240px] sm:h-[280px] md:h-[340px] overflow-y-auto overflow-x-hidden relative">
+              {transactions.slice(0, 8).map((transaction, index) => (
+                <motion.div
+                  key={transaction.id}
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  className="mb-3 p-3 rounded-md border border-primary/20 dark:border-gray-500/20 hover:bg-primary/5 dark:hover:bg-gray-600/50 transition-colors"
+                >
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center">
                               {(transaction.type === "Payment Received" || transaction.type === "Order Completed") ? (
-                                <ArrowUpRight className="h-5 w-5 mr-3 text-green-500" />
-                              ) : (
-                                <ArrowDownLeft className="h-5 w-5 mr-3 text-red-500" />
-                              )}
-                              <div>
-                                <span className={`text-sm font-medium ${lightModeTextColor}`}>{transaction.type}</span>
-                                <p className={`${lightModeMutedColor}`}>
-                                  {transaction.customerName} • {transaction.time}{" "}
-                                  {transaction.time === 1 ? "minute" : "minutes"} ago
-                                </p>
-                              </div>
-                            </div>
-                            <span className={`text-sm font-bold ${lightModeContentColor}`}>${transaction.amount}</span>
-                          </div>
-                        </motion.div>
-                      ))}
+                        <ArrowUpRight className="h-5 w-5 mr-3 text-green-500" />
+                      ) : (
+                        <ArrowDownLeft className="h-5 w-5 mr-3 text-red-500" />
+                      )}
+                      <div>
+                        <span className={`text-sm font-medium ${lightModeTextColor}`}>{transaction.type}</span>
+                        <p className={`${lightModeMutedColor}`}>
+                          {transaction.customerName} • {transaction.time}{" "}
+                          {transaction.time === 1 ? "minute" : "minutes"} ago
+                        </p>
+                      </div>
                     </div>
+                    <span className={`text-sm font-bold ${lightModeContentColor}`}>${transaction.amount}</span>
                   </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
                 </div>
               )}
 
               {/* Slide 1: Additional Industry-Specific Sections */}
               {slideIndex === 1 && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 h-full">
                   {dashboardType === "retail" ? (
                     <>
                       <div className="bg-background/50 dark:bg-gray-700/50 p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 backdrop-blur-sm">
@@ -750,8 +750,8 @@ export default function Dashboard({ className }: { className?: string }) {
               }`}
               aria-label="View performance metrics"
             />
-          </div>
         </div>
+      </div>
       </motion.div>
     </div>
   )
