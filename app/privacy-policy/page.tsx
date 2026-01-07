@@ -5,7 +5,7 @@ export default function PrivacyPolicy() {
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <h1 className="text-3xl font-bold mb-6">Privacy Policy</h1>
       <p className="mb-4">Last updated: December 31, 2024</p>
-      <p className="mb-4">Effective Date: January 1, 2025</p>
+      <p className="mb-4">Effective Date: January 1, 2026</p>
       <p className="mb-4">
         Maamul ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how your personal information is collected, used, and disclosed by Maamul.
       </p>

@@ -377,7 +377,7 @@ export async function POST(request: Request) {
           </div>
           
           <div style="text-align: center; padding: 20px; color: #777; font-size: 12px;">
-            <p>&copy; 2025 Maamul. All rights reserved.</p>
+            <p>&copy; 2026 Maamul. All rights reserved.</p>
           </div>
         </body>
         </html>
@@ -694,7 +694,7 @@ export async function POST(request: Request) {
         </div>
         
         <div class="footer">
-          <p>&copy; 2025 Maamul. All rights reserved.</p>
+          <p>&copy; 2026 Maamul. All rights reserved.</p>
           <p>This email was sent to you because you requested information about our enterprise plans for Maamul.</p>
         </div>
       </div>

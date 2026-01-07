@@ -5,7 +5,7 @@ export default function TermsOfService() {
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <h1 className="text-3xl font-bold mb-6">Terms of Service</h1>
       <p className="mb-4">Last updated: December 31, 2024</p>
-      <p className="mb-4">Effective Date: January 1, 2025</p>
+      <p className="mb-4">Effective Date: January 1, 2026</p>
       <p className="mb-4">
         Please read these Terms of Service ("Terms", "Terms of Service") carefully before using the Maamul platform (the "Service") operated by Maamul ("us", "we", or "our").
       </p>

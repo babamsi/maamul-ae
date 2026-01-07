@@ -431,7 +431,7 @@ export async function POST(request: NextRequest) {
           </div>
           
           <div style="text-align: center; padding: 20px; color: #777; font-size: 12px;">
-            <p>&copy; 2025 Maamul. All rights reserved.</p>
+            <p>&copy; 2026 Maamul. All rights reserved.</p>
         </div>
         </body>
         </html>

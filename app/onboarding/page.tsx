@@ -30,6 +30,9 @@ import {
   Settings,
   CheckCircle,
   Star,
+  UtensilsCrossed,
+  Menu,
+  ShoppingCart,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -85,6 +88,7 @@ interface SliderQuestion extends BaseQuestion {
 }
 
 type RetailQuestion = WelcomeQuestion | SingleSelectQuestion | MultiSelectQuestion | SliderQuestion
+type RestaurantQuestion = WelcomeQuestion | SingleSelectQuestion | MultiSelectQuestion | SliderQuestion
 
 // Industry options
 const industryOptions = [
@@ -94,6 +98,13 @@ const industryOptions = [
     icon: Building2,
     available: true,
     description: "Stores, shops, and direct-to-consumer businesses",
+  },
+  {
+    id: "restaurant",
+    label: "Restaurant",
+    icon: UtensilsCrossed,
+    available: true,
+    description: "Restaurants, cafes, and food service businesses",
   },
   {
     id: "wholesale",
@@ -242,6 +253,129 @@ const retailQuestions: RetailQuestion[] = [
     title: "What are your primary business needs?",
     description: "Select the modules you want included in your system. Essential modules are pre-selected.",
     options: businessModules,
+  },
+  {
+    id: "users",
+    type: "slider",
+    title: "How many user accounts do you need?",
+    description: "This includes managers, employees, and any other team members who will use the system.",
+    min: 1,
+    max: 20,
+    step: 1,
+    defaultValue: 2,
+  },
+]
+
+// Business modules for restaurant
+const restaurantModules: BusinessModuleOption[] = [
+  {
+    id: "menu",
+    label: "Menu Management",
+    description: "Manage your menu items, categories, and pricing",
+    icon: Menu,
+    essential: true,
+  },
+  {
+    id: "pos",
+    label: "Point of Sale",
+    description: "Process orders and transactions",
+    icon: Zap,
+    essential: true,
+  },
+  {
+    id: "tables",
+    label: "Table Management",
+    description: "Manage table reservations and seating",
+    icon: Building2,
+    essential: true,
+  },
+  {
+    id: "orders",
+    label: "Order Management",
+    description: "Track and manage dine-in, takeout, and delivery orders",
+    icon: ShoppingCart,
+    essential: false,
+  },
+  {
+    id: "inventory",
+    label: "Inventory Management",
+    description: "Track ingredients and kitchen supplies",
+    icon: Layers,
+    essential: false,
+  },
+  {
+    id: "employees",
+    label: "Staff Management",
+    description: "Manage staff schedules and roles",
+    icon: UserPlus,
+    essential: false,
+  },
+  {
+    id: "customers",
+    label: "Customer Management",
+    description: "Manage customer information and loyalty programs",
+    icon: Users,
+    essential: false,
+  },
+  {
+    id: "reporting",
+    label: "Analytics & Reporting",
+    description: "Generate detailed business reports and insights",
+    icon: PieChart,
+    essential: false,
+  },
+]
+
+// Questions for restaurant onboarding
+const restaurantQuestions: RestaurantQuestion[] = [
+  {
+    id: "welcome",
+    type: "welcome",
+    title: "Welcome to Maamul Setup",
+    description: "Let's configure your restaurant management system in just a few steps.",
+  },
+  {
+    id: "company-size",
+    type: "single-select",
+    title: "How many employees does your restaurant have?",
+    description: "This helps us configure the right user permissions and workflows.",
+    options: [
+      { id: "micro", label: "Just me (1 person)", icon: Users },
+      { id: "small", label: "2-5 employees", icon: Users },
+      { id: "medium", label: "6-15 employees", icon: Users },
+      { id: "large", label: "16-50 employees", icon: Users },
+      { id: "enterprise", label: "50+ employees", icon: Users },
+    ],
+  },
+  {
+    id: "revenue",
+    type: "single-select",
+    title: "What is your monthly revenue?",
+    description: "This helps us recommend the right features and pricing tier.",
+    options: [
+      { id: "startup", label: "Just starting out", icon: DollarSign },
+      { id: "tier1", label: "Less than $10K", icon: DollarSign },
+      { id: "tier2", label: "$10K - $30K", icon: DollarSign },
+      { id: "tier3", label: "$30K - $60K", icon: DollarSign },
+      { id: "tier4", label: "$60K+", icon: DollarSign },
+    ],
+  },
+  {
+    id: "locations",
+    type: "slider",
+    title: "How many locations does your restaurant operate?",
+    description: "We'll configure multi-location features if needed.",
+    min: 1,
+    max: 10,
+    step: 1,
+    defaultValue: 1,
+  },
+  {
+    id: "modules",
+    type: "multi-select",
+    title: "What are your primary business needs?",
+    description: "Select the modules you want included in your system. Essential modules are pre-selected.",
+    options: restaurantModules,
   },
   {
     id: "users",
@@ -414,7 +548,7 @@ interface SignUpData {
 }
 
 export default function OnboardingPage() {
-  const [currentStep, setCurrentStep] = useState<"industry" | "waitlist" | "retail-setup" | "signup" | "success">(
+  const [currentStep, setCurrentStep] = useState<"industry" | "waitlist" | "retail-setup" | "restaurant-setup" | "signup" | "success">(
     "industry",
   )
   const [selectedIndustry, setSelectedIndustry] = useState<string>("")
@@ -425,6 +559,13 @@ export default function OnboardingPage() {
     revenue: "",
     locations: 1,
     modules: ["inventory", "pos"], // Essential modules pre-selected
+    users: 2,
+  })
+  const [restaurantAnswers, setRestaurantAnswers] = useState<Record<string, any>>({
+    "company-size": "",
+    revenue: "",
+    locations: 1,
+    modules: ["menu", "pos", "tables"], // Essential modules pre-selected
     users: 2,
   })
   const [signUpData, setSignUpData] = useState<SignUpData>({
@@ -490,7 +631,7 @@ export default function OnboardingPage() {
 
   // Business Setup Animation Sequence
   useEffect(() => {
-    if (currentStep === "retail-setup") {
+    if (currentStep === "retail-setup" || currentStep === "restaurant-setup") {
       const runBusinessAnimation = async () => {
         // Step 1: Show logo
         if (businessSetupStep === 0) {
@@ -776,7 +917,7 @@ export default function OnboardingPage() {
 
   // Reset animations when step changes
   useEffect(() => {
-    if (currentStep === "retail-setup") {
+    if (currentStep === "retail-setup" || currentStep === "restaurant-setup") {
       setBusinessSetupStep(0)
       setShowBusinessLogo(false)
       setBusinessHeadingText("")
@@ -821,6 +962,10 @@ export default function OnboardingPage() {
   const retailProgressPercentage =
     currentStep === "retail-setup" ? (currentQuestionIndex / retailQuestions.length) * 100 : 0
 
+  // Calculate progress for restaurant setup
+  const restaurantProgressPercentage =
+    currentStep === "restaurant-setup" ? (currentQuestionIndex / restaurantQuestions.length) * 100 : 0
+
   // Calculate progress for signup
   const signupProgressPercentage = currentStep === "signup" ? ((currentSignupStep + 1) / signupSteps.length) * 100 : 0
 
@@ -829,14 +974,17 @@ export default function OnboardingPage() {
     setSelectedIndustry(industryId)
     if (industryId === "retail") {
       setCurrentStep("retail-setup")
+    } else if (industryId === "restaurant") {
+      setCurrentStep("restaurant-setup")
     } else {
       setCurrentStep("waitlist")
     }
   }
 
-  // Handle retail question navigation
+  // Handle retail/restaurant question navigation
   const handleNextQuestion = () => {
-    if (currentQuestionIndex < retailQuestions.length - 1) {
+    const questions = currentStep === "retail-setup" ? retailQuestions : restaurantQuestions
+    if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1)
       window.scrollTo(0, 0)
     } else {
@@ -894,8 +1042,8 @@ export default function OnboardingPage() {
       // Prevent accidental form submission/line breaks
       e.preventDefault()
 
-      if (currentStep === "retail-setup") {
-        // Only advance if current retail question is answered
+      if (currentStep === "retail-setup" || currentStep === "restaurant-setup") {
+        // Only advance if current question is answered
         if (isCurrentQuestionAnswered()) {
           handleNextQuestion()
         }
@@ -909,11 +1057,19 @@ export default function OnboardingPage() {
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [currentStep, currentQuestionIndex, currentSignupStep, signUpData, retailAnswers, isSubmitting])
+  }, [currentStep, currentQuestionIndex, currentSignupStep, signUpData, retailAnswers, restaurantAnswers, isSubmitting])
 
   // Handle retail answer changes
   const handleRetailAnswerChange = (questionId: string, value: any) => {
     setRetailAnswers((prev) => ({
+      ...prev,
+      [questionId]: value,
+    }))
+  }
+
+  // Handle restaurant answer changes
+  const handleRestaurantAnswerChange = (questionId: string, value: any) => {
+    setRestaurantAnswers((prev) => ({
       ...prev,
       [questionId]: value,
     }))
@@ -927,20 +1083,22 @@ export default function OnboardingPage() {
     }))
   }
 
-  // Check if current retail question is answered
+  // Check if current question is answered
   const isCurrentQuestionAnswered = () => {
-    const currentQuestion = retailQuestions[currentQuestionIndex]
+    const questions = currentStep === "retail-setup" ? retailQuestions : restaurantQuestions
+    const answers = currentStep === "retail-setup" ? retailAnswers : restaurantAnswers
+    const currentQuestion = questions[currentQuestionIndex]
     if (!currentQuestion) return true
 
     switch (currentQuestion.type) {
       case "welcome":
         return true
       case "single-select":
-        return !!retailAnswers[currentQuestion.id]
+        return !!answers[currentQuestion.id]
       case "multi-select":
-        return Array.isArray(retailAnswers[currentQuestion.id]) && retailAnswers[currentQuestion.id].length > 0
+        return Array.isArray(answers[currentQuestion.id]) && answers[currentQuestion.id].length > 0
       case "slider":
-        return retailAnswers[currentQuestion.id] !== undefined
+        return answers[currentQuestion.id] !== undefined
       default:
         return true
     }
@@ -987,10 +1145,11 @@ export default function OnboardingPage() {
   const handleSignUpSubmit = async () => {
     setIsSubmitting(true)
     try {
+      const onboardingData = currentStep === "retail-setup" ? retailAnswers : restaurantAnswers
       console.log(JSON.stringify({
         ...signUpData,
         industry: selectedIndustry,
-        onboardingData: retailAnswers
+        onboardingData: onboardingData
       }))
       const response = await fetch("/api/onboarding/signup", {
         method: "POST",
@@ -998,7 +1157,7 @@ export default function OnboardingPage() {
         body: JSON.stringify({
           ...signUpData,
           industry: selectedIndustry,
-          onboardingData: retailAnswers,
+          onboardingData: onboardingData,
         }),
       })
       if (response.ok) {
@@ -1530,18 +1689,18 @@ export default function OnboardingPage() {
     switch (currentQuestion.type) {
       case "welcome":
         return (
-          <div className="text-center max-w-2xl mx-auto animate-fade-in">
-            <div className="mb-8">
-              <div className="bg-primary/10 p-4 rounded-full w-fit mx-auto mb-4">
-                <Building2 className="h-8 w-8 text-primary" />
+          <div className="text-center max-w-2xl mx-auto animate-fade-in w-full">
+            <div className="mb-6 sm:mb-8">
+              <div className="bg-primary/10 p-3 sm:p-4 rounded-full w-fit mx-auto mb-4">
+                <Building2 className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
               </div>
-              <h1 className="text-4xl font-bold tracking-tight mb-4">{currentQuestion.title}</h1>
-              <p className="text-lg text-muted-foreground">{currentQuestion.description}</p>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-3 sm:mb-4 px-4">{currentQuestion.title}</h1>
+              <p className="text-sm sm:text-base md:text-lg text-muted-foreground px-4">{currentQuestion.description}</p>
             </div>
             <Button
               size="lg"
               onClick={handleNextQuestion}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm sm:text-base"
             >
               Let's Get Started
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -1569,13 +1728,13 @@ export default function OnboardingPage() {
                   `}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="bg-primary/10 p-2 rounded-full">
+                    <div className="bg-primary/10 p-2 rounded-full flex-shrink-0">
                       {React.createElement(option.icon, { className: "h-5 w-5 text-primary" })}
                     </div>
-                    <div className="flex-1">
-                      <div className="font-medium">{option.label}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium break-words">{option.label}</div>
                     </div>
-                    {retailAnswers[currentQuestion.id] === option.id && <Check className="h-5 w-5 text-primary" />}
+                    {retailAnswers[currentQuestion.id] === option.id && <Check className="h-5 w-5 text-primary flex-shrink-0" />}
                   </div>
                 </div>
               ))}
@@ -1623,23 +1782,23 @@ export default function OnboardingPage() {
                     `}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="bg-primary/10 p-2 rounded-full">
+                      <div className="bg-primary/10 p-2 rounded-full flex-shrink-0">
                         {React.createElement(option.icon, { className: "h-5 w-5 text-primary" })}
                       </div>
-                      <div className="flex-1">
-                        <div className="font-medium flex items-center gap-2">
-                          {option.label}
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium flex items-center gap-2 flex-wrap">
+                          <span className="break-words">{option.label}</span>
                           {isEssential && (
-                            <Badge variant="secondary" className="text-xs">
+                            <Badge variant="secondary" className="text-xs flex-shrink-0">
                               Essential
                             </Badge>
                           )}
                         </div>
-                        <div className="text-xs text-muted-foreground mt-1">
+                        <div className="text-xs text-muted-foreground mt-1 break-words">
                           {option.description}
                         </div>
                       </div>
-                      {(isSelected || isEssential) && <Check className="h-5 w-5 text-primary" />}
+                      {(isSelected || isEssential) && <Check className="h-5 w-5 text-primary flex-shrink-0" />}
                     </div>
                   </div>
                 )
@@ -1665,12 +1824,171 @@ export default function OnboardingPage() {
                 step={currentQuestion.step}
                 onValueChange={(value) => handleRetailAnswerChange(currentQuestion.id, value[0])}
               />
-              <div className="text-center text-2xl font-bold">
+              <div className="text-center text-xl sm:text-2xl font-bold break-words">
                 {retailAnswers[currentQuestion.id] || currentQuestion.defaultValue}
                 {currentQuestion.id === "locations" &&
                   ` location${(retailAnswers[currentQuestion.id] || currentQuestion.defaultValue) !== 1 ? "s" : ""}`}
                 {currentQuestion.id === "users" &&
                   ` user${(retailAnswers[currentQuestion.id] || currentQuestion.defaultValue) !== 1 ? "s" : ""}`}
+              </div>
+            </div>
+          </div>
+        )
+
+      default:
+        return null
+    }
+  }
+
+  // Render restaurant setup questions
+  const renderRestaurantSetup = () => {
+    const currentQuestion = restaurantQuestions[currentQuestionIndex]
+    if (!currentQuestion) return null
+
+    switch (currentQuestion.type) {
+      case "welcome":
+        return (
+          <div className="text-center max-w-2xl mx-auto animate-fade-in w-full">
+            <div className="mb-6 sm:mb-8">
+              <div className="bg-primary/10 p-3 sm:p-4 rounded-full w-fit mx-auto mb-4">
+                <UtensilsCrossed className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+              </div>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-3 sm:mb-4 px-4">{currentQuestion.title}</h1>
+              <p className="text-sm sm:text-base md:text-lg text-muted-foreground px-4">{currentQuestion.description}</p>
+            </div>
+            <Button
+              size="lg"
+              onClick={handleNextQuestion}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm sm:text-base"
+            >
+              Let's Get Started
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        )
+
+      case "single-select":
+        return (
+          <div className="max-w-2xl mx-auto animate-fade-in w-full">
+            <h2 className="text-xl sm:text-2xl font-bold mb-2 px-2">{currentQuestion.title}</h2>
+            <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 px-2">{currentQuestion.description}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              {currentQuestion.options.map((option) => (
+                <div
+                  key={option.id}
+                  onClick={() => handleRestaurantAnswerChange(currentQuestion.id, option.id)}
+                  className={`
+                    p-4 rounded-lg border cursor-pointer transition-all duration-200
+                    ${
+                      restaurantAnswers[currentQuestion.id] === option.id
+                        ? "border-primary bg-primary/5 shadow-sm"
+                        : "border-border hover:border-primary/50 hover:bg-muted/50"
+                    }
+                  `}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="bg-primary/10 p-2 rounded-full flex-shrink-0">
+                      {React.createElement(option.icon, { className: "h-5 w-5 text-primary" })}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium break-words">{option.label}</div>
+                    </div>
+                    {restaurantAnswers[currentQuestion.id] === option.id && <Check className="h-5 w-5 text-primary flex-shrink-0" />}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+
+      case "multi-select":
+        return (
+          <div className="max-w-2xl mx-auto animate-fade-in w-full">
+            <h2 className="text-xl sm:text-2xl font-bold mb-2 px-2">{currentQuestion.title}</h2>
+            <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 px-2">{currentQuestion.description}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              {currentQuestion.options.map((option) => {
+                const isSelected =
+                  Array.isArray(restaurantAnswers[currentQuestion.id]) &&
+                  restaurantAnswers[currentQuestion.id].includes(option.id)
+                const isEssential = option.essential
+                return (
+                  <div
+                    key={option.id}
+                    onClick={() => {
+                      if (isEssential) return // Can't deselect essential modules
+                      const currentAnswers = Array.isArray(restaurantAnswers[currentQuestion.id])
+                        ? [...restaurantAnswers[currentQuestion.id]]
+                        : []
+                      if (isSelected) {
+                        handleRestaurantAnswerChange(
+                          currentQuestion.id,
+                          currentAnswers.filter((id) => id !== option.id),
+                        )
+                      } else {
+                        handleRestaurantAnswerChange(currentQuestion.id, [...currentAnswers, option.id])
+                      }
+                    }}
+                    className={`
+                      p-4 rounded-lg border transition-all duration-200
+                      ${
+                        isEssential
+                          ? "border-primary bg-primary/5 cursor-default"
+                          : isSelected
+                            ? "border-primary bg-primary/5 shadow-sm cursor-pointer"
+                            : "border-border hover:border-primary/50 hover:bg-muted/50 cursor-pointer"
+                      }
+                    `}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="bg-primary/10 p-2 rounded-full flex-shrink-0">
+                        {React.createElement(option.icon, { className: "h-5 w-5 text-primary" })}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium flex items-center gap-2 flex-wrap">
+                          <span className="break-words">{option.label}</span>
+                          {isEssential && (
+                            <Badge variant="secondary" className="text-xs flex-shrink-0">
+                              Essential
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1 break-words">
+                          {option.description}
+                        </div>
+                      </div>
+                      {(isSelected || isEssential) && <Check className="h-5 w-5 text-primary flex-shrink-0" />}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )
+
+      case "slider":
+        return (
+          <div className="max-w-2xl mx-auto animate-fade-in w-full">
+            <h2 className="text-xl sm:text-2xl font-bold mb-2 px-2">{currentQuestion.title}</h2>
+            <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 px-2">{currentQuestion.description}</p>
+            <div className="space-y-6 sm:space-y-8 mt-6 sm:mt-8 px-2">
+              <div className="flex justify-between items-center text-sm text-muted-foreground">
+                <span>{currentQuestion.min}</span>
+                <span>{currentQuestion.max}</span>
+              </div>
+              <Slider
+                value={[restaurantAnswers[currentQuestion.id] || currentQuestion.defaultValue]}
+                min={currentQuestion.min}
+                max={currentQuestion.max}
+                step={currentQuestion.step}
+                onValueChange={(value) => handleRestaurantAnswerChange(currentQuestion.id, value[0])}
+              />
+              <div className="text-center text-xl sm:text-2xl font-bold break-words">
+                {restaurantAnswers[currentQuestion.id] || currentQuestion.defaultValue}
+                {currentQuestion.id === "locations" &&
+                  ` location${(restaurantAnswers[currentQuestion.id] || currentQuestion.defaultValue) !== 1 ? "s" : ""}`}
+                {currentQuestion.id === "users" &&
+                  ` user${(restaurantAnswers[currentQuestion.id] || currentQuestion.defaultValue) !== 1 ? "s" : ""}`}
               </div>
             </div>
           </div>
@@ -1687,13 +2005,13 @@ export default function OnboardingPage() {
     if (!currentStepData) return null
 
     return (
-      <div className="max-w-lg mx-auto animate-fade-in">
-        <div className="text-center mb-8">
+      <div className="max-w-lg mx-auto animate-fade-in w-full">
+        <div className="text-center mb-6 sm:mb-8">
           <div className="bg-primary/10 p-3 rounded-full w-fit mx-auto mb-4">
-            {React.createElement(currentStepData.icon || User, { className: "h-6 w-6 text-primary" })}
+            {React.createElement(currentStepData.icon || User, { className: "h-5 w-5 sm:h-6 sm:w-6 text-primary" })}
           </div>
-          <h2 className="text-2xl font-bold mb-2">{currentStepData.title}</h2>
-          <p className="text-muted-foreground">{currentStepData.description}</p>
+          <h2 className="text-xl sm:text-2xl font-bold mb-2 px-2">{currentStepData.title}</h2>
+          <p className="text-sm sm:text-base text-muted-foreground px-2">{currentStepData.description}</p>
         </div>
 
         {currentStepData.type === "input" && (
@@ -1703,7 +2021,7 @@ export default function OnboardingPage() {
               placeholder={currentStepData.placeholder}
               value={signUpData[currentStepData.field as keyof SignUpData] as string}
               onChange={(e) => handleSignupDataChange(currentStepData.field!, e.target.value)}
-              className="text-center text-lg py-6"
+              className="text-center text-base sm:text-lg py-4 sm:py-6"
               autoFocus
             />
           </div>
@@ -1822,16 +2140,17 @@ export default function OnboardingPage() {
   )
 
   return (
-    <div className="h-screen bg-background dark:bg-gray-900 overflow-hidden">
+    <div className="min-h-screen bg-background dark:bg-gray-900 flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-40 w-full backdrop-blur-sm bg-background/80 dark:bg-gray-900/80 border-b h-16">
+      <header className="sticky top-0 z-40 w-full backdrop-blur-sm bg-background/80 dark:bg-gray-900/80 border-b h-16 flex-shrink-0">
         <div className="container max-w-6xl mx-auto px-4 py-3 flex items-center justify-between h-full">
           <Link
             href="/"
             className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Home
+            <span className="hidden sm:inline">Back to Home</span>
+            <span className="sm:hidden">Back</span>
           </Link>
           <div className="flex items-center space-x-2">
             <span className="font-bold text-lg font-sans text-[#392A17] dark:text-primary">Maamul</span>
@@ -1840,33 +2159,42 @@ export default function OnboardingPage() {
       </header>
 
       {/* Main Content */}
-      <div className="flex h-[calc(100vh-4rem)]">
-        {/* Split Layout for retail-setup and signup */}
-        {currentStep === "retail-setup" || currentStep === "signup" ? (
+      <div className="flex flex-1 min-h-0 overflow-hidden">
+        {/* Split Layout for retail-setup, restaurant-setup and signup */}
+        {currentStep === "retail-setup" || currentStep === "restaurant-setup" || currentStep === "signup" ? (
           <>
             {/* Video Section - Left Side */}
             <div className="hidden lg:block lg:w-3/5 relative">
-              {currentStep === "retail-setup" ? renderBusinessSetupVideo() : renderAccountSetupVideo()}
+              {currentStep === "retail-setup" || currentStep === "restaurant-setup" ? renderBusinessSetupVideo() : renderAccountSetupVideo()}
             </div>
 
             {/* Form Section - Right Side */}
-            <div className="w-full lg:w-2/5 flex flex-col overflow-hidden">
+            <div className="w-full lg:w-2/5 flex flex-col min-h-0 overflow-hidden">
               {/* Progress bar */}
-              <div className="px-6 py-4 border-b bg-background/95 backdrop-blur-sm">
+              <div className="px-4 sm:px-6 py-3 sm:py-4 border-b bg-background/95 backdrop-blur-sm flex-shrink-0">
                 {currentStep === "retail-setup" && (
                   <div>
                     <div className="flex justify-between text-xs text-muted-foreground mb-2">
                       <span>Business Setup</span>
-                      <span>{Math.round(retailProgressPercentage)}% Complete</span>
+                      <span className="whitespace-nowrap">{Math.round(retailProgressPercentage)}% Complete</span>
                     </div>
                     <Progress value={retailProgressPercentage} className="h-2" />
+                  </div>
+                )}
+                {currentStep === "restaurant-setup" && (
+                  <div>
+                    <div className="flex justify-between text-xs text-muted-foreground mb-2">
+                      <span>Business Setup</span>
+                      <span className="whitespace-nowrap">{Math.round(restaurantProgressPercentage)}% Complete</span>
+                    </div>
+                    <Progress value={restaurantProgressPercentage} className="h-2" />
                   </div>
                 )}
                 {currentStep === "signup" && (
                   <div>
                     <div className="flex justify-between text-xs text-muted-foreground mb-2">
                       <span>Account Setup</span>
-                      <span>
+                      <span className="whitespace-nowrap">
                         Step {currentSignupStep + 1} of {signupSteps.length}
                       </span>
                     </div>
@@ -1876,41 +2204,87 @@ export default function OnboardingPage() {
               </div>
 
               {/* Form Content */}
-              <div className="flex-1 overflow-y-auto scrollbar-hide">
-                <div className="p-6 flex items-center justify-center min-h-full">
-                  {currentStep === "retail-setup" && renderRetailSetup()}
-                  {currentStep === "signup" && renderStepByStepSignup()}
+              <div className="flex-1 overflow-y-auto scrollbar-hide min-h-0">
+                <div className="p-4 sm:p-6 py-6 sm:py-8 flex items-center justify-center min-h-full">
+                  <div className="w-full max-w-2xl">
+                    {currentStep === "retail-setup" && renderRetailSetup()}
+                    {currentStep === "restaurant-setup" && renderRestaurantSetup()}
+                    {currentStep === "signup" && renderStepByStepSignup()}
+                  </div>
                 </div>
               </div>
 
               {/* Navigation */}
-              <div className="px-6 py-4 border-t bg-background/95 backdrop-blur-sm">
+              <div className="px-4 sm:px-6 py-3 sm:py-4 border-t bg-background/95 backdrop-blur-sm flex-shrink-0">
                 {currentStep === "retail-setup" && retailQuestions[currentQuestionIndex]?.type !== "welcome" && (
-                  <div className="flex justify-between">
-                    <Button variant="outline" onClick={handlePreviousQuestion} disabled={currentQuestionIndex === 0}>
+                  <div className="flex justify-between gap-2 sm:gap-4">
+                    <Button 
+                      variant="outline" 
+                      onClick={handlePreviousQuestion} 
+                      disabled={currentQuestionIndex === 0}
+                      className="flex-shrink-0 text-xs sm:text-sm"
+                    >
                       Back
                     </Button>
                     <Button
                       onClick={handleNextQuestion}
                       disabled={!isCurrentQuestionAnswered()}
-                      className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1 sm:flex-initial text-xs sm:text-sm whitespace-nowrap"
                     >
-                      {currentQuestionIndex === retailQuestions.length - 1 ? "Continue to Account Setup" : "Next"}
+                      {currentQuestionIndex === retailQuestions.length - 1 ? (
+                        <span className="hidden sm:inline">Continue to Account Setup</span>
+                      ) : (
+                        "Next"
+                      )}
+                      {currentQuestionIndex === retailQuestions.length - 1 && (
+                        <span className="sm:hidden">Continue</span>
+                      )}
+                    </Button>
+                  </div>
+                )}
+                {currentStep === "restaurant-setup" && restaurantQuestions[currentQuestionIndex]?.type !== "welcome" && (
+                  <div className="flex justify-between gap-2 sm:gap-4">
+                    <Button 
+                      variant="outline" 
+                      onClick={handlePreviousQuestion} 
+                      disabled={currentQuestionIndex === 0}
+                      className="flex-shrink-0 text-xs sm:text-sm"
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      onClick={handleNextQuestion}
+                      disabled={!isCurrentQuestionAnswered()}
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1 sm:flex-initial text-xs sm:text-sm whitespace-nowrap"
+                    >
+                      {currentQuestionIndex === restaurantQuestions.length - 1 ? (
+                        <span className="hidden sm:inline">Continue to Account Setup</span>
+                      ) : (
+                        "Next"
+                      )}
+                      {currentQuestionIndex === restaurantQuestions.length - 1 && (
+                        <span className="sm:hidden">Continue</span>
+                      )}
                     </Button>
                   </div>
                 )}
                 {currentStep === "signup" && (
-                  <div className="flex justify-between">
-                    <Button variant="outline" onClick={handlePreviousSignupStep} disabled={currentSignupStep === 0}>
+                  <div className="flex justify-between gap-2 sm:gap-4">
+                    <Button 
+                      variant="outline" 
+                      onClick={handlePreviousSignupStep} 
+                      disabled={currentSignupStep === 0}
+                      className="flex-shrink-0 text-xs sm:text-sm"
+                    >
                       Back
                     </Button>
                     <Button
                       onClick={handleNextSignupStep}
                       disabled={!canProceedSignupStep() || isSubmitting}
-                      className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1 sm:flex-initial text-xs sm:text-sm whitespace-nowrap"
                     >
                       {isSubmitting
-                        ? "Creating Account..."
+                        ? "Creating..."
                         : currentSignupStep === signupSteps.length - 1
                           ? "Create Account"
                           : "Next"}
@@ -1922,9 +2296,9 @@ export default function OnboardingPage() {
           </>
         ) : (
           /* Full Width Layout for other steps */
-          <main className="flex-1 overflow-y-auto scrollbar-hide">
-            <div className="container max-w-6xl mx-auto px-4 pt-12 pb-24">
-              <div className="min-h-[60vh] flex items-center justify-center py-8">
+          <main className="flex-1 overflow-y-auto scrollbar-hide min-h-0">
+            <div className="container max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-12 sm:pb-24">
+              <div className="min-h-[60vh] flex items-center justify-center py-6 sm:py-8">
                 {currentStep === "industry" && renderIndustrySelection()}
                 {currentStep === "waitlist" && renderWaitlistForm()}
                 {currentStep === "success" && renderSuccess()}

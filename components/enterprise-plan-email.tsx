@@ -30,7 +30,7 @@ export const EnterpriseEmail: React.FC<EnterpriseEmailProps> = ({
   annualPrice = 23664,
   billingPreference = "annual",
   implementationTimeline = "1-3 months",
-  meetingDate = "June 15, 2025 at 10:00 AM EAT",
+  meetingDate = "June 15, 2026 at 10:00 AM EAT",
   contactEmail = "enterprise@maamul.com",
 }) => {
   // Calculate monthly display price based on billing preference
@@ -152,7 +152,7 @@ export const EnterpriseEmail: React.FC<EnterpriseEmailProps> = ({
 
       {/* Email Footer */}
       <div className="bg-gray-100 p-4 text-center text-gray-500 text-sm">
-        <p>&copy; 2025 Maamul. All rights reserved.</p>
+        <p>&copy; 2026 Maamul. All rights reserved.</p>
         <p className="mt-1">This email was sent to you because you requested information about our enterprise plans.</p>
       </div>
     </div>

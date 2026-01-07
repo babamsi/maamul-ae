@@ -1038,9 +1038,9 @@ export default function PlansPage() {
             </div>
 
             <div className="flex flex-col md:flex-row gap-6">
-              <div className="md:w-2/3">
+              <div className="md:w-2/3 min-w-0">
                 <h4 className="font-semibold text-base mb-3 flex items-center">
-                  <Check className="h-4 w-4 text-primary mr-2" />
+                  <Check className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
                   Key Features
                 </h4>
                 <div className="grid sm:grid-cols-2 gap-x-6 gap-y-3">
@@ -1049,8 +1049,8 @@ export default function PlansPage() {
                       <div className="text-primary mr-2 mt-1 flex-shrink-0">
                         <Check className="h-4 w-4" />
                       </div>
-                      <div>
-                        <span className="text-sm">{feature.name}</span>
+                      <div className="min-w-0">
+                        <span className="text-sm break-words">{feature.name}</span>
                       </div>
                     </div>
                   ))}
@@ -1058,29 +1058,34 @@ export default function PlansPage() {
               </div>
 
               {/* Pricing Details */}
-              <div className="md:w-1/3 bg-muted/20 p-4 rounded-lg">
+              <div className="md:w-1/3 bg-muted/20 p-4 sm:p-5 rounded-lg flex-shrink-0 md:min-w-[280px]">
                 <div className="mb-4">
-                  <div className="flex justify-between items-baseline mb-2">
-                    <div className="flex items-baseline">
-                      <span className="text-2xl font-bold">
-                        {currencySymbol === "KES" ? "KES " : "$"}{formatPrice(monthlyDisplayPriceUSD)}
-                      </span>
-                      <span className="text-muted-foreground ml-1">/month</span>
+                  <div className="mb-3">
+                    <div className="flex flex-wrap items-baseline gap-2 mb-2">
+                      <div className="flex items-baseline flex-wrap gap-1 min-w-0">
+                        <span className="text-xl sm:text-2xl font-bold whitespace-nowrap">
+                          {currencySymbol === "KES" ? "KES " : "$"}{formatPrice(monthlyDisplayPriceUSD)}
+                        </span>
+                        <span className="text-sm sm:text-base text-muted-foreground whitespace-nowrap">/month</span>
+                      </div>
                     </div>
-                    <Badge variant={billingCycle === "annual" ? "default" : "outline"} className="font-normal text-xs">
+                    <Badge 
+                      variant={billingCycle === "annual" ? "default" : "outline"} 
+                      className="font-normal text-xs w-fit"
+                    >
                       {billingCycle === "annual" ? "Annual Billing" : "Quarterly Billing"}
                     </Badge>
                   </div>
 
                   {billingCycle === "annual" && (
-                    <div className="bg-primary/5 rounded-lg p-2 border border-primary/10 text-xs mt-2">
-                      <div className="flex justify-between font-medium">
-                        <span>Annual payment:</span>
-                        <span>{currencySymbol === "KES" ? "KES " : "$"}{formatPrice(plan.annualPrice)}/year</span>
+                    <div className="bg-primary/5 rounded-lg p-2 sm:p-3 border border-primary/10 text-xs mt-2">
+                      <div className="flex justify-between items-center gap-2 font-medium mb-1">
+                        <span className="whitespace-nowrap">Annual payment:</span>
+                        <span className="text-right whitespace-nowrap">{currencySymbol === "KES" ? "KES " : "$"}{formatPrice(plan.annualPrice)}/year</span>
                       </div>
-                      <div className="flex justify-between text-muted-foreground mt-1">
-                        <span>You save:</span>
-                        <span>{currencySymbol === "KES" ? "KES " : "$"}{formatPrice(plan.monthlyPrice * 12 - plan.annualPrice)}/year</span>
+                      <div className="flex justify-between items-center gap-2 text-muted-foreground">
+                        <span className="whitespace-nowrap">You save:</span>
+                        <span className="text-right whitespace-nowrap">{currencySymbol === "KES" ? "KES " : "$"}{formatPrice(plan.monthlyPrice * 12 - plan.annualPrice)}/year</span>
                       </div>
                     </div>
                   )}
