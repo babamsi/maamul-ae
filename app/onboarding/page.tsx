@@ -1225,8 +1225,9 @@ export default function OnboardingPage() {
   }
 
   // Render Business Setup video section
-  const renderBusinessSetupVideo = () => (
-    <div className="relative h-full overflow-hidden">
+  const renderBusinessSetupVideo = () => {
+    return (
+      <div className="relative h-full overflow-hidden">
       {/* Background Video */}
       <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover scale-105">
         <source
@@ -1239,26 +1240,27 @@ export default function OnboardingPage() {
       <div className="absolute inset-0 bg-gradient-to-br from-black/30 via-black/20 to-black/40"></div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col justify-center px-12 py-16 h-full">
-        <div className="max-w-lg backdrop-blur-[10%] bg-black/10 p-6 rounded-3xl border border-white/20 shadow-2xl overflow-hidden">
-          {/* Messaging Platform Style Content */}
-          <div className="space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-hide">
-            {/* Logo */}
-            {showBusinessLogo && (
-              <div className="transition-all duration-500 opacity-100 translate-y-0">
-                <div className="text-white text-5xl font-serif drop-shadow-2xl">𐒑</div>
+      <div className="relative z-10 flex flex-col h-full overflow-hidden">
+        <div className="h-full flex items-center justify-center px-3 sm:px-4 lg:px-6 xl:px-8">
+          <div className="w-full max-w-lg backdrop-blur-[10%] bg-black/10 p-2 sm:p-3 lg:p-4 xl:p-5 rounded-xl sm:rounded-2xl lg:rounded-3xl border border-white/20 shadow-2xl overflow-hidden max-h-full flex flex-col">
+            {/* Messaging Platform Style Content */}
+            <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide space-y-1.5 sm:space-y-2 lg:space-y-2.5 flex flex-col justify-center py-1 sm:py-2">
+              {/* Logo */}
+              {showBusinessLogo && (
+              <div className="transition-all duration-500 opacity-100 translate-y-0 flex-shrink-0">
+                <div className="text-white text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-serif drop-shadow-2xl">𐒑</div>
               </div>
             )}
 
             {/* Heading - Typing Effect */}
             {businessHeadingText && (
-              <div className="transition-all duration-500 opacity-100 translate-y-0">
+              <div className="transition-all duration-500 opacity-100 translate-y-0 flex-shrink-0">
                 <div className="flex items-start">
-                  <div className="bg-primary/20 backdrop-blur-sm p-2 rounded-full mr-3 mt-1 flex-shrink-0">
-                    <Settings className="h-4 w-4 text-white" />
+                  <div className="bg-primary/20 backdrop-blur-sm p-1.5 sm:p-2 rounded-full mr-2 sm:mr-3 mt-1 flex-shrink-0">
+                    <Settings className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                   </div>
-                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[85%]">
-                    <h1 className="text-2xl font-bold tracking-tight text-white drop-shadow-xl leading-tight">
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-2 sm:p-2.5 lg:p-3 rounded-lg sm:rounded-xl lg:rounded-2xl rounded-tl-none border border-white/20 max-w-[85%]">
+                    <h1 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold tracking-tight text-white drop-shadow-xl leading-tight">
                       {businessHeadingText}
                       {isTypingBusinessHeading && <span className="animate-pulse">|</span>}
                     </h1>
@@ -1269,10 +1271,10 @@ export default function OnboardingPage() {
 
             {/* Description - Typing Effect */}
             {businessDescText && (
-              <div className="transition-all duration-500 opacity-100 translate-y-0">
+              <div className="transition-all duration-500 opacity-100 translate-y-0 flex-shrink-0">
                 <div className="flex items-start justify-end">
-                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-3 rounded-2xl rounded-tr-none border border-primary/30 max-w-[85%]">
-                    <p className="text-base text-white leading-relaxed drop-shadow-sm">
+                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-2 sm:p-2.5 lg:p-3 rounded-lg sm:rounded-xl lg:rounded-2xl rounded-tr-none border border-primary/30 max-w-[85%]">
+                    <p className="text-xs sm:text-sm lg:text-base text-white leading-relaxed drop-shadow-sm">
                       {businessDescText}
                       {isTypingBusinessDesc && <span className="animate-pulse">|</span>}
                     </p>
@@ -1283,12 +1285,12 @@ export default function OnboardingPage() {
 
             {/* Feature 1 - Typing Effect */}
             {businessFeature1Text && (
-              <div className="transition-all duration-500 opacity-100 translate-y-0">
+              <div className="transition-all duration-500 opacity-100 translate-y-0 flex-shrink-0">
                 <div className="flex items-start">
-                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl mr-3 border border-white/30 shadow-xl flex-shrink-0">
-                    <Settings className="h-4 w-4 text-white" />
+                  <div className="bg-white/20 backdrop-blur-sm p-1.5 sm:p-2 rounded-lg sm:rounded-xl mr-2 sm:mr-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Settings className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                   </div>
-                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-2 sm:p-2.5 lg:p-3 rounded-lg sm:rounded-xl lg:rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
                     {renderTypedText(businessFeature1Text)}
                     {isTypingBusinessFeature1 && <span className="animate-pulse">|</span>}
                   </div>
@@ -1298,14 +1300,14 @@ export default function OnboardingPage() {
 
             {/* Feature 2 - Typing Effect */}
             {businessFeature2Text && (
-              <div className="transition-all duration-500 opacity-100 translate-y-0">
+              <div className="transition-all duration-500 opacity-100 translate-y-0 flex-shrink-0">
                 <div className="flex items-start justify-end">
-                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-3 rounded-2xl rounded-tr-none border border-primary/30 max-w-[80%]">
+                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-2 sm:p-2.5 lg:p-3 rounded-lg sm:rounded-xl lg:rounded-2xl rounded-tr-none border border-primary/30 max-w-[80%]">
                     {renderTypedText(businessFeature2Text)}
                     {isTypingBusinessFeature2 && <span className="animate-pulse">|</span>}
                   </div>
-                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl ml-3 border border-white/30 shadow-xl flex-shrink-0">
-                    <Layers className="h-4 w-4 text-white" />
+                  <div className="bg-white/20 backdrop-blur-sm p-1.5 sm:p-2 rounded-lg sm:rounded-xl ml-2 sm:ml-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Layers className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                   </div>
                 </div>
               </div>
@@ -1313,12 +1315,12 @@ export default function OnboardingPage() {
 
             {/* Feature 3 - Typing Effect */}
             {businessFeature3Text && (
-              <div className="transition-all duration-500 opacity-100 translate-y-0">
+              <div className="transition-all duration-500 opacity-100 translate-y-0 flex-shrink-0">
                 <div className="flex items-start">
-                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl mr-3 border border-white/30 shadow-xl flex-shrink-0">
-                    <TrendingUp className="h-4 w-4 text-white" />
+                  <div className="bg-white/20 backdrop-blur-sm p-1.5 sm:p-2 rounded-lg sm:rounded-xl mr-2 sm:mr-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                   </div>
-                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-2 sm:p-2.5 lg:p-3 rounded-lg sm:rounded-xl lg:rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
                     {renderTypedText(businessFeature3Text)}
                     {isTypingBusinessFeature3 && <span className="animate-pulse">|</span>}
                   </div>
@@ -1328,14 +1330,14 @@ export default function OnboardingPage() {
 
             {/* Feature 4 - Typing Effect */}
             {businessFeature4Text && (
-              <div className="transition-all duration-500 opacity-100 translate-y-0">
+              <div className="transition-all duration-500 opacity-100 translate-y-0 flex-shrink-0">
                 <div className="flex items-start justify-end">
-                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-3 rounded-2xl rounded-tr-none border border-primary/30 max-w-[80%]">
+                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-2 sm:p-2.5 lg:p-3 rounded-lg sm:rounded-xl lg:rounded-2xl rounded-tr-none border border-primary/30 max-w-[80%]">
                     {renderTypedText(businessFeature4Text)}
                     {isTypingBusinessFeature4 && <span className="animate-pulse">|</span>}
                   </div>
-                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl ml-3 border border-white/30 shadow-xl flex-shrink-0">
-                    <DollarSign className="h-4 w-4 text-white" />
+                  <div className="bg-white/20 backdrop-blur-sm p-1.5 sm:p-2 rounded-lg sm:rounded-xl ml-2 sm:ml-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                   </div>
                 </div>
               </div>
@@ -1343,12 +1345,12 @@ export default function OnboardingPage() {
 
             {/* Feature 5 - Typing Effect */}
             {businessFeature5Text && (
-              <div className="transition-all duration-500 opacity-100 translate-y-0">
+              <div className="transition-all duration-500 opacity-100 translate-y-0 flex-shrink-0">
                 <div className="flex items-start">
-                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl mr-3 border border-white/30 shadow-xl flex-shrink-0">
-                    <Shield className="h-4 w-4 text-white" />
+                  <div className="bg-white/20 backdrop-blur-sm p-1.5 sm:p-2 rounded-lg sm:rounded-xl mr-2 sm:mr-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                   </div>
-                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-2 sm:p-2.5 lg:p-3 rounded-lg sm:rounded-xl lg:rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
                     {renderTypedText(businessFeature5Text)}
                     {isTypingBusinessFeature5 && <span className="animate-pulse">|</span>}
                   </div>
@@ -1358,11 +1360,11 @@ export default function OnboardingPage() {
 
             {/* Trust Badge */}
             {showBusinessTrust && (
-              <div className="transition-all duration-700 opacity-100 scale-100">
-                <div className="mt-4 p-4 bg-white/15 backdrop-blur-md rounded-2xl border border-white/30 shadow-2xl">
-                  <div className="flex items-center gap-3 mb-2">
-                    <CheckCircle className="h-4 w-4 text-green-400 animate-pulse" />
-                    <span className="font-medium text-white drop-shadow-sm text-sm">Trusted by 58+ businesses</span>
+              <div className="transition-all duration-700 opacity-100 scale-100 flex-shrink-0">
+                <div className="mt-2 sm:mt-3 lg:mt-4 p-2 sm:p-3 lg:p-4 bg-white/15 backdrop-blur-md rounded-xl sm:rounded-2xl border border-white/30 shadow-2xl">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-1.5 sm:mb-2">
+                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-400 animate-pulse" />
+                    <span className="font-medium text-white drop-shadow-sm text-xs sm:text-sm">Trusted by 58+ businesses</span>
                   </div>
                   <div className="flex gap-1 flex-wrap">
                     <Badge
@@ -1396,12 +1398,15 @@ export default function OnboardingPage() {
           </div>
         </div>
       </div>
-    </div>
-  )
+      </div>
+      </div>
+    )
+  }
 
   // Render Account Setup video section
-  const renderAccountSetupVideo = () => (
-    <div className="relative h-full overflow-hidden">
+  const renderAccountSetupVideo = () => {
+    return (
+      <div className="relative h-full overflow-hidden">
       {/* Background Video */}
       <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover scale-105">
         <source
@@ -1414,26 +1419,27 @@ export default function OnboardingPage() {
       <div className="absolute inset-0 bg-gradient-to-br from-black/25 via-black/15 to-black/35"></div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col justify-center px-12 py-16 h-full">
-        <div className="max-w-lg backdrop-blur-[10%] bg-black/10 p-6 rounded-3xl border border-white/20 shadow-2xl overflow-hidden">
-          {/* Messaging Platform Style Content */}
-          <div className="space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-hide">
+      <div className="relative z-10 flex flex-col h-full overflow-hidden">
+        <div className="h-full flex items-center justify-center px-3 sm:px-4 lg:px-6 xl:px-8">
+          <div className="w-full max-w-lg backdrop-blur-[10%] bg-black/10 p-2 sm:p-3 lg:p-4 xl:p-5 rounded-xl sm:rounded-2xl lg:rounded-3xl border border-white/20 shadow-2xl overflow-hidden max-h-full flex flex-col">
+            {/* Messaging Platform Style Content */}
+            <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide space-y-1.5 sm:space-y-2 lg:space-y-2.5 flex flex-col justify-center py-1 sm:py-2">
             {/* Logo */}
             {showAccountLogo && (
-              <div className="transition-all duration-500 opacity-100 translate-y-0">
-                <div className="text-white text-5xl font-serif drop-shadow-2xl">𐒑</div>
+              <div className="transition-all duration-500 opacity-100 translate-y-0 flex-shrink-0">
+                <div className="text-white text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-serif drop-shadow-2xl">𐒑</div>
               </div>
             )}
 
             {/* Heading - Typing Effect */}
             {accountHeadingText && (
-              <div className="transition-all duration-500 opacity-100 translate-y-0">
+              <div className="transition-all duration-500 opacity-100 translate-y-0 flex-shrink-0">
                 <div className="flex items-start">
-                  <div className="bg-primary/20 backdrop-blur-sm p-2 rounded-full mr-3 mt-1 flex-shrink-0">
-                    <User className="h-4 w-4 text-white" />
+                  <div className="bg-primary/20 backdrop-blur-sm p-1.5 sm:p-2 rounded-full mr-2 sm:mr-3 mt-1 flex-shrink-0">
+                    <User className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                   </div>
-                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[85%]">
-                    <h1 className="text-2xl font-bold tracking-tight text-white drop-shadow-xl leading-tight">
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-2 sm:p-2.5 lg:p-3 rounded-lg sm:rounded-xl lg:rounded-2xl rounded-tl-none border border-white/20 max-w-[85%]">
+                    <h1 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold tracking-tight text-white drop-shadow-xl leading-tight">
                       {accountHeadingText}
                       {isTypingAccountHeading && <span className="animate-pulse">|</span>}
                     </h1>
@@ -1444,10 +1450,10 @@ export default function OnboardingPage() {
 
             {/* Description - Typing Effect */}
             {accountDescText && (
-              <div className="transition-all duration-500 opacity-100 translate-y-0">
+              <div className="transition-all duration-500 opacity-100 translate-y-0 flex-shrink-0">
                 <div className="flex items-start justify-end">
-                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-3 rounded-2xl rounded-tr-none border border-primary/30 max-w-[85%]">
-                    <p className="text-base text-white leading-relaxed drop-shadow-sm">
+                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-2 sm:p-2.5 lg:p-3 rounded-lg sm:rounded-xl lg:rounded-2xl rounded-tr-none border border-primary/30 max-w-[85%]">
+                    <p className="text-xs sm:text-sm lg:text-base text-white leading-relaxed drop-shadow-sm">
                       {accountDescText}
                       {isTypingAccountDesc && <span className="animate-pulse">|</span>}
                     </p>
@@ -1458,12 +1464,12 @@ export default function OnboardingPage() {
 
             {/* Feature 1 - Typing Effect */}
             {accountFeature1Text && (
-              <div className="transition-all duration-500 opacity-100 translate-y-0">
+              <div className="transition-all duration-500 opacity-100 translate-y-0 flex-shrink-0">
                 <div className="flex items-start">
-                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl mr-3 border border-white/30 shadow-xl flex-shrink-0">
-                    <Shield className="h-4 w-4 text-white" />
+                  <div className="bg-white/20 backdrop-blur-sm p-1.5 sm:p-2 rounded-lg sm:rounded-xl mr-2 sm:mr-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                   </div>
-                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-2 sm:p-2.5 lg:p-3 rounded-lg sm:rounded-xl lg:rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
                     {renderTypedText(accountFeature1Text)}
                     {isTypingAccountFeature1 && <span className="animate-pulse">|</span>}
                   </div>
@@ -1473,14 +1479,14 @@ export default function OnboardingPage() {
 
             {/* Feature 2 - Typing Effect */}
             {accountFeature2Text && (
-              <div className="transition-all duration-500 opacity-100 translate-y-0">
+              <div className="transition-all duration-500 opacity-100 translate-y-0 flex-shrink-0">
                 <div className="flex items-start justify-end">
-                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-3 rounded-2xl rounded-tr-none border border-primary/30 max-w-[80%]">
+                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-2 sm:p-2.5 lg:p-3 rounded-lg sm:rounded-xl lg:rounded-2xl rounded-tr-none border border-primary/30 max-w-[80%]">
                     {renderTypedText(accountFeature2Text)}
                     {isTypingAccountFeature2 && <span className="animate-pulse">|</span>}
                   </div>
-                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl ml-3 border border-white/30 shadow-xl flex-shrink-0">
-                    <Users className="h-4 w-4 text-white" />
+                  <div className="bg-white/20 backdrop-blur-sm p-1.5 sm:p-2 rounded-lg sm:rounded-xl ml-2 sm:ml-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Users className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                   </div>
                 </div>
               </div>
@@ -1488,12 +1494,12 @@ export default function OnboardingPage() {
 
             {/* Feature 3 - Typing Effect */}
             {accountFeature3Text && (
-              <div className="transition-all duration-500 opacity-100 translate-y-0">
+              <div className="transition-all duration-500 opacity-100 translate-y-0 flex-shrink-0">
                 <div className="flex items-start">
-                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl mr-3 border border-white/30 shadow-xl flex-shrink-0">
-                    <Zap className="h-4 w-4 text-white" />
+                  <div className="bg-white/20 backdrop-blur-sm p-1.5 sm:p-2 rounded-lg sm:rounded-xl mr-2 sm:mr-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Zap className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                   </div>
-                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-2 sm:p-2.5 lg:p-3 rounded-lg sm:rounded-xl lg:rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
                     {renderTypedText(accountFeature3Text)}
                     {isTypingAccountFeature3 && <span className="animate-pulse">|</span>}
                   </div>
@@ -1503,14 +1509,14 @@ export default function OnboardingPage() {
 
             {/* Feature 4 - Typing Effect */}
             {accountFeature4Text && (
-              <div className="transition-all duration-500 opacity-100 translate-y-0">
+              <div className="transition-all duration-500 opacity-100 translate-y-0 flex-shrink-0">
                 <div className="flex items-start justify-end">
-                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-3 rounded-2xl rounded-tr-none border border-primary/30 max-w-[80%]">
+                  <div className="message-bubble bg-primary/20 backdrop-blur-sm p-2 sm:p-2.5 lg:p-3 rounded-lg sm:rounded-xl lg:rounded-2xl rounded-tr-none border border-primary/30 max-w-[80%]">
                     {renderTypedText(accountFeature4Text)}
                     {isTypingAccountFeature4 && <span className="animate-pulse">|</span>}
                   </div>
-                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl ml-3 border border-white/30 shadow-xl flex-shrink-0">
-                    <Lock className="h-4 w-4 text-white" />
+                  <div className="bg-white/20 backdrop-blur-sm p-1.5 sm:p-2 rounded-lg sm:rounded-xl ml-2 sm:ml-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Lock className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                   </div>
                 </div>
               </div>
@@ -1518,12 +1524,12 @@ export default function OnboardingPage() {
 
             {/* Feature 5 - Typing Effect */}
             {accountFeature5Text && (
-              <div className="transition-all duration-500 opacity-100 translate-y-0">
+              <div className="transition-all duration-500 opacity-100 translate-y-0 flex-shrink-0">
                 <div className="flex items-start">
-                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl mr-3 border border-white/30 shadow-xl flex-shrink-0">
-                    <Users className="h-4 w-4 text-white" />
+                  <div className="bg-white/20 backdrop-blur-sm p-1.5 sm:p-2 rounded-lg sm:rounded-xl mr-2 sm:mr-3 border border-white/30 shadow-xl flex-shrink-0">
+                    <Users className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                   </div>
-                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
+                  <div className="message-bubble bg-white/10 backdrop-blur-sm p-2 sm:p-2.5 lg:p-3 rounded-lg sm:rounded-xl lg:rounded-2xl rounded-tl-none border border-white/20 max-w-[80%]">
                     {renderTypedText(accountFeature5Text)}
                     {isTypingAccountFeature5 && <span className="animate-pulse">|</span>}
                   </div>
@@ -1533,11 +1539,11 @@ export default function OnboardingPage() {
 
             {/* Trust Badge */}
             {showAccountTrust && (
-              <div className="transition-all duration-700 opacity-100 scale-100">
-                <div className="mt-4 p-4 bg-white/15 backdrop-blur-md rounded-2xl border border-white/30 shadow-2xl">
-                  <div className="flex items-center gap-3 mb-2">
-                    <Star className="h-4 w-4 text-yellow-400 animate-pulse" />
-                    <span className="font-medium text-white drop-shadow-sm text-sm">
+              <div className="transition-all duration-700 opacity-100 scale-100 flex-shrink-0">
+                <div className="mt-2 sm:mt-3 lg:mt-4 p-2 sm:p-3 lg:p-4 bg-white/15 backdrop-blur-md rounded-xl sm:rounded-2xl border border-white/30 shadow-2xl">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-1.5 sm:mb-2">
+                    <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400 animate-pulse" />
+                    <span className="font-medium text-white drop-shadow-sm text-xs sm:text-sm">
                       Join thousands of successful businesses
                     </span>
                   </div>
@@ -1573,26 +1579,28 @@ export default function OnboardingPage() {
           </div>
         </div>
       </div>
-    </div>
-  )
+      </div>
+      </div>
+    )
+  }
 
   // Render industry selection
   const renderIndustrySelection = () => (
-    <div className="max-w-4xl mx-auto animate-fade-in">
-      <div className="text-center mb-8">
-        <div className="text-primary mx-auto mb-4 text-6xl font-serif">𐒑</div>
-        <h1 className="text-4xl font-bold tracking-tight mb-4">Which industry does your business operate in?</h1>
-        <p className="text-lg text-muted-foreground">
+    <div className="max-w-4xl mx-auto animate-fade-in w-full h-full flex flex-col justify-center">
+      <div className="text-center mb-3 sm:mb-4">
+        <div className="text-primary mx-auto mb-2 text-3xl sm:text-4xl md:text-5xl font-serif">𐒑</div>
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight mb-1 sm:mb-2 px-2">Which industry does your business operate in?</h1>
+        <p className="text-xs sm:text-sm md:text-base text-muted-foreground px-2">
           Choose your industry to get started with the right setup for your business.
         </p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
         {industryOptions.map((industry) => (
           <div
             key={industry.id}
             onClick={() => handleIndustrySelect(industry.id)}
             className={`
-              relative p-6 rounded-lg border cursor-pointer transition-all duration-200
+              relative p-3 sm:p-4 rounded-lg border cursor-pointer transition-all duration-200
               ${
                 industry.available
                   ? "border-border hover:border-primary/50 hover:bg-muted/50"
@@ -1600,20 +1608,20 @@ export default function OnboardingPage() {
               }
             `}
           >
-            <div className="flex flex-col items-center text-center gap-3">
-              <div className={`p-3 rounded-full ${industry.available ? "bg-primary/10" : "bg-muted"}`}>
+            <div className="flex flex-col items-center text-center gap-2">
+              <div className={`p-2 rounded-full ${industry.available ? "bg-primary/10" : "bg-muted"}`}>
                 {React.createElement(industry.icon, {
-                  className: `h-6 w-6 ${industry.available ? "text-primary" : "text-muted-foreground"}`,
+                  className: `h-4 w-4 sm:h-5 sm:w-5 ${industry.available ? "text-primary" : "text-muted-foreground"}`,
                 })}
               </div>
               <div>
-                <div className="font-semibold mb-1">{industry.label}</div>
-                <div className="text-sm text-muted-foreground">{industry.description}</div>
+                <div className="font-semibold text-xs sm:text-sm mb-0.5">{industry.label}</div>
+                <div className="text-xs text-muted-foreground line-clamp-2">{industry.description}</div>
               </div>
               {industry.available ? (
-                <Badge className="bg-primary text-primary-foreground">Set up on the go</Badge>
+                <Badge className="bg-primary text-primary-foreground text-xs">Available</Badge>
               ) : (
-                <Badge variant="outline">Coming Soon</Badge>
+                <Badge variant="outline" className="text-xs">Soon</Badge>
               )}
             </div>
           </div>
@@ -1626,14 +1634,14 @@ export default function OnboardingPage() {
   const renderWaitlistForm = () => {
     const selectedIndustryData = industryOptions.find((i) => i.id === selectedIndustry)
     return (
-      <div className="max-w-md mx-auto animate-fade-in">
-        <div className="text-center mb-8">
-          <div className="bg-primary/10 p-3 rounded-full w-fit mx-auto mb-4">
+      <div className="max-w-md mx-auto animate-fade-in w-full h-full flex flex-col justify-center">
+        <div className="text-center mb-4 sm:mb-6">
+          <div className="bg-primary/10 p-2 sm:p-3 rounded-full w-fit mx-auto mb-3 sm:mb-4">
             {selectedIndustryData &&
-              React.createElement(selectedIndustryData.icon, { className: "h-8 w-8 text-primary" })}
+              React.createElement(selectedIndustryData.icon, { className: "h-6 w-6 sm:h-8 sm:w-8 text-primary" })}
           </div>
-          <h2 className="text-3xl font-bold mb-2">Join the Waitlist</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-2 px-2">Join the Waitlist</h2>
+          <p className="text-sm sm:text-base text-muted-foreground px-2">
             We're working hard to bring Maamul to the <strong>{selectedIndustryData?.label}</strong> industry. Join our
             waitlist to be notified when it's ready!
           </p>
@@ -1690,12 +1698,12 @@ export default function OnboardingPage() {
       case "welcome":
         return (
           <div className="text-center max-w-2xl mx-auto animate-fade-in w-full">
-            <div className="mb-6 sm:mb-8">
-              <div className="bg-primary/10 p-3 sm:p-4 rounded-full w-fit mx-auto mb-4">
-                <Building2 className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+            <div className="mb-4 sm:mb-6">
+              <div className="bg-primary/10 p-2 sm:p-3 rounded-full w-fit mx-auto mb-3 sm:mb-4">
+                <Building2 className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-3 sm:mb-4 px-4">{currentQuestion.title}</h1>
-              <p className="text-sm sm:text-base md:text-lg text-muted-foreground px-4">{currentQuestion.description}</p>
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight mb-2 sm:mb-3 px-2">{currentQuestion.title}</h1>
+              <p className="text-xs sm:text-sm md:text-base text-muted-foreground px-2">{currentQuestion.description}</p>
             </div>
             <Button
               size="lg"
@@ -1710,16 +1718,16 @@ export default function OnboardingPage() {
 
       case "single-select":
         return (
-          <div className="max-w-2xl mx-auto animate-fade-in">
-            <h2 className="text-2xl font-bold mb-2">{currentQuestion.title}</h2>
-            <p className="text-muted-foreground mb-6">{currentQuestion.description}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="max-w-2xl mx-auto animate-fade-in w-full">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 px-2">{currentQuestion.title}</h2>
+            <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 px-2">{currentQuestion.description}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
               {currentQuestion.options.map((option) => (
                 <div
                   key={option.id}
                   onClick={() => handleRetailAnswerChange(currentQuestion.id, option.id)}
                   className={`
-                    p-4 rounded-lg border cursor-pointer transition-all duration-200
+                    p-3 sm:p-4 rounded-lg border cursor-pointer transition-all duration-200
                     ${
                       retailAnswers[currentQuestion.id] === option.id
                         ? "border-primary bg-primary/5 shadow-sm"
@@ -1727,14 +1735,14 @@ export default function OnboardingPage() {
                     }
                   `}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="bg-primary/10 p-2 rounded-full flex-shrink-0">
-                      {React.createElement(option.icon, { className: "h-5 w-5 text-primary" })}
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="bg-primary/10 p-1.5 sm:p-2 rounded-full flex-shrink-0">
+                      {React.createElement(option.icon, { className: "h-4 w-4 sm:h-5 sm:w-5 text-primary" })}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium break-words">{option.label}</div>
+                      <div className="font-medium text-sm sm:text-base break-words">{option.label}</div>
                     </div>
-                    {retailAnswers[currentQuestion.id] === option.id && <Check className="h-5 w-5 text-primary flex-shrink-0" />}
+                    {retailAnswers[currentQuestion.id] === option.id && <Check className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />}
                   </div>
                 </div>
               ))}
@@ -1744,75 +1752,77 @@ export default function OnboardingPage() {
 
       case "multi-select":
         return (
-          <div className="max-w-2xl mx-auto animate-fade-in">
-            <h2 className="text-2xl font-bold mb-2">{currentQuestion.title}</h2>
-            <p className="text-muted-foreground mb-6">{currentQuestion.description}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {currentQuestion.options.map((option) => {
-                const isSelected =
-                  Array.isArray(retailAnswers[currentQuestion.id]) &&
-                  retailAnswers[currentQuestion.id].includes(option.id)
-                const isEssential = option.essential
-                return (
-                  <div
-                    key={option.id}
-                    onClick={() => {
-                      if (isEssential) return // Can't deselect essential modules
-                      const currentAnswers = Array.isArray(retailAnswers[currentQuestion.id])
-                        ? [...retailAnswers[currentQuestion.id]]
-                        : []
-                      if (isSelected) {
-                        handleRetailAnswerChange(
-                          currentQuestion.id,
-                          currentAnswers.filter((id) => id !== option.id),
-                        )
-                      } else {
-                        handleRetailAnswerChange(currentQuestion.id, [...currentAnswers, option.id])
-                      }
-                    }}
-                    className={`
-                      p-4 rounded-lg border transition-all duration-200
-                      ${
-                        isEssential
-                          ? "border-primary bg-primary/5 cursor-default"
-                          : isSelected
-                            ? "border-primary bg-primary/5 shadow-sm cursor-pointer"
-                            : "border-border hover:border-primary/50 hover:bg-muted/50 cursor-pointer"
-                      }
-                    `}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="bg-primary/10 p-2 rounded-full flex-shrink-0">
-                        {React.createElement(option.icon, { className: "h-5 w-5 text-primary" })}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium flex items-center gap-2 flex-wrap">
-                          <span className="break-words">{option.label}</span>
-                          {isEssential && (
-                            <Badge variant="secondary" className="text-xs flex-shrink-0">
-                              Essential
-                            </Badge>
-                          )}
+          <div className="max-w-2xl mx-auto animate-fade-in w-full h-full flex flex-col">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 px-2 flex-shrink-0">{currentQuestion.title}</h2>
+            <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 px-2 flex-shrink-0">{currentQuestion.description}</p>
+            <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 pr-1">
+                {currentQuestion.options.map((option) => {
+                  const isSelected =
+                    Array.isArray(retailAnswers[currentQuestion.id]) &&
+                    retailAnswers[currentQuestion.id].includes(option.id)
+                  const isEssential = option.essential
+                  return (
+                    <div
+                      key={option.id}
+                      onClick={() => {
+                        if (isEssential) return // Can't deselect essential modules
+                        const currentAnswers = Array.isArray(retailAnswers[currentQuestion.id])
+                          ? [...retailAnswers[currentQuestion.id]]
+                          : []
+                        if (isSelected) {
+                          handleRetailAnswerChange(
+                            currentQuestion.id,
+                            currentAnswers.filter((id) => id !== option.id),
+                          )
+                        } else {
+                          handleRetailAnswerChange(currentQuestion.id, [...currentAnswers, option.id])
+                        }
+                      }}
+                      className={`
+                        p-3 sm:p-4 rounded-lg border transition-all duration-200
+                        ${
+                          isEssential
+                            ? "border-primary bg-primary/5 cursor-default"
+                            : isSelected
+                              ? "border-primary bg-primary/5 shadow-sm cursor-pointer"
+                              : "border-border hover:border-primary/50 hover:bg-muted/50 cursor-pointer"
+                        }
+                      `}
+                    >
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="bg-primary/10 p-1.5 sm:p-2 rounded-full flex-shrink-0">
+                          {React.createElement(option.icon, { className: "h-4 w-4 sm:h-5 sm:w-5 text-primary" })}
                         </div>
-                        <div className="text-xs text-muted-foreground mt-1 break-words">
-                          {option.description}
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-sm sm:text-base flex items-center gap-2 flex-wrap">
+                            <span className="break-words">{option.label}</span>
+                            {isEssential && (
+                              <Badge variant="secondary" className="text-xs flex-shrink-0">
+                                Essential
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1 break-words">
+                            {option.description}
+                          </div>
                         </div>
+                        {(isSelected || isEssential) && <Check className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />}
                       </div>
-                      {(isSelected || isEssential) && <Check className="h-5 w-5 text-primary flex-shrink-0" />}
                     </div>
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
             </div>
           </div>
         )
 
       case "slider":
         return (
-          <div className="max-w-2xl mx-auto animate-fade-in">
-            <h2 className="text-2xl font-bold mb-2">{currentQuestion.title}</h2>
-            <p className="text-muted-foreground mb-6">{currentQuestion.description}</p>
-            <div className="space-y-8 mt-8">
+          <div className="max-w-2xl mx-auto animate-fade-in w-full">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 px-2">{currentQuestion.title}</h2>
+            <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 px-2">{currentQuestion.description}</p>
+            <div className="space-y-4 sm:space-y-6 mt-4 sm:mt-6 px-2">
               <div className="flex justify-between items-center text-sm text-muted-foreground">
                 <span>{currentQuestion.min}</span>
                 <span>{currentQuestion.max}</span>
@@ -1824,7 +1834,7 @@ export default function OnboardingPage() {
                 step={currentQuestion.step}
                 onValueChange={(value) => handleRetailAnswerChange(currentQuestion.id, value[0])}
               />
-              <div className="text-center text-xl sm:text-2xl font-bold break-words">
+              <div className="text-center text-lg sm:text-xl md:text-2xl font-bold break-words">
                 {retailAnswers[currentQuestion.id] || currentQuestion.defaultValue}
                 {currentQuestion.id === "locations" &&
                   ` location${(retailAnswers[currentQuestion.id] || currentQuestion.defaultValue) !== 1 ? "s" : ""}`}
@@ -1849,12 +1859,12 @@ export default function OnboardingPage() {
       case "welcome":
         return (
           <div className="text-center max-w-2xl mx-auto animate-fade-in w-full">
-            <div className="mb-6 sm:mb-8">
-              <div className="bg-primary/10 p-3 sm:p-4 rounded-full w-fit mx-auto mb-4">
-                <UtensilsCrossed className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+            <div className="mb-4 sm:mb-6">
+              <div className="bg-primary/10 p-2 sm:p-3 rounded-full w-fit mx-auto mb-3 sm:mb-4">
+                <UtensilsCrossed className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-3 sm:mb-4 px-4">{currentQuestion.title}</h1>
-              <p className="text-sm sm:text-base md:text-lg text-muted-foreground px-4">{currentQuestion.description}</p>
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight mb-2 sm:mb-3 px-2">{currentQuestion.title}</h1>
+              <p className="text-xs sm:text-sm md:text-base text-muted-foreground px-2">{currentQuestion.description}</p>
             </div>
             <Button
               size="lg"
@@ -1870,15 +1880,15 @@ export default function OnboardingPage() {
       case "single-select":
         return (
           <div className="max-w-2xl mx-auto animate-fade-in w-full">
-            <h2 className="text-xl sm:text-2xl font-bold mb-2 px-2">{currentQuestion.title}</h2>
-            <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 px-2">{currentQuestion.description}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 px-2">{currentQuestion.title}</h2>
+            <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 px-2">{currentQuestion.description}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
               {currentQuestion.options.map((option) => (
                 <div
                   key={option.id}
                   onClick={() => handleRestaurantAnswerChange(currentQuestion.id, option.id)}
                   className={`
-                    p-4 rounded-lg border cursor-pointer transition-all duration-200
+                    p-3 sm:p-4 rounded-lg border cursor-pointer transition-all duration-200
                     ${
                       restaurantAnswers[currentQuestion.id] === option.id
                         ? "border-primary bg-primary/5 shadow-sm"
@@ -1886,14 +1896,14 @@ export default function OnboardingPage() {
                     }
                   `}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="bg-primary/10 p-2 rounded-full flex-shrink-0">
-                      {React.createElement(option.icon, { className: "h-5 w-5 text-primary" })}
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="bg-primary/10 p-1.5 sm:p-2 rounded-full flex-shrink-0">
+                      {React.createElement(option.icon, { className: "h-4 w-4 sm:h-5 sm:w-5 text-primary" })}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium break-words">{option.label}</div>
+                      <div className="font-medium text-sm sm:text-base break-words">{option.label}</div>
                     </div>
-                    {restaurantAnswers[currentQuestion.id] === option.id && <Check className="h-5 w-5 text-primary flex-shrink-0" />}
+                    {restaurantAnswers[currentQuestion.id] === option.id && <Check className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />}
                   </div>
                 </div>
               ))}
@@ -1903,65 +1913,67 @@ export default function OnboardingPage() {
 
       case "multi-select":
         return (
-          <div className="max-w-2xl mx-auto animate-fade-in w-full">
-            <h2 className="text-xl sm:text-2xl font-bold mb-2 px-2">{currentQuestion.title}</h2>
-            <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 px-2">{currentQuestion.description}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              {currentQuestion.options.map((option) => {
-                const isSelected =
-                  Array.isArray(restaurantAnswers[currentQuestion.id]) &&
-                  restaurantAnswers[currentQuestion.id].includes(option.id)
-                const isEssential = option.essential
-                return (
-                  <div
-                    key={option.id}
-                    onClick={() => {
-                      if (isEssential) return // Can't deselect essential modules
-                      const currentAnswers = Array.isArray(restaurantAnswers[currentQuestion.id])
-                        ? [...restaurantAnswers[currentQuestion.id]]
-                        : []
-                      if (isSelected) {
-                        handleRestaurantAnswerChange(
-                          currentQuestion.id,
-                          currentAnswers.filter((id) => id !== option.id),
-                        )
-                      } else {
-                        handleRestaurantAnswerChange(currentQuestion.id, [...currentAnswers, option.id])
-                      }
-                    }}
-                    className={`
-                      p-4 rounded-lg border transition-all duration-200
-                      ${
-                        isEssential
-                          ? "border-primary bg-primary/5 cursor-default"
-                          : isSelected
-                            ? "border-primary bg-primary/5 shadow-sm cursor-pointer"
-                            : "border-border hover:border-primary/50 hover:bg-muted/50 cursor-pointer"
-                      }
-                    `}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="bg-primary/10 p-2 rounded-full flex-shrink-0">
-                        {React.createElement(option.icon, { className: "h-5 w-5 text-primary" })}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium flex items-center gap-2 flex-wrap">
-                          <span className="break-words">{option.label}</span>
-                          {isEssential && (
-                            <Badge variant="secondary" className="text-xs flex-shrink-0">
-                              Essential
-                            </Badge>
-                          )}
+          <div className="max-w-2xl mx-auto animate-fade-in w-full h-full flex flex-col">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 px-2 flex-shrink-0">{currentQuestion.title}</h2>
+            <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 px-2 flex-shrink-0">{currentQuestion.description}</p>
+            <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 pr-1">
+                {currentQuestion.options.map((option) => {
+                  const isSelected =
+                    Array.isArray(restaurantAnswers[currentQuestion.id]) &&
+                    restaurantAnswers[currentQuestion.id].includes(option.id)
+                  const isEssential = option.essential
+                  return (
+                    <div
+                      key={option.id}
+                      onClick={() => {
+                        if (isEssential) return // Can't deselect essential modules
+                        const currentAnswers = Array.isArray(restaurantAnswers[currentQuestion.id])
+                          ? [...restaurantAnswers[currentQuestion.id]]
+                          : []
+                        if (isSelected) {
+                          handleRestaurantAnswerChange(
+                            currentQuestion.id,
+                            currentAnswers.filter((id) => id !== option.id),
+                          )
+                        } else {
+                          handleRestaurantAnswerChange(currentQuestion.id, [...currentAnswers, option.id])
+                        }
+                      }}
+                      className={`
+                        p-3 sm:p-4 rounded-lg border transition-all duration-200
+                        ${
+                          isEssential
+                            ? "border-primary bg-primary/5 cursor-default"
+                            : isSelected
+                              ? "border-primary bg-primary/5 shadow-sm cursor-pointer"
+                              : "border-border hover:border-primary/50 hover:bg-muted/50 cursor-pointer"
+                        }
+                      `}
+                    >
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="bg-primary/10 p-1.5 sm:p-2 rounded-full flex-shrink-0">
+                          {React.createElement(option.icon, { className: "h-4 w-4 sm:h-5 sm:w-5 text-primary" })}
                         </div>
-                        <div className="text-xs text-muted-foreground mt-1 break-words">
-                          {option.description}
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-sm sm:text-base flex items-center gap-2 flex-wrap">
+                            <span className="break-words">{option.label}</span>
+                            {isEssential && (
+                              <Badge variant="secondary" className="text-xs flex-shrink-0">
+                                Essential
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1 break-words">
+                            {option.description}
+                          </div>
                         </div>
+                        {(isSelected || isEssential) && <Check className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />}
                       </div>
-                      {(isSelected || isEssential) && <Check className="h-5 w-5 text-primary flex-shrink-0" />}
                     </div>
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
             </div>
           </div>
         )
@@ -1969,9 +1981,9 @@ export default function OnboardingPage() {
       case "slider":
         return (
           <div className="max-w-2xl mx-auto animate-fade-in w-full">
-            <h2 className="text-xl sm:text-2xl font-bold mb-2 px-2">{currentQuestion.title}</h2>
-            <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 px-2">{currentQuestion.description}</p>
-            <div className="space-y-6 sm:space-y-8 mt-6 sm:mt-8 px-2">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 px-2">{currentQuestion.title}</h2>
+            <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 px-2">{currentQuestion.description}</p>
+            <div className="space-y-4 sm:space-y-6 mt-4 sm:mt-6 px-2">
               <div className="flex justify-between items-center text-sm text-muted-foreground">
                 <span>{currentQuestion.min}</span>
                 <span>{currentQuestion.max}</span>
@@ -1983,7 +1995,7 @@ export default function OnboardingPage() {
                 step={currentQuestion.step}
                 onValueChange={(value) => handleRestaurantAnswerChange(currentQuestion.id, value[0])}
               />
-              <div className="text-center text-xl sm:text-2xl font-bold break-words">
+              <div className="text-center text-lg sm:text-xl md:text-2xl font-bold break-words">
                 {restaurantAnswers[currentQuestion.id] || currentQuestion.defaultValue}
                 {currentQuestion.id === "locations" &&
                   ` location${(restaurantAnswers[currentQuestion.id] || currentQuestion.defaultValue) !== 1 ? "s" : ""}`}
@@ -2006,35 +2018,35 @@ export default function OnboardingPage() {
 
     return (
       <div className="max-w-lg mx-auto animate-fade-in w-full">
-        <div className="text-center mb-6 sm:mb-8">
-          <div className="bg-primary/10 p-3 rounded-full w-fit mx-auto mb-4">
-            {React.createElement(currentStepData.icon || User, { className: "h-5 w-5 sm:h-6 sm:w-6 text-primary" })}
+        <div className="text-center mb-4 sm:mb-6">
+          <div className="bg-primary/10 p-2 sm:p-3 rounded-full w-fit mx-auto mb-3 sm:mb-4">
+            {React.createElement(currentStepData.icon || User, { className: "h-4 w-4 sm:h-5 sm:w-5 text-primary" })}
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold mb-2 px-2">{currentStepData.title}</h2>
-          <p className="text-sm sm:text-base text-muted-foreground px-2">{currentStepData.description}</p>
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 px-2">{currentStepData.title}</h2>
+          <p className="text-xs sm:text-sm text-muted-foreground px-2">{currentStepData.description}</p>
         </div>
 
         {currentStepData.type === "input" && (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <Input
               type={currentStepData.inputType || "text"}
               placeholder={currentStepData.placeholder}
               value={signUpData[currentStepData.field as keyof SignUpData] as string}
               onChange={(e) => handleSignupDataChange(currentStepData.field!, e.target.value)}
-              className="text-center text-base sm:text-lg py-4 sm:py-6"
+              className="text-center text-sm sm:text-base md:text-lg py-3 sm:py-4 md:py-5"
               autoFocus
             />
           </div>
         )}
 
         {currentStepData.type === "single-select" && (
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {currentStepData.options?.map((option) => (
               <div
                 key={option.id}
                 onClick={() => handleSignupDataChange(currentStepData.field!, option.id)}
                 className={`
-                  p-4 rounded-lg border cursor-pointer transition-all duration-200
+                  p-3 sm:p-4 rounded-lg border cursor-pointer transition-all duration-200
                   ${
                     signUpData[currentStepData.field as keyof SignUpData] === option.id
                       ? "border-primary bg-primary/5 shadow-sm"
@@ -2043,9 +2055,9 @@ export default function OnboardingPage() {
                 `}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-medium">{option.label}</span>
+                  <span className="font-medium text-sm sm:text-base">{option.label}</span>
                   {signUpData[currentStepData.field as keyof SignUpData] === option.id && (
-                    <Check className="h-5 w-5 text-primary" />
+                    <Check className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                   )}
                 </div>
               </div>
@@ -2054,9 +2066,9 @@ export default function OnboardingPage() {
         )}
 
         {currentStepData.type === "team-setup" && (
-          <div className="space-y-4">
+          <div className="space-y-2 sm:space-y-3 max-h-[50vh] overflow-y-auto scrollbar-hide">
             {signUpData.teamMembers.map((member, index) => (
-              <div key={index} className="grid grid-cols-1 gap-2 p-3 border rounded-lg">
+              <div key={index} className="grid grid-cols-1 gap-2 p-2 sm:p-3 border rounded-lg">
                 <Input
                   placeholder="Team member name"
                   value={member.name}
@@ -2108,13 +2120,13 @@ export default function OnboardingPage() {
 
   // Render success page
   const renderSuccess = () => (
-    <div className="max-w-lg mx-auto text-center animate-fade-in">
-      <div className="mb-8">
-        <div className="bg-green-100 p-4 rounded-full w-fit mx-auto mb-4">
-          <Check className="h-8 w-8 text-green-600" />
+    <div className="max-w-lg mx-auto text-center animate-fade-in w-full h-full flex flex-col justify-center">
+      <div className="mb-4 sm:mb-6">
+        <div className="bg-green-100 p-3 sm:p-4 rounded-full w-fit mx-auto mb-3 sm:mb-4">
+          <Check className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
         </div>
-        <h1 className="text-3xl font-bold mb-4">Welcome to Maamul!</h1>
-        <p className="text-muted-foreground mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 px-2">Welcome to Maamul!</h1>
+        <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 px-2">
           Your account has been successfully created and configured. We've sent you a confirmation email with next
           steps.
         </p>
@@ -2140,10 +2152,10 @@ export default function OnboardingPage() {
   )
 
   return (
-    <div className="min-h-screen bg-background dark:bg-gray-900 flex flex-col">
+    <div className="h-screen bg-background dark:bg-gray-900 flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="sticky top-0 z-40 w-full backdrop-blur-sm bg-background/80 dark:bg-gray-900/80 border-b h-16 flex-shrink-0">
-        <div className="container max-w-6xl mx-auto px-4 py-3 flex items-center justify-between h-full">
+      <header className="sticky top-0 z-40 w-full backdrop-blur-sm bg-background/80 dark:bg-gray-900/80 border-b h-14 sm:h-16 flex-shrink-0">
+        <div className="container max-w-6xl mx-auto px-4 py-2 sm:py-3 flex items-center justify-between h-full">
           <Link
             href="/"
             className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
@@ -2164,49 +2176,49 @@ export default function OnboardingPage() {
         {currentStep === "retail-setup" || currentStep === "restaurant-setup" || currentStep === "signup" ? (
           <>
             {/* Video Section - Left Side */}
-            <div className="hidden lg:block lg:w-3/5 relative">
+            <div className="hidden lg:block lg:w-3/5 relative h-full overflow-hidden">
               {currentStep === "retail-setup" || currentStep === "restaurant-setup" ? renderBusinessSetupVideo() : renderAccountSetupVideo()}
             </div>
 
             {/* Form Section - Right Side */}
             <div className="w-full lg:w-2/5 flex flex-col min-h-0 overflow-hidden">
               {/* Progress bar */}
-              <div className="px-4 sm:px-6 py-3 sm:py-4 border-b bg-background/95 backdrop-blur-sm flex-shrink-0">
+              <div className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 border-b bg-background/95 backdrop-blur-sm flex-shrink-0">
                 {currentStep === "retail-setup" && (
                   <div>
-                    <div className="flex justify-between text-xs text-muted-foreground mb-2">
+                    <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
                       <span>Business Setup</span>
                       <span className="whitespace-nowrap">{Math.round(retailProgressPercentage)}% Complete</span>
                     </div>
-                    <Progress value={retailProgressPercentage} className="h-2" />
+                    <Progress value={retailProgressPercentage} className="h-1.5" />
                   </div>
                 )}
                 {currentStep === "restaurant-setup" && (
                   <div>
-                    <div className="flex justify-between text-xs text-muted-foreground mb-2">
+                    <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
                       <span>Business Setup</span>
                       <span className="whitespace-nowrap">{Math.round(restaurantProgressPercentage)}% Complete</span>
                     </div>
-                    <Progress value={restaurantProgressPercentage} className="h-2" />
+                    <Progress value={restaurantProgressPercentage} className="h-1.5" />
                   </div>
                 )}
                 {currentStep === "signup" && (
                   <div>
-                    <div className="flex justify-between text-xs text-muted-foreground mb-2">
+                    <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
                       <span>Account Setup</span>
                       <span className="whitespace-nowrap">
                         Step {currentSignupStep + 1} of {signupSteps.length}
                       </span>
                     </div>
-                    <Progress value={signupProgressPercentage} className="h-2" />
+                    <Progress value={signupProgressPercentage} className="h-1.5" />
                   </div>
                 )}
               </div>
 
               {/* Form Content */}
-              <div className="flex-1 overflow-y-auto scrollbar-hide min-h-0">
-                <div className="p-4 sm:p-6 py-6 sm:py-8 flex items-center justify-center min-h-full">
-                  <div className="w-full max-w-2xl">
+              <div className="flex-1 min-h-0 overflow-hidden">
+                <div className="h-full p-3 sm:p-4 lg:p-6 flex items-center justify-center">
+                  <div className="w-full max-w-2xl h-full flex flex-col justify-center">
                     {currentStep === "retail-setup" && renderRetailSetup()}
                     {currentStep === "restaurant-setup" && renderRestaurantSetup()}
                     {currentStep === "signup" && renderStepByStepSignup()}
@@ -2215,7 +2227,7 @@ export default function OnboardingPage() {
               </div>
 
               {/* Navigation */}
-              <div className="px-4 sm:px-6 py-3 sm:py-4 border-t bg-background/95 backdrop-blur-sm flex-shrink-0">
+              <div className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 border-t bg-background/95 backdrop-blur-sm flex-shrink-0">
                 {currentStep === "retail-setup" && retailQuestions[currentQuestionIndex]?.type !== "welcome" && (
                   <div className="flex justify-between gap-2 sm:gap-4">
                     <Button 
@@ -2296,9 +2308,9 @@ export default function OnboardingPage() {
           </>
         ) : (
           /* Full Width Layout for other steps */
-          <main className="flex-1 overflow-y-auto scrollbar-hide min-h-0">
-            <div className="container max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-12 sm:pb-24">
-              <div className="min-h-[60vh] flex items-center justify-center py-6 sm:py-8">
+          <main className="flex-1 min-h-0 overflow-hidden">
+            <div className="h-full container max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-center">
+              <div className="w-full h-full flex items-center justify-center py-4 sm:py-6">
                 {currentStep === "industry" && renderIndustrySelection()}
                 {currentStep === "waitlist" && renderWaitlistForm()}
                 {currentStep === "success" && renderSuccess()}
